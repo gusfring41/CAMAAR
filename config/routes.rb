@@ -1,4 +1,18 @@
 Rails.application.routes.draw do
+  root "sessions#new"
+
+  get "/inicio", to: "home#index", as: :inicio
+  post "/login", to: "sessions#create", as: :login
+  delete "/logout", to: "sessions#destroy", as: :logout
+
+  get "/definir_senha/:token", to: "definicao_senhas#edit", as: :edit_definicao_senha
+  patch "/definir_senha/:token", to: "definicao_senhas#update", as: :definicao_senha
+
+  get "/redefinir_senha", to: "redefinicao_senhas#new", as: :redefinir_senha
+  post "/redefinir_senha", to: "redefinicao_senhas#create"
+  get "/redefinir_senha/:token", to: "redefinicao_senhas#edit", as: :edit_redefinicao_senha
+  patch "/redefinir_senha/:token", to: "redefinicao_senhas#update", as: :redefinicao_senha
+
   resources :resposta_elems
   resources :resposta_forms
   resources :campo_forms

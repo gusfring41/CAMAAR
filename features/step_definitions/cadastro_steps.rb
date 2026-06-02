@@ -7,10 +7,13 @@ Dado('que eu importei os dados do SIGAA com sucesso') do
   # implementar a partir da feature de importar dados
 end
 
-Então('o e-mail de usuário {string} está cadastrado no sistema com senha indefinida') do |email|
-  # implementar quando definir models
-end
-
 Então('um email de definição de senha é enviado para o email {string}') do |email|
-  # implementar quando definir models (vai ser um método do model)
+  usuario = Usuario.find_by!(email: email)
+  ActionMailer::Base.deliveries.clear
+  usuario.enviar_email_definicao_senha!
+
+  @email_destino = email
+
+  enviados = ActionMailer::Base.deliveries.select { |m| m.to == [email] }
+  expect(enviados).not_to be_empty
 end
