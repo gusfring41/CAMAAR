@@ -21,6 +21,7 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
   get "admin", to: "admin#index", as: :admin
   post "admin/importar_sigaa", to: "admin#importar_sigaa", as: :importar_sigaa
+  post "admin/atualizar_sigaa", to: "admin#atualizar_sigaa", as: :atualizar_sigaa
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
