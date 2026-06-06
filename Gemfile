@@ -66,6 +66,5 @@ group :test do
   gem "selenium-webdriver"
   gem "cucumber-rails", require: false
   gem "database_cleaner"
-  gem "sqlite3", ">= 2.1"
   gem "rspec-rails"
 end
