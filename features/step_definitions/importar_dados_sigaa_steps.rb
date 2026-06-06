@@ -1,7 +1,7 @@
 
 
 Dado('que os dados do SIGAA estão disponíveis para importação') do
-  # By default, let the importer work normally; specific scenarios will stub its return.
+  # Por padrão, o SigaaImporter importará os dados dos arquivos "classes.json" e "members.json", então não é necessário configurar nada aqui para simular a disponibilidade dos dados do SIGAA.
 end
 
 Dado('que os dados do SIGAA foram importados com sucesso') do

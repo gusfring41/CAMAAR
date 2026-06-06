@@ -22,12 +22,12 @@ class AdminController < ApplicationController
     resultado = SigaaImporter.update_from_files("classes.json", "members.json")
 
     case resultado
-    when /atualiza/i
-      redirect_to admin_path, notice: "As turmas, matérias e participantes do SIGAA estão atualizados no sistema com os dados atuais do SIGAA."
     when /alguns dados/i
       redirect_to admin_path, notice: "alguns dados já estão atualizados e não serão atualizados novamente, mas os dados restantes serão atualizados com sucesso"
     when /já estão atualizados/i
       redirect_to admin_path, alert: "os dados do SIGAA já estão atualizados e não serão atualizados novamente"
+    when /atualiza/i
+      redirect_to admin_path, notice: "As turmas, matérias e participantes do SIGAA estão atualizados no sistema com os dados atuais do SIGAA."
     else
       redirect_to admin_path, alert: "erro informando que a atualização falhou"
     end
