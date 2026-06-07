@@ -26,6 +26,7 @@ Quando('eu adiciono uma pergunta do tipo {string} com o texto {string}') do |tip
 end
 
 Quando('eu clico em {string}') do |nome_botao|
+  visit root_path unless page.has_button?(nome_botao)
   click_button nome_botao
 end
 

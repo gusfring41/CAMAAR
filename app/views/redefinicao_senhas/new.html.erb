@@ -1,0 +1,12 @@
+<h1>Redefinição de senha</h1>
+
+<%= form_with url: redefinir_senha_path do %>
+  <div>
+    <%= label_tag :email, "Email" %>
+    <%= email_field_tag :email %>
+  </div>
+
+  <div>
+    <%= submit_tag "Solicitar redefinição" %>
+  </div>
+<% end %>

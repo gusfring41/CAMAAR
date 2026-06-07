@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_28_002258) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_02_090000) do
   create_table "campo_forms", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "elemento_form_id", null: false
@@ -134,17 +134,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_28_002258) do
   create_table "usuarios", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "curso_id"
+    t.datetime "definicao_senha_sent_at"
+    t.string "definicao_senha_token"
     t.bigint "departamento_id"
     t.string "email"
     t.string "formacao"
     t.string "matricula"
     t.string "nome"
+    t.datetime "redefinicao_senha_sent_at"
+    t.string "redefinicao_senha_token"
     t.string "senha_hash"
     t.string "type"
     t.datetime "updated_at", null: false
     t.index ["curso_id"], name: "index_usuarios_on_curso_id"
+    t.index ["definicao_senha_token"], name: "index_usuarios_on_definicao_senha_token", unique: true
     t.index ["departamento_id"], name: "index_usuarios_on_departamento_id"
     t.index ["matricula"], name: "index_usuarios_on_matricula", unique: true
+    t.index ["redefinicao_senha_token"], name: "index_usuarios_on_redefinicao_senha_token", unique: true
   end
 
   add_foreign_key "campo_forms", "elemento_forms"
