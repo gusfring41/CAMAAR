@@ -30,14 +30,13 @@
       <div class="admin-body">
         
         <aside class="admin-sidebar">
-          <div class="sidebar-header">
-          </div>
+          <div class="sidebar-header"></div>
           
           <a href="/admin/avaliacoes" class="menu-item <%= 'active' if request.path == '/admin/avaliacoes' %>">
             Avaliações
           </a>
           
-          <a href="/admin/gerenciamento" class="menu-item <%= 'active' if request.path == '/admin/gerenciamento' %>">
+          <a href="/admin/gerenciamento" class="menu-item <%= 'active' if request.path.start_with?('/admin/gerenciamento') || request.path.start_with?('/admin/template') %>">
             Gerenciamento
           </a>
         </aside>

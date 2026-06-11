@@ -34,8 +34,9 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "/admin", to: redirect("/admin/avaliacoes")
 
-  get "/admin/gerenciamento", to: "admin#gerenciamento", as: :admin_gerenciamento
   get "/admin/avaliacoes", to: "admin#avaliacoes", as: :admin_avaliacoes
+  get "/admin/gerenciamento", to: "admin#gerenciamento", as: :admin_gerenciamento
+  get "/admin/templates", to: "admin#templates", as: :admin_templates
 
   post "admin/importar_sigaa", to: "admin#importar_sigaa", as: :importar_sigaa
   post "admin/atualizar_sigaa", to: "admin#atualizar_sigaa", as: :atualizar_sigaa
