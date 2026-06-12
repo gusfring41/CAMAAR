@@ -1,6 +1,5 @@
 class Elemento < ApplicationRecord
   belongs_to :template
-  has_many :campos, dependent: :destroy  
-  validates :ordem, presence: true
-  validates :ordem, uniqueness: { scope: :template_id }
+  has_many :campos, dependent: :destroy
+  accepts_nested_attributes_for :campos, allow_destroy: true
 end
