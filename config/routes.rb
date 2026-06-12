@@ -20,7 +20,6 @@ Rails.application.routes.draw do
   resources :formularios
   resources :campos
   resources :elementos
-  resources :templates
   resources :docentes
   resources :discentes
   resources :usuarios
@@ -36,7 +35,10 @@ Rails.application.routes.draw do
 
   get "/admin/avaliacoes", to: "admin#avaliacoes", as: :admin_avaliacoes
   get "/admin/gerenciamento", to: "admin#gerenciamento", as: :admin_gerenciamento
-  get "/admin/templates", to: "admin#templates", as: :admin_templates
+
+  scope '/admin', as: 'admin' do
+    resources :templates
+  end
 
   post "admin/importar_sigaa", to: "admin#importar_sigaa", as: :importar_sigaa
   post "admin/atualizar_sigaa", to: "admin#atualizar_sigaa", as: :atualizar_sigaa

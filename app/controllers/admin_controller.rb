@@ -7,11 +7,6 @@ class AdminController < ApplicationController
   def gerenciamento
   end
 
-  def templates
-    @templates = Template.all 
-  end
-
-
   def importar_sigaa
     resultado = SigaaImporter.import_from_files("classes.json", "members.json")
 

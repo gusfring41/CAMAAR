@@ -1,4 +1,7 @@
 class TemplatesController < ApplicationController
+
+  layout 'gerenciamento' 
+  
   before_action :set_template, only: %i[ show edit update destroy ]
 
   # GET /templates or /templates.json
@@ -8,15 +11,24 @@ class TemplatesController < ApplicationController
 
   # GET /templates/1 or /templates/1.json
   def show
+    redirect_to admin_templates_path
   end
 
   # GET /templates/new
   def new
+    @templates = Template.all 
     @template = Template.new
+    elemento = @template.elementos.build
+    elemento.campos.build
   end
 
   # GET /templates/1/edit
   def edit
+    @templates = Template.all
+    if @template.elementos.empty?
+      elemento = @template.elementos.build
+      elemento.campos.build
+    end
   end
 
   # POST /templates or /templates.json
@@ -25,9 +37,10 @@ class TemplatesController < ApplicationController
 
     respond_to do |format|
       if @template.save
-        format.html { redirect_to @template, notice: "Template was successfully created." }
+        format.html { redirect_to admin_templates_path, notice: "Template criado com sucesso!" }
         format.json { render :show, status: :created, location: @template }
       else
+        @templates = Template.all 
         format.html { render :new, status: :unprocessable_content }
         format.json { render json: @template.errors, status: :unprocessable_content }
       end
@@ -38,9 +51,10 @@ class TemplatesController < ApplicationController
   def update
     respond_to do |format|
       if @template.update(template_params)
-        format.html { redirect_to @template, notice: "Template was successfully updated.", status: :see_other }
+        format.html { redirect_to admin_templates_path, notice: "Template atualizado com sucesso!" }
         format.json { render :show, status: :ok, location: @template }
       else
+        @templates = Template.all 
         format.html { render :edit, status: :unprocessable_content }
         format.json { render json: @template.errors, status: :unprocessable_content }
       end
@@ -50,9 +64,9 @@ class TemplatesController < ApplicationController
   # DELETE /templates/1 or /templates/1.json
   def destroy
     @template.destroy!
-
     respond_to do |format|
-      format.html { redirect_to templates_path, notice: "Template was successfully destroyed.", status: :see_other }
+      # Mude templates_path para admin_templates_path
+      format.html { redirect_to admin_templates_path, notice: "Template deletado com sucesso!", status: :see_other }
       format.json { head :no_content }
     end
   end
@@ -65,6 +79,12 @@ class TemplatesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def template_params
-      params.expect(template: [ :nome ])
+      params.require(:template).permit(
+        :nome, 
+        elementos_attributes: [
+          :id, :enunciado, :ordem, :_destroy, 
+          campos_attributes: [:id, :tipo_elemento, :enunciado, :ordem, :_destroy]
+        ]
+      )
     end
 end
