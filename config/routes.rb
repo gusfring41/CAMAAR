@@ -40,8 +40,8 @@ Rails.application.routes.draw do
     resources :templates
   end
 
-  post "admin/importar_sigaa", to: "admin#importar_sigaa", as: :importar_sigaa
-  post "admin/atualizar_sigaa", to: "admin#atualizar_sigaa", as: :atualizar_sigaa
+  get  "admin/sincronizar_sigaa", to: "admin#sincronizar_sigaa", as: :admin_sincronizar_sigaa
+  post "admin/sincronizar_sigaa", to: "admin#sincronizar_sigaa"
 
   get "up" => "rails/health#show", as: :rails_health_check
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
