@@ -4,6 +4,16 @@ class AdminController < ApplicationController
   def avaliacoes
   end
 
+  def resultados
+    @admin = Administrador.find_by(id: session[:usuario_id])
+
+    if @admin
+      @formularios = Formulario.joins(turma: :disciplina).where(disciplinas: { departamento_id: @admin.departamento_id }).includes(turma: :disciplina)
+    else
+      redirect_to root_path, alert: "Acesso não autorizado."
+    end
+  end
+
   def gerenciamento
   end
 

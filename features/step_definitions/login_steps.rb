@@ -67,6 +67,5 @@ Então('permaneço na página de login') do
 end
 
 Então('sou direcionado para a página inicial') do
-  # expect(page).to have_current_path(avaliacoes_path)
-  # implementar quando o nome da rota for determinado
+  expect(page).to have_current_path(inicio_path)
 end
