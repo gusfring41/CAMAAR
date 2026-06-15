@@ -1,6 +1,8 @@
 class AdminController < ApplicationController
   layout 'gerenciamento'
 
+  before_action :set_admin
+
   def avaliacoes
   end
 
@@ -16,6 +18,14 @@ class AdminController < ApplicationController
   end
 
   private
+
+  def set_admin
+    @admin = Administrador.find(params[:admin_id])
+    
+    if @admin.id != session[:usuario_id]
+      redirect_to inicio_path, alert: "Acesso negado! Você só pode acessar as suas próprias páginas."
+    end
+  end
 
   def processar_sincronizacao
     acao = params[:acao]
@@ -43,23 +53,23 @@ class AdminController < ApplicationController
     case resultado
     when /alguns dados/i
       if acao == 'importar'
-        redirect_to admin_gerenciamento_path, notice: "alguns dados já foram importados e não serão importados novamente, mas os dados restantes serão importados com sucesso"
+        redirect_to admin_gerenciamento_path(@admin), notice: "alguns dados já foram importados e não serão importados novamente, mas os dados restantes serão importados com sucesso"
       else
-        redirect_to admin_gerenciamento_path, notice: "alguns dados já estão atualizados e não serão atualizados novamente, mas os dados restantes serão atualizados com sucesso"
+        redirect_to admin_gerenciamento_path(@admin), notice: "alguns dados já estão atualizados e não serão atualizados novamente, mas os dados restantes serão atualizados com sucesso"
       end
     when /sucesso/i
       if acao == 'importar'
-        redirect_to admin_gerenciamento_path, notice: "As turmas, matérias e participantes do SIGAA estão presentes no sistema."
+        redirect_to admin_gerenciamento_path(@admin), notice: "As turmas, matérias e participantes do SIGAA estão presentes no sistema."
       else
-        redirect_to admin_gerenciamento_path, notice: "As turmas, matérias e participantes do SIGAA estão atualizados no sistema com os dados atuais do SIGAA."
+        redirect_to admin_gerenciamento_path(@admin), notice: "As turmas, matérias e participantes do SIGAA estão atualizados no sistema com os dados atuais do SIGAA."
       end
     when /já existem/i
-      redirect_to admin_gerenciamento_path, alert: "os dados do SIGAA já existem na base de dados do sistema e não serão importados novamente"
+      redirect_to admin_gerenciamento_path(@admin), alert: "os dados do SIGAA já existem na base de dados do sistema e não serão importados novamente"
     when /já estão atualizados/i
-      redirect_to admin_gerenciamento_path, alert: "os dados do SIGAA já estão atualizados e não serão atualizados novamente"
+      redirect_to admin_gerenciamento_path(@admin), alert: "os dados do SIGAA já estão atualizados e não serão atualizados novamente"
     else
       nome_acao = acao == 'importar' ? 'importação' : 'atualização'
-      redirect_to admin_gerenciamento_path, alert: "erro informando que a #{nome_acao} falhou"
+      redirect_to admin_gerenciamento_path(@admin), alert: "erro informando que a #{nome_acao} falhou"
     end
   end
 end
