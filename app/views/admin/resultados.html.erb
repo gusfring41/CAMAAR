@@ -11,10 +11,10 @@
               <%= formulario.turma.disciplina.nome %>
             </h3>
             <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: #333333;">
-              <%= formulario.turma.semestre %>
+              Turma <%= formulario.turma.numero_da_turma %>
             </p>
             <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: #333333;">
-              <%= formulario.turma.horario %>
+              <%= formulario.turma.semestre %> - <%= formulario.turma.horario %>
             </p>
           </div>
           
@@ -24,7 +24,7 @@
               <%= formulario.turma.docentes.first&.nome || "Professor(a) não alocado(a)" %>
             </p>
             
-            <%= link_to "Baixar Resultado", "#", style: "display: block; text-align: center; background-color: #612F65; color: white; text-decoration: none; padding: 10px 16px; border-radius: 4px; font-weight: bold; font-size: 0.9rem;" %>
+            <%= link_to "Baixar Resultado", baixar_csv_path(id: formulario.id, format: :csv), style: "display: block; text-align: center; background-color: #612F65; color: white; text-decoration: none; padding: 10px 16px; border-radius: 4px; font-weight: bold; font-size: 0.9rem;" %>
           </div>
 
         </div>
