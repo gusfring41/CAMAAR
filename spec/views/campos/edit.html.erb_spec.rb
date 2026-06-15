@@ -18,7 +18,6 @@ RSpec.describe "campos/edit", type: :view do
     render
 
     assert_select "form[action=?][method=?]", campo_path(campo), "post" do
-
       assert_select "input[name=?]", "campo[ordem]"
 
       assert_select "input[name=?]", "campo[enunciado]"

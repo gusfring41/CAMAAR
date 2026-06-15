@@ -18,7 +18,6 @@ RSpec.describe "docentes/edit", type: :view do
     render
 
     assert_select "form[action=?][method=?]", docente_path(docente), "post" do
-
       assert_select "input[name=?]", "docente[matricula]"
 
       assert_select "input[name=?]", "docente[email]"

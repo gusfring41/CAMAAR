@@ -15,7 +15,6 @@ RSpec.describe "formularios/edit", type: :view do
     render
 
     assert_select "form[action=?][method=?]", formulario_path(formulario), "post" do
-
       assert_select "input[name=?]", "formulario[turma_id]"
     end
   end

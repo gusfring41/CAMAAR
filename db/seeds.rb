@@ -62,7 +62,7 @@ docente.nome ||= "GUS"
 docente.matricula ||= "241000004"
 docente.senha = "teste123"
 docente.senha_confirmation = "teste123"
-docente.departamento = dept_cic 
+docente.departamento = dept_cic
 docente.formacao = "doutorado"
 docente.save!
 

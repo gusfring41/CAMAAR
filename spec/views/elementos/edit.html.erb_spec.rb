@@ -17,7 +17,6 @@ RSpec.describe "elementos/edit", type: :view do
     render
 
     assert_select "form[action=?][method=?]", elemento_path(elemento), "post" do
-
       assert_select "input[name=?]", "elemento[ordem]"
 
       assert_select "input[name=?]", "elemento[enunciado]"

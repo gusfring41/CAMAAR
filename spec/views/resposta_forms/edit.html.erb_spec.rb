@@ -16,7 +16,6 @@ RSpec.describe "resposta_forms/edit", type: :view do
     render
 
     assert_select "form[action=?][method=?]", resposta_form_path(resposta_form), "post" do
-
       assert_select "input[name=?]", "resposta_form[formulario_id]"
 
       assert_select "input[name=?]", "resposta_form[usuario_id]"

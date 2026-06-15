@@ -1,7 +1,6 @@
 class TemplatesController < ApplicationController
+  layout "gerenciamento"
 
-  layout 'gerenciamento' 
-  
   before_action :set_template, only: %i[ show edit update destroy ]
 
   # GET /templates or /templates.json
@@ -16,7 +15,7 @@ class TemplatesController < ApplicationController
 
   # GET /templates/new
   def new
-    @templates = Template.all 
+    @templates = Template.all
     @template = Template.new
     elemento = @template.elementos.build
     elemento.campos.build
@@ -40,7 +39,7 @@ class TemplatesController < ApplicationController
         format.html { redirect_to admin_templates_path, notice: "Template criado com sucesso!" }
         format.json { render :show, status: :created, location: @template }
       else
-        @templates = Template.all 
+        @templates = Template.all
         format.html { render :new, status: :unprocessable_content }
         format.json { render json: @template.errors, status: :unprocessable_content }
       end
@@ -54,7 +53,7 @@ class TemplatesController < ApplicationController
         format.html { redirect_to admin_templates_path, notice: "Template atualizado com sucesso!" }
         format.json { render :show, status: :ok, location: @template }
       else
-        @templates = Template.all 
+        @templates = Template.all
         format.html { render :edit, status: :unprocessable_content }
         format.json { render json: @template.errors, status: :unprocessable_content }
       end
@@ -80,10 +79,10 @@ class TemplatesController < ApplicationController
     # Only allow a list of trusted parameters through.
     def template_params
       params.require(:template).permit(
-        :nome, 
+        :nome,
         elementos_attributes: [
-          :id, :enunciado, :ordem, :_destroy, 
-          campos_attributes: [:id, :tipo_elemento, :enunciado, :ordem, :_destroy]
+          :id, :enunciado, :ordem, :_destroy,
+          campos_attributes: [ :id, :tipo_elemento, :enunciado, :ordem, :_destroy ]
         ]
       )
     end

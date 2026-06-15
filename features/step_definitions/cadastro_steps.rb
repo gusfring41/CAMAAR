@@ -14,6 +14,6 @@ Então('um email de definição de senha é enviado para o email {string}') do |
 
   @email_destino = email
 
-  enviados = ActionMailer::Base.deliveries.select { |m| m.to == [email] }
+  enviados = ActionMailer::Base.deliveries.select { |m| m.to == [ email ] }
   expect(enviados).not_to be_empty
 end

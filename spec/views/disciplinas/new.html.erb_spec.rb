@@ -13,7 +13,6 @@ RSpec.describe "disciplinas/new", type: :view do
     render
 
     assert_select "form[action=?][method=?]", disciplinas_path, "post" do
-
       assert_select "input[name=?]", "disciplina[codigo]"
 
       assert_select "input[name=?]", "disciplina[nome]"

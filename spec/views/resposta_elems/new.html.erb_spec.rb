@@ -14,7 +14,6 @@ RSpec.describe "resposta_elems/new", type: :view do
     render
 
     assert_select "form[action=?][method=?]", resposta_elems_path, "post" do
-
       assert_select "textarea[name=?]", "resposta_elem[texto_resposta]"
 
       assert_select "input[name=?]", "resposta_elem[resposta_form_id]"

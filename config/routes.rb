@@ -36,7 +36,7 @@ Rails.application.routes.draw do
   get "/admin/avaliacoes", to: "admin#avaliacoes", as: :admin_avaliacoes
   get "/admin/gerenciamento", to: "admin#gerenciamento", as: :admin_gerenciamento
 
-  scope '/admin', as: 'admin' do
+  scope "/admin", as: "admin" do
     resources :templates
   end
 

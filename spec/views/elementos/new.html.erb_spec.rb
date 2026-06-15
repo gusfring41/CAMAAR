@@ -13,7 +13,6 @@ RSpec.describe "elementos/new", type: :view do
     render
 
     assert_select "form[action=?][method=?]", elementos_path, "post" do
-
       assert_select "input[name=?]", "elemento[ordem]"
 
       assert_select "input[name=?]", "elemento[enunciado]"

@@ -17,7 +17,6 @@ RSpec.describe "cursos/edit", type: :view do
     render
 
     assert_select "form[action=?][method=?]", curso_path(curso), "post" do
-
       assert_select "input[name=?]", "curso[codigo]"
 
       assert_select "input[name=?]", "curso[nome]"
