@@ -57,6 +57,15 @@ admin.senha_confirmation = "teste123"
 admin.departamento = dept_cic
 admin.save!
 
+docente = Docente.find_or_initialize_by(email: "gusfring.a@gmail.com")
+docente.nome ||= "GUS"
+docente.matricula ||= "241000004"
+docente.senha = "teste123"
+docente.senha_confirmation = "teste123"
+docente.departamento = dept_cic 
+docente.formacao = "doutorado"
+docente.save!
+
 # Vinculando Usuários às Turmas
 discente.turmas << turma_a unless discente.turmas.include?(turma_a)
 docente.turmas << turma_a unless docente.turmas.include?(turma_a)
