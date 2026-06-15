@@ -4,11 +4,14 @@ class SigaaImporter
     ignored = 0
 
     ActiveRecord::Base.transaction do
+      dep_padrao = Departamento.find_or_create_by(codigo: "NAO_ESP") { |d| d.nome = "Não especificado" }
+
       # classes.json
       classes = JSON.parse(File.read(classes_path))
       classes.each do |c|
         disciplina = Disciplina.find_or_create_by(codigo: c["code"]) do |d|
           d.nome = c["name"]
+          d.departamento = dep_padrao
         end
 
         class_info = c["class"] || {}
@@ -36,15 +39,12 @@ class SigaaImporter
 
         # docente
         if m["docente"].is_a?(Hash)
-          dep = Departamento.find_or_create_by(nome: m["docente"]["departamento"]) if m["docente"]["departamento"]
-          usuario = Usuario.find_or_create_by(usuario: m["docente"]["usuario"]) do |u|
-            u.nome = m["docente"]["nome"]
-            u.email = m["docente"]["email"]
-          end
-          docente = Docente.find_or_create_by(usuario: usuario.usuario) do |dct|
-            dct.nome = usuario.nome
-            dct.email = usuario.email
-            dct.departamento = dep if dep
+          dep = m["docente"]["departamento"].present? ? Departamento.find_or_create_by(nome: m["docente"]["departamento"]) : dep_padrao
+          docente = Docente.find_or_create_by(email: m["docente"]["email"]) do |dct|
+            dct.nome = m["docente"]["nome"]
+            dct.matricula = m["docente"]["matricula"] || m["docente"]["usuario"]
+            dct.formacao = m["docente"]["formacao"] || "docente"
+            dct.departamento = dep
           end
           unless docente.turmas.exists?(turma.id)
             docente.turmas << turma
@@ -57,14 +57,11 @@ class SigaaImporter
         # discentes
         Array(m["dicente"]).each do |aluno|
           next unless aluno.is_a?(Hash)
-          curso = Curso.find_or_create_by(nome: aluno["curso"]) if aluno["curso"]
-          usuario = Usuario.find_or_create_by(matricula: aluno["matricula"]) do |u|
-            u.nome = aluno["nome"]
-            u.email = aluno["email"]
-          end
+          curso = Curso.find_or_create_by(nome: aluno["curso"]) { |c| c.departamento = dep_padrao } if aluno["curso"]
           discente = Discente.find_or_create_by(matricula: aluno["matricula"]) do |d|
-            d.nome = usuario.nome
-            d.usuario = usuario.usuario if usuario.respond_to?(:usuario)
+            d.nome = aluno["nome"]
+            d.email = aluno["email"]
+            d.formacao = aluno["formacao"] || "graduando"
             d.curso = curso if curso
           end
           unless discente.turmas.exists?(turma.id)
@@ -112,21 +109,17 @@ class SigaaImporter
 
         if m["docente"].is_a?(Hash)
           dep = Departamento.find_or_create_by(nome: m["docente"]["departamento"]) if m["docente"]["departamento"]
-          usuario = Usuario.find_by(usuario: m["docente"]["usuario"])
-          usuario.update(nome: m["docente"]["nome"], email: m["docente"]["email"]) if usuario
-          docente = Docente.find_by(usuario: m["docente"]["usuario"])
-          docente.update(nome: m["docente"]["nome"], email: m["docente"]["email"], departamento: dep) if docente
-          docente.turmas << turma unless docente.turmas.exists?(turma.id)
+          docente = Docente.find_by(email: m["docente"]["email"])
+          docente.update(nome: m["docente"]["nome"], departamento: dep) if docente
+          docente.turmas << turma if docente && !docente.turmas.exists?(turma.id)
         end
 
         Array(m["dicente"]).each do |aluno|
           next unless aluno.is_a?(Hash)
-          curso = Curso.find_or_create_by(nome: aluno["curso"]) if aluno["curso"]
-          usuario = Usuario.find_by(matricula: aluno["matricula"])
-          usuario.update(nome: aluno["nome"], email: aluno["email"]) if usuario
+          curso = Curso.find_by(nome: aluno["curso"]) if aluno["curso"]
           discente = Discente.find_by(matricula: aluno["matricula"])
-          discente.update(nome: aluno["nome"], curso: curso) if discente
-          discente.turmas << turma unless discente.turmas.exists?(turma.id)
+          discente.update(nome: aluno["nome"], email: aluno["email"], curso: curso) if discente
+          discente.turmas << turma if discente && !discente.turmas.exists?(turma.id)
         end
       end
     end
