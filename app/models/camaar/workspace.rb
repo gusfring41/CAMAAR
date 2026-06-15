@@ -195,7 +195,8 @@ module Camaar
     private
 
     def normalize_questions(raw_questions)
-      Array(raw_questions).filter_map do |question|
+      questions_array = raw_questions.is_a?(Hash) ? raw_questions.values : Array(raw_questions)
+      questions_array.filter_map do |question|
         next if question.nil?
 
         title = question["title"].to_s.strip
