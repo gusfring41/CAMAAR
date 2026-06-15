@@ -1,0 +1,41 @@
+<div class="modal-page">
+  <div class="modal-card">
+    <h1>Editar Template</h1>
+
+    <%= form_with url: admin_template_path(@template["id"]), method: :patch, local: true do %>
+      <div class="field">
+        <%= label_tag :template_title, "Título" %>
+        <%= text_field_tag "template[title]", @template["title"], placeholder: "Ex: Template de Avaliação de Turma" %>
+      </div>
+
+      <div class="field">
+        <%= label_tag :template_semester, "Semestre" %>
+        <%= text_field_tag "template[semester]", @template["semester"], placeholder: "Ex: 2026.1" %>
+      </div>
+
+      <h3>Perguntas</h3>
+      <div id="questions">
+        <% @template["questions"].each_with_index do |question, index| %>
+          <div class="question-block" data-index="<%= index %>">
+            <div class="field">
+              <%= label_tag "template[questions][#{index}][title]", "Pergunta #{index + 1}" %>
+              <%= text_field_tag "template[questions][#{index}][title]", question["title"], placeholder: "Digite a pergunta" %>
+            </div>
+            <div class="field">
+              <%= label_tag "template[questions][#{index}][type]", "Tipo" %>
+              <%= select_tag "template[questions][#{index}][type]", options_for_select([["Múltipla escolha", "radio"], ["Texto", "text"]], question["type"]) %>
+            </div>
+            <div class="field">
+              <%= label_tag "template[questions][#{index}][options]", "Opções (separadas por vírgula)" %>
+              <%= text_field_tag "template[questions][#{index}][options]", question["options"].join(", "), placeholder: "Ótimo, Bom, Regular, Ruim" %>
+            </div>
+            <%= hidden_field_tag "template[questions][#{index}][id]", question["id"] %>
+          </div>
+        <% end %>
+      </div>
+
+      <%= submit_tag "Salvar Alterações", class: "btn btn--primary" %>
+      <%= link_to "Cancelar", admin_templates_path, class: "btn btn--ghost" %>
+    <% end %>
+  </div>
+</div>
