@@ -39,7 +39,6 @@ class SessionsController < ApplicationController
     else
       redirect_to inicio_path, notice: "Login realizado com sucesso."
     end
-    
   end
 
   def destroy

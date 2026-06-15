@@ -1,15 +1,15 @@
 Given(/^I [aA]m authenticated as an "([^"]*)"$/) do |role|
   depto = Departamento.find_or_create_by!(nome: 'Departamento', codigo: 'TST')
-  
+
   @admin = Administrador.find_or_create_by!(email: 'admin@unb.br') do |u|
     u.senha_hash = '123456'
     u.nome = 'Admin'
     u.matricula = '123456789'
     u.departamento = depto
   end
-  
+
   allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@admin)
-  
+
   allow_any_instance_of(TemplatesController).to receive(:set_admin) do |controller|
     controller.instance_variable_set(:@admin, @admin)
   end
@@ -54,8 +54,8 @@ When('I confirm the deletion') do
 end
 
 Given('I have added the template') do |table|
-  dados = table.rows_hash  
-  valor = dados['titulo'].gsub(/^"|"$/, '')  
+  dados = table.rows_hash
+  valor = dados['titulo'].gsub(/^"|"$/, '')
   fill_in "Nome do template:", with: valor
 end
 
@@ -152,11 +152,11 @@ end
 Given('the template {string} has the following elementos:') do |nome, table|
   template = Template.find_by(nome: nome)
   template.elementos.destroy_all # Limpa a fantasma
-  
+
   table.hashes.each_with_index do |row, index|
     tipo = row['tipo_campo'] == 'multipla_escolha' ? 'Múltipla Escolha' : 'Texto'
     elemento = template.elementos.create!(enunciado: row['enunciado_elemento'], ordem: index + 1)
-    
+
     if tipo == 'Múltipla Escolha'
       opcoes = row['enunciado_campo'].split(':').map(&:strip).reject(&:empty?)
       opcoes.each_with_index do |opcao, opt_idx|
@@ -171,4 +171,3 @@ end
 Given('I have no templates saved') do
   Template.destroy_all
 end
-
