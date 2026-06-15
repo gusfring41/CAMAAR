@@ -51,7 +51,7 @@ class SessionsController < ApplicationController
     if usuario.is_a?(Administrador)
       redirect_to admin_avaliacoes_path(usuario.id)
     else
-      redirect_to inicio_path
+      redirect_to usuario_path(usuario.id)
     end
   end
 end
