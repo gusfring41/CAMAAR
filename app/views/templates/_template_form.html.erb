@@ -1,5 +1,5 @@
 <%= form_with model: @template, 
-              url: @template.persisted? ? update_admin_template_path(@template) : create_admin_template_path, 
+              url: @template.persisted? ? update_admin_template_path(@admin, @template) : create_admin_template_path, 
               method: @template.persisted? ? :patch : :post do |f| %>
   
   <div class="form-group">

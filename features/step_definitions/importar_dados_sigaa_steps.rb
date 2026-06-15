@@ -6,29 +6,29 @@ end
 Dado('que os dados do SIGAA foram importados com sucesso') do
   allow(SigaaImporter).to receive(:import_from_files).and_return("importação realizada com sucesso")
   arquivo = Rack::Test::UploadedFile.new(Rails.root.join("classes.json"), "application/json")
-  page.driver.post(admin_sincronizar_sigaa_path, { acao: 'importar', arquivo_sigaa: arquivo })
-  visit admin_gerenciamento_path
+  page.driver.post(admin_sincronizar_sigaa_path(@admin), { acao: 'importar', arquivo_sigaa: arquivo })
+  visit admin_gerenciamento_path(@admin)
 end
 
 Dado('que eu tentei importar os dados do SIGAA mas ocorreu um erro') do
   allow(SigaaImporter).to receive(:import_from_files).and_return("a importação falhou")
   arquivo = Rack::Test::UploadedFile.new(Rails.root.join("classes.json"), "application/json")
-  page.driver.post(admin_sincronizar_sigaa_path, { acao: 'importar', arquivo_sigaa: arquivo })
-  visit admin_gerenciamento_path
+  page.driver.post(admin_sincronizar_sigaa_path(@admin), { acao: 'importar', arquivo_sigaa: arquivo })
+  visit admin_gerenciamento_path(@admin)
 end
 
 Dado('que os dados do SIGAA já existem na base de dados do sistema') do
   allow(SigaaImporter).to receive(:import_from_files).and_return("os dados já existem e não foram duplicados")
   arquivo = Rack::Test::UploadedFile.new(Rails.root.join("classes.json"), "application/json")
-  page.driver.post(admin_sincronizar_sigaa_path, { acao: 'importar', arquivo_sigaa: arquivo })
-  visit admin_gerenciamento_path
+  page.driver.post(admin_sincronizar_sigaa_path(@admin), { acao: 'importar', arquivo_sigaa: arquivo })
+  visit admin_gerenciamento_path(@admin)
 end
 
 Dado('que alguns dados do SIGAA já existem na base de dados do sistema') do
   allow(SigaaImporter).to receive(:import_from_files).and_return("alguns dados já foram importados e não serão importados novamente")
   arquivo = Rack::Test::UploadedFile.new(Rails.root.join("classes.json"), "application/json")
-  page.driver.post(admin_sincronizar_sigaa_path, { acao: 'importar', arquivo_sigaa: arquivo })
-  visit admin_gerenciamento_path
+  page.driver.post(admin_sincronizar_sigaa_path(@admin), { acao: 'importar', arquivo_sigaa: arquivo })
+  visit admin_gerenciamento_path(@admin)
 end
 
 Então('as turmas, matérias e participantes do SIGAA estão presentes no sistema') do

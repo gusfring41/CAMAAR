@@ -31,17 +31,14 @@ Rails.application.routes.draw do
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get "/admin", to: redirect("/admin/avaliacoes")
 
-  get "/admin/avaliacoes", to: "admin#avaliacoes", as: :admin_avaliacoes
-  get "/admin/gerenciamento", to: "admin#gerenciamento", as: :admin_gerenciamento
-
-  scope '/admin', as: 'admin' do
+  scope '/admin/:admin_id', as: 'admin' do
+    get "avaliacoes", to: "admin#avaliacoes", as: :avaliacoes
+    get "gerenciamento", to: "admin#gerenciamento", as: :gerenciamento
     resources :templates
+    get  "sincronizar_sigaa", to: "admin#sincronizar_sigaa", as: :sincronizar_sigaa
+    post "sincronizar_sigaa", to: "admin#sincronizar_sigaa"
   end
-
-  get  "admin/sincronizar_sigaa", to: "admin#sincronizar_sigaa", as: :admin_sincronizar_sigaa
-  post "admin/sincronizar_sigaa", to: "admin#sincronizar_sigaa"
 
   get "up" => "rails/health#show", as: :rails_health_check
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)

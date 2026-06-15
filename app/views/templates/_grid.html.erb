@@ -6,17 +6,20 @@
 <% else %>
   <div class="templates-grid">
     <% @templates.each do |template| %>
+      
+      <% next if template.new_record? %>
+
       <div class="card">
         <div class="card-content">
           <h2 class="template-title"><%= template.nome %></h2>
         </div>
         
         <div class="card-actions">
-          <%= link_to edit_admin_template_path(template), class: "action-btn", aria: { label: "Editar" } do %>
+          <%= link_to edit_admin_template_path(@admin, template), class: "action-btn", aria: { label: "Editar" } do %>
             <%= svg_icon('edit') %>
           <% end %>
 
-          <%= button_to admin_template_path(template), method: :delete, 
+          <%= button_to admin_template_path(@admin, template), method: :delete, 
               form: { data: { turbo_confirm: "..." } }, 
               class: "action-btn button-to-clean",
               aria: { label: "Deletar" } do %>
@@ -26,7 +29,7 @@
       </div>
     <% end %>
 
-    <%= link_to new_admin_template_path, class: "card-create-new" do %>
+    <%= link_to new_admin_template_path(@admin), class: "card-create-new" do %>
       <span style="display: none;">Adicionar novo template</span>
       +
     <% end %>

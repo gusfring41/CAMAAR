@@ -34,7 +34,12 @@ class SessionsController < ApplicationController
     end
 
     session[:usuario_id] = usuario.id
-    redirect_to inicio_path, notice: "Login realizado com sucesso."
+    if usuario.is_a?(Administrador)
+      redirect_to admin_avaliacoes_path(usuario.id), notice: "Login realizado com sucesso."
+    else
+      redirect_to inicio_path, notice: "Login realizado com sucesso."
+    end
+    
   end
 
   def destroy

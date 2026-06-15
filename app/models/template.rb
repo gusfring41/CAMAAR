@@ -1,4 +1,6 @@
 class Template < ApplicationRecord
+  
+  belongs_to :administrador, foreign_key: 'usuario_id', class_name: 'Administrador'
   has_many :elementos, dependent: :destroy
   accepts_nested_attributes_for :elementos, allow_destroy: true
 
