@@ -7,49 +7,35 @@
     <%= csp_meta_tag %>
     
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "gerenciamento", "data-turbo-track": "reload" %>
   </head>
 
   <body>
-    <div class="admin-container">
-      
-      <header class="admin-header">
-        <div class="header-left">
-          <h1 class="tab-name">Visão Geral</h1>
+    <div class="app-shell">
+      <div class="sidebar">
+        <%= link_to "Avaliações", admin_avaliacoes_path, class: "sidebar__item #{'sidebar__item--active' if request.path == '/admin/avaliacoes' || request.path.start_with?('/admin/forms')}" %>
+        <%= link_to "Gerenciamento", admin_gerenciamento_path, class: "sidebar__item #{'sidebar__item--active' if request.path.start_with?('/admin/gerenciamento') || request.path.start_with?('/admin/templates') || request.path.start_with?('/admin/sincronizar_sigaa')}" %>
+        <%= link_to "Templates", admin_templates_path, class: "sidebar__item #{'sidebar__item--active' if request.path.start_with?('/admin/templates')}" %>
+      </div>
+
+      <div class="workspace">
+        <div class="topbar">
+          <h1 class="topbar__title">Admin CAMAAR</h1>
+          <div class="search-pill"></div>
+          <div class="avatar">A</div>
+          <%= link_to "Voltar ao Início", inicio_path, class: "btn btn--ghost" %>
+          <%= button_to "Logout", logout_path, method: :delete, class: "btn btn--danger" %>
         </div>
-        <div class="header-right">
-          
-          <div class="search-container">
-            <input type="text" class="search-input" placeholder="Pesquisar...">
-          </div>
 
-          <div class="user-avatar">U</div> 
-        </div>
-      </header>
-
-      <div class="admin-body">
-        
-        <aside class="admin-sidebar">
-          <div class="sidebar-header"></div>
-          
-          <a href="<%= admin_avaliacoes_path(@admin) %>" class="menu-item <%= 'active' if request.path.include?('/avaliacoes') %>">
-            Avaliações
-          </a>
-          
-          <a href="<%= admin_gerenciamento_path(@admin) %>" class="menu-item <%= 'active' if request.path.include?('/gerenciamento') || request.path.include?('/template') %>">
-            Gerenciamento
-          </a>
-        </aside>
-
-        <main class="admin-content">
-        <% flash.each do |type, message| %>
-            <div class="flash-message <%= type %>" style="padding: 15px; margin-bottom: 20px; border-radius: 5px; width: 100%; max-width: 462px; text-align: center;">
-            <%= message %>
+        <div class="workspace__body">
+          <% flash.each do |type, message| %>
+            <div class="flash">
+              <div class="flash__item <%= 'flash__item--alert' if type == 'alert' %>">
+                <%= message %>
+              </div>
             </div>
-        <% end %>
+          <% end %>
           <%= yield %>
-        </main>
-        
+        </div>
       </div>
     </div>
   </body>

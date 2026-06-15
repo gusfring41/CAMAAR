@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_15_105458) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_15_220605) do
   create_table "campo_forms", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "elemento_form_id", null: false
@@ -153,6 +153,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_15_105458) do
     t.index ["departamento_id"], name: "index_usuarios_on_departamento_id"
     t.index ["matricula"], name: "index_usuarios_on_matricula", unique: true
     t.index ["redefinicao_senha_token"], name: "index_usuarios_on_redefinicao_senha_token", unique: true
+  end
+
+  create_table "workspace_states", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.json "data", null: false
+    t.datetime "updated_at", null: false
   end
 
   add_foreign_key "campo_forms", "elemento_forms"
