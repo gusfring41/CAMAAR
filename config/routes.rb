@@ -38,13 +38,12 @@ Rails.application.routes.draw do
     resources :templates
     get  "sincronizar_sigaa", to: "admin#sincronizar_sigaa", as: :sincronizar_sigaa
     post "sincronizar_sigaa", to: "admin#sincronizar_sigaa"
+    get "resultados", to: "admin#resultados", as: :resultados
+    get "resultados/:id/download.csv", to: "admin#exportar_csv", as: :baixar_csv
   end
 
   post "admin/importar_sigaa", to: "admin#importar_sigaa", as: :importar_sigaa
   post "admin/atualizar_sigaa", to: "admin#atualizar_sigaa", as: :atualizar_sigaa
-
-  get "/admin/resultados", to: "admin#resultados", as: :admin_resultados
-  get "/admin/resultados/:id/download.csv", to: "admin#exportar_csv", as: :baixar_csv
 
   get "up" => "rails/health#show", as: :rails_health_check
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)

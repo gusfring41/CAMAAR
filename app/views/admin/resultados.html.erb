@@ -24,7 +24,7 @@
               <%= formulario.turma.docentes.first&.nome || "Professor(a) não alocado(a)" %>
             </p>
             
-            <%= link_to "Baixar Resultado", baixar_csv_path(id: formulario.id, format: :csv), style: "display: block; text-align: center; background-color: #612F65; color: white; text-decoration: none; padding: 10px 16px; border-radius: 4px; font-weight: bold; font-size: 0.9rem;" %>
+            <%= link_to "Baixar Resultado", admin_baixar_csv_path(@admin, id: formulario.id, format: :csv), style: "display: block; text-align: center; background-color: #612F65; color: white; text-decoration: none; padding: 10px 16px; border-radius: 4px; font-weight: bold; font-size: 0.9rem;" %>
           </div>
 
         </div>

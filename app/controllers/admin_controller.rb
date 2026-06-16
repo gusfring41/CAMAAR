@@ -12,13 +12,7 @@ class AdminController < ApplicationController
   end
 
   def resultados
-    @admin = Administrador.find_by(id: session[:usuario_id])
-
-    if @admin
-      @formularios = Formulario.joins(turma: :disciplina).where(disciplinas: { departamento_id: @admin.departamento_id }).includes(turma: :disciplina)
-    else
-      redirect_to root_path, alert: "Acesso não autorizado."
-    end
+    @formularios = Formulario.joins(turma: :disciplina).where(disciplinas: { departamento_id: @admin.departamento_id }).includes(turma: :disciplina)
   end
 
   def exportar_csv
@@ -27,24 +21,24 @@ class AdminController < ApplicationController
     if @formulario
       # O .includes carrega o usuário e também os resposta_elems junto com seus respectivo elemento_form
       @respostas = RespostaForm.where(formulario_id: @formulario.id).includes(:usuario, resposta_elems: :elemento_form)
-      
+
       if @formulario.resposta_forms.empty?
-        redirect_to admin_resultados_path,alert: "Falha na exportação: Este formulário ainda não possui respostas registradas."
+        redirect_to admin_resultados_path(@admin), alert: "Falha na exportação: Este formulário ainda não possui respostas registradas."
         return
       end
 
       respond_to do |format|
         format.csv do
-          num_turma = @formulario.turma&.numero_da_turma&.parameterize(separator: '_') || "sem_turma"
-          nome_materia = @formulario.turma&.disciplina&.nome&.parameterize(separator: '_') || "sem_materia"
+          num_turma = @formulario.turma&.numero_da_turma&.parameterize(separator: "_") || "sem_turma"
+          nome_materia = @formulario.turma&.disciplina&.nome&.parameterize(separator: "_") || "sem_materia"
           nome_arquivo = "formulario_#{@formulario.id}_turma_#{num_turma}_#{nome_materia}.csv"
 
           # Força o download
-          response.headers['Content-Disposition'] = "attachment; filename=\"#{nome_arquivo}\""
+          response.headers["Content-Disposition"] = "attachment; filename=\"#{nome_arquivo}\""
         end
       end
     else
-      redirect_to admin_resultados_path, alert: "Formulário não encontrado"
+      redirect_to admin_resultados_path(@admin), alert: "Formulário não encontrado"
     end
   end
   def sincronizar_sigaa

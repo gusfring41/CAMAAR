@@ -99,16 +99,12 @@ alunos = alunos_dados.map do |dados|
 end
 docente = Docente.find_or_initialize_by(email: "gusfring.a@gmail.com")
 docente.nome ||= "GUS"
-docente.matricula ||= "241000004"
+docente.matricula ||= "241000067"
 docente.senha = "teste123"
 docente.senha_confirmation = "teste123"
 docente.departamento = dept_cic
 docente.formacao = "doutorado"
 docente.save!
-
-# Vinculando Usuários às Turmas
-discente.turmas << turma_a unless discente.turmas.include?(turma_a)
-docente.turmas << turma_a unless docente.turmas.include?(turma_a)
 
 # ==========================================
 # VINCULANDO USUÁRIOS ÀS TURMAS
@@ -121,17 +117,17 @@ docente_2.turmas << turma_isc_a unless docente_2.turmas.include?(turma_isc_a)
 
 # Distribuindo alunos nas turmas para gerar variação de dados
 # Turma ED A: Alunos 1, 2 e 3
-[alunos[0], alunos[1], alunos[2]].each do |aluno|
+[ alunos[0], alunos[1], alunos[2] ].each do |aluno|
   aluno.turmas << turma_ed_a unless aluno.turmas.include?(turma_ed_a)
 end
 
 # Turma ED B: Alunos 3, 4 e 5
-[alunos[2], alunos[3], alunos[4]].each do |aluno|
+[ alunos[2], alunos[3], alunos[4] ].each do |aluno|
   aluno.turmas << turma_ed_b unless aluno.turmas.include?(turma_ed_b)
 end
 
 # Turma ISC A: Alunos 1, 4 e 5
-[alunos[0], alunos[4], alunos[3]].each do |aluno|
+[ alunos[0], alunos[4], alunos[3] ].each do |aluno|
   aluno.turmas << turma_isc_a unless aluno.turmas.include?(turma_isc_a)
 end
 
@@ -142,11 +138,13 @@ end
 template = Template.find_or_initialize_by(nome: "Avaliação de Disciplina Padrão")
 
 if template.new_record?
+  template.administrador = admin
+
   # ---------------------------------------------------------
   # Elemento 1: Múltipla Escolha (1 a 5)
   # ---------------------------------------------------------
   elemento_nota = template.elementos.build(enunciado: "Avalie a didática do professor", ordem: 1)
-  
+
   (1..5).each do |valor|
     elemento_nota.campos.build(enunciado: valor.to_s, ordem: valor, tipo_elemento: "Múltipla Escolha")
   end
@@ -155,8 +153,8 @@ if template.new_record?
   # Elemento 2: Múltipla Escolha (Dificuldade)
   # ---------------------------------------------------------
   elemento_opcoes = template.elementos.build(enunciado: "Como você avalia a dificuldade das listas de exercícios?", ordem: 2)
-  
-  ["Muito Fácil", "Adequada", "Muito Difícil"].each_with_index do |opcao, index|
+
+  [ "Muito Fácil", "Adequada", "Muito Difícil" ].each_with_index do |opcao, index|
     elemento_opcoes.campos.build(enunciado: opcao, ordem: index + 1, tipo_elemento: "Múltipla Escolha")
   end
 
@@ -164,7 +162,7 @@ if template.new_record?
   # Elemento 3: Texto Livre
   # ---------------------------------------------------------
   elemento_texto = template.elementos.build(enunciado: "Deixe um comentário ou sugestão sobre a disciplina", ordem: 3)
-  
+
   elemento_texto.campos.build(enunciado: nil, ordem: 1, tipo_elemento: "Texto")
 
   # Salva o bloco inteiro (Template + Elementos + Campos) de uma vez, satisfazendo a validação
@@ -190,7 +188,7 @@ def configurar_formulario_e_respostas(turma, template_base, dados_alunos)
       CampoForm.find_or_create_by!(enunciado: campo_base.enunciado, elemento_form: ef) do |c|
         c.ordem = campo_base.ordem
         # A linha abaixo foi removida pois CampoForm não possui a coluna tipo_elemento
-        # c.tipo_elemento = campo_base.tipo_elemento 
+        # c.tipo_elemento = campo_base.tipo_elemento
       end
     end
   end
@@ -223,34 +221,34 @@ end
 
 # Configurando dados para Estrutura de Dados - Turma A
 configurar_formulario_e_respostas(
-  turma_ed_a, 
+  turma_ed_a,
   template,
   [
-    { aluno: alunos[0], respostas: ["5", "Adequada", "Ótima didática, recomendo!"] },
-    { aluno: alunos[1], respostas: ["4", "Muito Difícil", "As listas poderiam ter mais exemplos práticos."] },
-    { aluno: alunos[2], respostas: ["5", "Adequada", "Sem reclamações, matéria excelente."] }
+    { aluno: alunos[0], respostas: [ "5", "Adequada", "Ótima didática, recomendo!" ] },
+    { aluno: alunos[1], respostas: [ "4", "Muito Difícil", "As listas poderiam ter mais exemplos práticos." ] },
+    { aluno: alunos[2], respostas: [ "5", "Adequada", "Sem reclamações, matéria excelente." ] }
   ]
 )
 
 # Configurando dados para Estrutura de Dados - Turma B
 configurar_formulario_e_respostas(
-  turma_ed_b, 
+  turma_ed_b,
   template,
   [
-    { aluno: alunos[2], respostas: ["3", "Muito Difícil", "O ritmo das aulas está muito acelerado."] },
-    { aluno: alunos[3], respostas: ["4", "Adequada", "Gostei da metodologia."] },
-    { aluno: alunos[4], respostas: ["2", "Muito Difícil", "Preciso de mais monitoria para acompanhar."] }
+    { aluno: alunos[2], respostas: [ "3", "Muito Difícil", "O ritmo das aulas está muito acelerado." ] },
+    { aluno: alunos[3], respostas: [ "4", "Adequada", "Gostei da metodologia." ] },
+    { aluno: alunos[4], respostas: [ "2", "Muito Difícil", "Preciso de mais monitoria para acompanhar." ] }
   ]
 )
 
 # Configurando dados para Introdução aos Sistemas de Computação - Turma A
 configurar_formulario_e_respostas(
-  turma_isc_a, 
+  turma_isc_a,
   template,
   [
-    { aluno: alunos[0], respostas: ["5", "Muito Fácil", "Projetos práticos são muito divertidos!"] },
-    { aluno: alunos[4], respostas: ["5", "Adequada", "O professor tira todas as dúvidas e os projetos ajudam muito."] },
-    { aluno: alunos[3], respostas: ["4", "Adequada", "Gostaria de mais exercícios de fixação antes das provas."] }
+    { aluno: alunos[0], respostas: [ "5", "Muito Fácil", "Projetos práticos são muito divertidos!" ] },
+    { aluno: alunos[4], respostas: [ "5", "Adequada", "O professor tira todas as dúvidas e os projetos ajudam muito." ] },
+    { aluno: alunos[3], respostas: [ "4", "Adequada", "Gostaria de mais exercícios de fixação antes das provas." ] }
   ]
 )
 
