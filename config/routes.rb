@@ -29,7 +29,7 @@ Rails.application.routes.draw do
   resources :departamentos
 
   # User forms (responder avaliações)
-  resources :forms, only: [:index, :show] do
+  resources :forms, only: [ :index, :show ] do
     member do
       post :create_response
     end
@@ -45,7 +45,7 @@ Rails.application.routes.draw do
     get "avaliacoes", to: "dashboard#index"
     get "gerenciamento", to: "dashboard#gerenciamento"
 
-    resources :forms, only: [:index, :new, :create] do
+    resources :forms, only: [ :index, :new, :create ] do
       member do
         post :publish
         get :results

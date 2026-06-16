@@ -3,7 +3,7 @@ require "securerandom"
 module Admin
   class TemplatesController < ApplicationController
     before_action :require_admin
-    layout 'gerenciamento'
+    layout "gerenciamento"
 
     def index
       @workspace = workspace
@@ -57,7 +57,7 @@ module Admin
         "title" => "",
         "semester" => "2026.1",
         "questions" => [
-          { "id" => SecureRandom.uuid, "title" => "Questão 1", "type" => "radio", "options" => ["Ótimo", "Bom", "Regular", "Ruim"] }
+          { "id" => SecureRandom.uuid, "title" => "Questão 1", "type" => "radio", "options" => [ "Ótimo", "Bom", "Regular", "Ruim" ] }
         ]
       }
     end

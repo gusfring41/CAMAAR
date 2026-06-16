@@ -13,7 +13,7 @@ module Camaar
               "id" => "template-1-q1",
               "title" => "Questão 1",
               "type" => "radio",
-              "options" => ["Ótimo", "Bom", "Regular", "Ruim"]
+              "options" => [ "Ótimo", "Bom", "Regular", "Ruim" ]
             },
             {
               "id" => "template-1-q2",
@@ -38,7 +38,7 @@ module Camaar
               "id" => "form-1-q1",
               "title" => "Como você avalia o professor?",
               "type" => "radio",
-              "options" => ["Ótimo", "Bom", "Regular", "Ruim"]
+              "options" => [ "Ótimo", "Bom", "Regular", "Ruim" ]
             }
           ],
           "responses" => []
@@ -56,7 +56,7 @@ module Camaar
               "id" => "form-2-q1",
               "title" => "Como você avalia o ambiente da disciplina?",
               "type" => "radio",
-              "options" => ["Ótimo", "Bom", "Regular", "Ruim"]
+              "options" => [ "Ótimo", "Bom", "Regular", "Ruim" ]
             }
           ],
           "responses" => []

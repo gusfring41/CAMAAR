@@ -3,7 +3,7 @@ require "securerandom"
 module Admin
   class FormsController < ApplicationController
     before_action :require_admin
-    layout 'gerenciamento'
+    layout "gerenciamento"
 
     def index
       @workspace = workspace
