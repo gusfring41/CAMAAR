@@ -27,30 +27,37 @@ Rails.application.routes.draw do
   resources :disciplinas
   resources :cursos
   resources :departamentos
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get "/admin", to: redirect("/admin/avaliacoes")
-
-  get "/admin/avaliacoes", to: "admin#avaliacoes", as: :admin_avaliacoes
-  get "/admin/gerenciamento", to: "admin#gerenciamento", as: :admin_gerenciamento
-
-  scope '/admin', as: 'admin' do
-    resources :templates
+  # User forms (responder avaliações)
+  resources :forms, only: [ :index, :show ] do
+    member do
+      post :create_response
+    end
   end
 
-  post "admin/importar_sigaa", to: "admin#importar_sigaa", as: :importar_sigaa
-  post "admin/atualizar_sigaa", to: "admin#atualizar_sigaa", as: :atualizar_sigaa
+  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
+  get "/up" => "rails/health#show", as: :rails_health_check
+
+  # Admin routes
+  namespace :admin do
+    get "/", to: redirect("/admin/avaliacoes")
+
+    get "avaliacoes", to: "dashboard#index"
+    get "gerenciamento", to: "dashboard#gerenciamento"
+
+    resources :forms, only: [ :index, :new, :create ] do
+      member do
+        post :publish
+        get :results
+      end
+    end
+
+    resources :templates
+
+    get  "sincronizar_sigaa", to: "dashboard#sincronizar_sigaa", as: :sincronizar_sigaa
+    post "sincronizar_sigaa", to: "dashboard#sincronizar_sigaa"
+  end
 
   get "/admin/resultados", to: "admin#resultados", as: :admin_resultados
   get "/admin/resultados/:id/download.csv", to: "admin#exportar_csv", as: :baixar_csv
-
-  get "up" => "rails/health#show", as: :rails_health_check
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
-
-  # Defines the root path route ("/")
-  # root "posts#index"
 end

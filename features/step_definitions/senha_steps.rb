@@ -9,7 +9,7 @@ end
 Quando('eu acesso o link de definição de senha recebido por e-mail') do
   email_destino = @email_destino || raise("Email de destino não definido nos steps")
 
-  mensagem = ActionMailer::Base.deliveries.reverse.find { |m| m.to == [email_destino] }
+  mensagem = ActionMailer::Base.deliveries.reverse.find { |m| m.to == [ email_destino ] }
   raise("Nenhum email enviado para #{email_destino}") if mensagem.nil?
 
   corpo = mensagem.text_part&.body&.decoded || mensagem.html_part&.body&.decoded || mensagem.body.decoded
@@ -47,7 +47,7 @@ Então('um email de redefinição de senha é enviado para o email {string}') do
 
   @email_destino = email
 
-  enviados = ActionMailer::Base.deliveries.select { |m| m.to == [email] }
+  enviados = ActionMailer::Base.deliveries.select { |m| m.to == [ email ] }
   expect(enviados).not_to be_empty
 end
 
@@ -61,7 +61,7 @@ end
 Quando('eu acesso o link de redefinição de senha recebido por e-mail') do
   email_destino = @email_destino || raise("Email de destino não definido nos steps")
 
-  mensagem = ActionMailer::Base.deliveries.reverse.find { |m| m.to == [email_destino] }
+  mensagem = ActionMailer::Base.deliveries.reverse.find { |m| m.to == [ email_destino ] }
   raise("Nenhum email enviado para #{email_destino}") if mensagem.nil?
 
   corpo = mensagem.text_part&.body&.decoded || mensagem.html_part&.body&.decoded || mensagem.body.decoded

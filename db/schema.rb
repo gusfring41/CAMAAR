@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_02_090000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_15_220605) do
   create_table "campo_forms", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "elemento_form_id", null: false
@@ -119,6 +119,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_02_090000) do
     t.datetime "created_at", null: false
     t.string "nome"
     t.datetime "updated_at", null: false
+    t.bigint "usuario_id", null: false
+    t.index ["usuario_id"], name: "index_templates_on_usuario_id"
   end
 
   create_table "turmas", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -153,6 +155,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_02_090000) do
     t.index ["redefinicao_senha_token"], name: "index_usuarios_on_redefinicao_senha_token", unique: true
   end
 
+  create_table "workspace_states", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.json "data", null: false
+    t.datetime "updated_at", null: false
+  end
+
   add_foreign_key "campo_forms", "elemento_forms"
   add_foreign_key "campos", "elementos"
   add_foreign_key "cursos", "departamentos"
@@ -165,6 +173,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_02_090000) do
   add_foreign_key "resposta_elems", "resposta_forms"
   add_foreign_key "resposta_forms", "formularios"
   add_foreign_key "resposta_forms", "usuarios"
+  add_foreign_key "templates", "usuarios"
   add_foreign_key "turmas", "disciplinas"
   add_foreign_key "usuarios", "cursos"
   add_foreign_key "usuarios", "departamentos"
