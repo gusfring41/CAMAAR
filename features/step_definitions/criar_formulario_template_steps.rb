@@ -95,6 +95,20 @@ Quando('eu seleciono as turmas {string}') do |turmas_texto|
   # end
 end
 
+Quando('eu seleciono as turmas {string} e {string}') do |turma1, turma2|
+  # TODO: Implementar seleção de múltiplas turmas
+  # [turma1, turma2].each do |turma_info|
+  #   partes = turma_info.split(' - ')
+  #   codigo = partes[0]
+  #   nome_disciplina = partes[1]
+  #   numero_turma = partes[2]
+  #
+  #   disciplina = Disciplina.find_by!(codigo: codigo, nome: nome_disciplina)
+  #   turma = Turma.find_by!(disciplina: disciplina, numero_da_turma: numero_turma)
+  #   check "turma_ids_#{turma.id}"
+  # end
+end
+
 Quando('eu não seleciono nenhuma turma') do
   # TODO: Garantir que nenhuma turma está selecionada
 end

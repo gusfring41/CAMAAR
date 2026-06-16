@@ -61,19 +61,19 @@ class AdminController < ApplicationController
 
   def processar_sincronizacao
     acao = params[:acao]
-    arquivo = params[:arquivo_sigaa]
+    arquivo_classes = params[:arquivo_classes]
+    arquivo_membros = params[:arquivo_membros]
 
-    unless arquivo.present?
-      redirect_to admin_gerenciamento_path, alert: "Por favor, selecione um arquivo"
+    unless arquivo_classes.present? && arquivo_membros.present?
+      redirect_to admin_gerenciamento_path, alert: "Por favor, selecione os dois arquivos JSON"
       return
     end
 
-    temp_file = arquivo.path
     resultado = case acao
     when "importar"
-                  SigaaImporter.import_from_files(temp_file, temp_file)
+                  SigaaImporter.import_from_files(arquivo_classes.path, arquivo_membros.path)
     when "atualizar"
-                  SigaaImporter.update_from_files(temp_file, temp_file)
+                  SigaaImporter.update_from_files(arquivo_classes.path, arquivo_membros.path)
     else
                   "ação inválida"
     end

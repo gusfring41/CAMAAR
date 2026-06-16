@@ -47,7 +47,7 @@ RSpec.describe "Sessions", type: :request do
 
       it "redireciona para a página do usuário" do
         get root_path
-        expect(response).to redirect_to(usuario_path(docente.id))
+        expect(response).to redirect_to(inicio_path)
       end
     end
   end
@@ -98,12 +98,12 @@ RSpec.describe "Sessions", type: :request do
     context "com credenciais válidas de usuário comum" do
       it "redireciona para a página do usuário" do
         post login_path, params: { login: docente.email, senha: "Senha123" }
-        expect(response).to redirect_to(usuario_path(docente.id))
+        expect(response).to redirect_to(inicio_path)
       end
 
       it "aceita login pela matrícula" do
         post login_path, params: { login: docente.matricula, senha: "Senha123" }
-        expect(response).to redirect_to(usuario_path(docente.id))
+        expect(response).to redirect_to(inicio_path)
       end
     end
   end
