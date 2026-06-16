@@ -57,4 +57,7 @@ Rails.application.routes.draw do
     get  "sincronizar_sigaa", to: "dashboard#sincronizar_sigaa", as: :sincronizar_sigaa
     post "sincronizar_sigaa", to: "dashboard#sincronizar_sigaa"
   end
+
+  get "/admin/resultados", to: "admin#resultados", as: :admin_resultados
+  get "/admin/resultados/:id/download.csv", to: "admin#exportar_csv", as: :baixar_csv
 end
