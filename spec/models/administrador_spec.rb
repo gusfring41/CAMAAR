@@ -9,7 +9,7 @@ RSpec.describe Administrador, type: :model do
         nome: "Admin Teste",
         matricula: "admin123",
         email: "admin@unb.br",
-        senha: "Senha123", 
+        senha: "Senha123",
         departamento: departamento
       )
       expect(admin).to be_valid

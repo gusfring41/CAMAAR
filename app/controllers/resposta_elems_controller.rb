@@ -1,4 +1,5 @@
 class RespostaElemsController < ApplicationController
+  before_action :require_login
   before_action :set_resposta_elem, only: %i[ show edit update destroy ]
 
   # GET /resposta_elems or /resposta_elems.json

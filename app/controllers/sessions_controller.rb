@@ -1,5 +1,8 @@
 class SessionsController < ApplicationController
   def new
+    if current_user
+      redirect_para_pagina_do_usuario(current_user)
+    end
   end
 
   def create
@@ -34,16 +37,21 @@ class SessionsController < ApplicationController
     end
 
     session[:usuario_id] = usuario.id
-    if usuario.is_a?(Administrador)
-      redirect_to admin_avaliacoes_path(usuario.id), notice: "Login realizado com sucesso."
-    else
-      redirect_to inicio_path, notice: "Login realizado com sucesso."
-    end
-    
+    redirect_para_pagina_do_usuario(usuario)
   end
 
   def destroy
     reset_session
     redirect_to root_path
+  end
+
+  private
+
+  def redirect_para_pagina_do_usuario(usuario)
+    if usuario.is_a?(Administrador)
+      redirect_to admin_avaliacoes_path(usuario.id)
+    else
+      redirect_to usuario_path(usuario.id)
+    end
   end
 end

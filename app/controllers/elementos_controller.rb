@@ -1,4 +1,5 @@
 class ElementosController < ApplicationController
+  before_action :require_login
   before_action :set_elemento, only: %i[ show edit update destroy ]
 
   # GET /elementos or /elementos.json
