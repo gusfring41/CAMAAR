@@ -11,6 +11,58 @@ class AdminController < ApplicationController
   def gerenciamento
   end
 
+  def enviar_formularios
+    if request.get?
+      @templates = Template.where(usuario_id: @admin.id)
+      @turmas = Turma.joins(:disciplina).includes(:disciplina).order("disciplinas.nome, turmas.semestre")
+    elsif request.post?
+      template_id = params[:template_id]
+      turma_ids = params[:turma_ids]
+
+      if template_id.blank?
+        flash[:alert] = "Selecione um template para criar o formulário"
+        redirect_to admin_enviar_formularios_path(@admin) and return
+      end
+
+      if turma_ids.blank?
+        flash[:alert] = "Selecione pelo menos uma turma"
+        redirect_to admin_enviar_formularios_path(@admin) and return
+      end
+
+      template = Template.includes(elementos: :campos).find(template_id)
+      turmas = Turma.where(id: turma_ids)
+
+      turmas.each do |turma|
+        formulario = Formulario.create!(
+          turma: turma,
+          titulo: "#{turma.disciplina.nome} - #{turma.semestre}"
+        )
+
+        template.elementos.each_with_index do |elemento, _i|
+          tipo = elemento.campos.first&.tipo_elemento || "Texto"
+          ef = formulario.elemento_forms.create!(
+            enunciado: elemento.enunciado,
+            ordem: elemento.ordem,
+            tipo: tipo
+          )
+
+          next if tipo == "Texto"
+
+          elemento.campos.each do |campo|
+            ef.campo_forms.create!(
+              enunciado: campo.enunciado,
+              ordem: campo.ordem
+            )
+          end
+        end
+      end
+
+      msg = turma_ids.size == 1 ? "Formulário criado com sucesso" : "Formulários criados com sucesso"
+      flash[:notice] = msg
+      redirect_to admin_gerenciamento_path(@admin)
+    end
+  end
+
   def resultados
     @formularios = Formulario.joins(turma: :disciplina).where(disciplinas: { departamento_id: @admin.departamento_id }).includes(turma: :disciplina)
   end
