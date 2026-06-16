@@ -1,4 +1,6 @@
 class UsuariosController < ApplicationController
+  before_action :require_login
+  before_action :require_admin
   before_action :set_usuario, only: %i[ show edit update destroy ]
 
   # GET /usuarios or /usuarios.json

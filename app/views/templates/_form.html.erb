@@ -13,7 +13,7 @@
     <% end %>
 
     <%= form_with model: @template, 
-                  url: @template.persisted? ? admin_template_path(@template) : admin_templates_path, 
+                  url: @template.persisted? ? admin_template_path(@admin, @template) : admin_templates_path(@admin),
                   method: @template.persisted? ? :patch : :post, 
                   data: { turbo_frame: "_top" },
                   class: "figma-form-content" do |f| %>
@@ -47,7 +47,7 @@
                 
                 <div class="question-row tipo-row" style="<%= 'display:none;' if index_opcao > 0 %>">
                   <label class="figma-label-small">Tipo:</label>
-                  <%= campo_form.select :tipo_elemento, ["Texto", "Múltipla Escolha", "Dropdown"], {}, { class: "figma-dropdown select-tipo", onchange: "window.toggleOptionsVisibility(this)" } %>
+                  <%= campo_form.select :tipo_elemento, ["Texto", "Múltipla Escolha"], {}, { class: "figma-dropdown select-tipo", onchange: "window.toggleOptionsVisibility(this)" } %>
                 </div>
                 
                 <div class="question-row option-row" style="margin-top: 10px;">
@@ -79,7 +79,7 @@
       </div>
 
       <div class="cancel-row">
-        <%= link_to "Cancelar", admin_templates_path, data: { turbo_frame: "_top" }, class: "btn-cancel" %>
+        <%= link_to "Cancelar", admin_templates_path(@admin), data: { turbo_frame: "_top" }, class: "btn-cancel" %>
       </div>
 
     <% end %>
@@ -108,7 +108,6 @@
         <select name="template[elementos_attributes][NEW_ELEMENT_INDEX][campos_attributes][0][tipo_elemento]" class="figma-dropdown select-tipo" onchange="window.toggleOptionsVisibility(this)">
           <option value="Texto">Texto</option>
           <option value="Múltipla Escolha">Múltipla Escolha</option>
-          <option value="Dropdown">Dropdown</option>
         </select>
       </div>
       
@@ -131,19 +130,15 @@
 <script>
   window.templateFormFunctions = window.templateFormFunctions || (function() {
     
-    // Função mágica que enumera as questões visíveis
     window.updateQuestionNumbers = function() {
-      // Pega apenas as questões que não foram deletadas
       const activeBlocks = document.querySelectorAll('.question-block:not(.deleted-block)');
       
       activeBlocks.forEach((block, index) => {
         const currentNumber = index + 1;
         
-        // Atualiza o texto na tela (Questão 1, Questão 2...)
         const numberSpan = block.querySelector('.question-number');
         if (numberSpan) numberSpan.textContent = currentNumber;
         
-        // Atualiza o campo oculto pro banco de dados salvar a ordem correta
         const orderInput = block.querySelector('.question-order-input');
         if (orderInput) orderInput.value = currentNumber;
       });
@@ -178,7 +173,6 @@
       const newBlock = questionsContainer.lastElementChild;
       window.toggleOptionsVisibility(newBlock.querySelector('.select-tipo'));
       
-      // Sempre que adicionar uma nova, recalcula os números
       window.updateQuestionNumbers();
     };
 
@@ -205,24 +199,19 @@
       optionsContainer.insertAdjacentHTML('beforeend', optionHtml);
     };
 
-    // Função para deletar a Questão inteira
     window.removeQuestion = function(buttonElement) {
       const block = buttonElement.closest('.question-block');
       if (!block) return;
       
-      // Marca pro Rails deletar no banco
       const destroyInput = block.querySelector('.destroy-question-input');
       if (destroyInput) destroyInput.value = '1';
       
-      // Esconde da tela e marca como deletado pro JavaScript ignorar
       block.style.display = 'none';
       block.classList.add('deleted-block');
       
-      // Recalcula os números das questões que sobraram
       window.updateQuestionNumbers();
     };
 
-    // Função para deletar apenas uma Opção
     window.removeOption = function(buttonElement) {
       const row = buttonElement.closest('.option-row');
       if (!row) return;
@@ -237,7 +226,6 @@
     return true;
   })();
 
-  // Execuções iniciais quando a página carrega
   document.querySelectorAll('.select-tipo').forEach(select => window.toggleOptionsVisibility(select));
   window.updateQuestionNumbers(); // Enumera as que vieram do banco
 </script>

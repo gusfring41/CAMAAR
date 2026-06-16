@@ -97,6 +97,18 @@ alunos = alunos_dados.map do |dados|
   aluno.save!
   aluno
 end
+docente = Docente.find_or_initialize_by(email: "gusfring.a@gmail.com")
+docente.nome ||= "GUS"
+docente.matricula ||= "241000004"
+docente.senha = "teste123"
+docente.senha_confirmation = "teste123"
+docente.departamento = dept_cic
+docente.formacao = "doutorado"
+docente.save!
+
+# Vinculando Usuários às Turmas
+discente.turmas << turma_a unless discente.turmas.include?(turma_a)
+docente.turmas << turma_a unless docente.turmas.include?(turma_a)
 
 # ==========================================
 # VINCULANDO USUÁRIOS ÀS TURMAS
@@ -243,3 +255,4 @@ configurar_formulario_e_respostas(
 )
 
 puts "Seeds finalizados com sucesso! Campos padronizados como Texto e Múltipla Escolha."
+puts "Seeds finalizados com sucesso"

@@ -1,4 +1,5 @@
 class ElementoFormsController < ApplicationController
+  before_action :require_login
   before_action :set_elemento_form, only: %i[ show edit update destroy ]
 
   # GET /elemento_forms or /elemento_forms.json

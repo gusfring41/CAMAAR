@@ -1,5 +1,9 @@
 class AdminController < ApplicationController
-  layout 'gerenciamento'
+  layout "gerenciamento"
+
+  before_action :require_login
+  before_action :require_admin
+  before_action :set_admin
 
   def avaliacoes
   end
@@ -43,34 +47,67 @@ class AdminController < ApplicationController
       redirect_to admin_resultados_path, alert: "Formulário não encontrado"
     end
   end
-
-  def importar_sigaa
-    resultado = SigaaImporter.import_from_files("classes.json", "members.json")
-
-    case resultado
-    when /sucesso/i
-      redirect_to admin_gerenciamento_path, notice: "As turmas, matérias e participantes do SIGAA estão presentes no sistema."
-    when /alguns dados/i
-      redirect_to admin_gerenciamento_path, notice: "alguns dados já foram importados e não serão importados novamente, mas os dados restantes serão importados com sucesso"
-    when /já existem/i
-      redirect_to admin_gerenciamento_path, alert: "os dados do SIGAA já existem na base de dados do sistema e não serão importados novamente"
-    else
-      redirect_to admin_gerenciamento_path, alert: "erro informando que a importação falhou"
+  def sincronizar_sigaa
+    if request.get?
+      render :sincronizar_sigaa
+    elsif request.post?
+      processar_sincronizacao
     end
   end
 
-  def atualizar_sigaa
-    resultado = SigaaImporter.update_from_files("classes.json", "members.json")
+  private
 
+  def set_admin
+    @admin = Administrador.find(params[:admin_id])
+
+    if @admin.id != session[:usuario_id]
+      redirect_to inicio_path, alert: "Acesso negado! Você só pode acessar as suas próprias páginas."
+    end
+  end
+
+  def processar_sincronizacao
+    acao = params[:acao]
+    arquivo = params[:arquivo_sigaa]
+
+    unless arquivo.present?
+      redirect_to admin_gerenciamento_path, alert: "Por favor, selecione um arquivo"
+      return
+    end
+
+    temp_file = arquivo.path
+    resultado = case acao
+    when "importar"
+                  SigaaImporter.import_from_files(temp_file, temp_file)
+    when "atualizar"
+                  SigaaImporter.update_from_files(temp_file, temp_file)
+    else
+                  "ação inválida"
+    end
+
+    processar_resultado(resultado, acao)
+  end
+
+  def processar_resultado(resultado, acao)
     case resultado
     when /alguns dados/i
-      redirect_to admin_gerenciamento_path, notice: "alguns dados já estão atualizados e não serão atualizados novamente, mas os dados restantes serão atualizados com sucesso"
+      if acao == "importar"
+        redirect_to admin_gerenciamento_path(@admin), notice: "alguns dados já foram importados e não serão importados novamente, mas os dados restantes serão importados com sucesso"
+      else
+        redirect_to admin_gerenciamento_path(@admin), notice: "alguns dados já estão atualizados e não serão atualizados novamente, mas os dados restantes serão atualizados com sucesso"
+      end
+    when /sucesso/i
+      if acao == "importar"
+        redirect_to admin_gerenciamento_path(@admin), notice: "As turmas, matérias e participantes do SIGAA estão presentes no sistema."
+      else
+        redirect_to admin_gerenciamento_path(@admin), notice: "As turmas, matérias e participantes do SIGAA estão atualizados no sistema com os dados atuais do SIGAA."
+      end
+    when /já existem/i
+      redirect_to admin_gerenciamento_path(@admin), alert: "os dados do SIGAA já existem na base de dados do sistema e não serão importados novamente"
     when /já estão atualizados/i
-      redirect_to admin_gerenciamento_path, alert: "os dados do SIGAA já estão atualizados e não serão atualizados novamente"
-    when /atualiza/i
-      redirect_to admin_gerenciamento_path, notice: "As turmas, matérias e participantes do SIGAA estão atualizados no sistema com os dados atuais do SIGAA."
+      redirect_to admin_gerenciamento_path(@admin), alert: "os dados do SIGAA já estão atualizados e não serão atualizados novamente"
     else
-      redirect_to admin_gerenciamento_path, alert: "erro informando que a atualização falhou"
+      nome_acao = acao == "importar" ? "importação" : "atualização"
+      redirect_to admin_gerenciamento_path(@admin), alert: "erro informando que a #{nome_acao} falhou"
     end
   end
 end

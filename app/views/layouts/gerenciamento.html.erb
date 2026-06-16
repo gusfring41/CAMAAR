@@ -32,11 +32,11 @@
         <aside class="admin-sidebar">
           <div class="sidebar-header"></div>
           
-          <a href="/admin/avaliacoes" class="menu-item <%= 'active' if request.path == '/admin/avaliacoes' %>">
+          <a href="<%= admin_avaliacoes_path(@admin) %>" class="menu-item <%= 'active' if request.path.include?('/avaliacoes') %>">
             Avaliações
           </a>
           
-          <a href="/admin/gerenciamento" class="menu-item <%= 'active' if request.path.start_with?('/admin/gerenciamento') || request.path.start_with?('/admin/template') || request.path.start_with?('/admin/resultados') %>">
+          <a href="<%= admin_gerenciamento_path(@admin) %>" class="menu-item <%= 'active' if request.path.include?('/gerenciamento') || request.path.include?('/template') %>">
             Gerenciamento
           </a>
         </aside>
