@@ -67,5 +67,5 @@ Então('permaneço na página de login') do
 end
 
 Então('sou direcionado para a página inicial') do
-  expect(page).to have_current_path(inicio_path)
+  expect(page).to have_current_path(/\/(admin\/\d+|usuarios\/\d+)\/avaliacoes/)
 end
