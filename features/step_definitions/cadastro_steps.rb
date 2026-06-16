@@ -8,6 +8,8 @@ Dado('que estou na página de gerenciamento') do
     departamento: departamento
   )
 
+  allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@admin)
+
   allow_any_instance_of(AdminController).to receive(:set_admin) do |controller|
     controller.instance_variable_set(:@admin, Administrador.find(controller.params[:admin_id]))
   end

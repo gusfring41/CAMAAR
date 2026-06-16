@@ -99,14 +99,6 @@ Quando('eu não seleciono nenhuma turma') do
   # TODO: Garantir que nenhuma turma está selecionada
 end
 
-Quando('eu clico em {string}') do |nome_botao|
-  click_button nome_botao
-end
-
-Então('eu devo ver a mensagem {string}') do |mensagem|
-  expect(page).to have_content(mensagem)
-end
-
 Então('o formulário deve conter as perguntas do template {string}') do |nome_template|
   # TODO: Verificar se o formulário foi criado com os elementos copiados do template
   # template = Template.find_by!(nome: nome_template)
