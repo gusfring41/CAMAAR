@@ -10,6 +10,9 @@
 # Ignore bundler config.
 /.bundle
 
+# Ignore coverage
+coverage/
+
 # Ignore all environment files (but keep .env.example in the repo).
 /.env*
 !/.env.example
