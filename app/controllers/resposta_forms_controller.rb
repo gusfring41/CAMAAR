@@ -1,4 +1,5 @@
 class RespostaFormsController < ApplicationController
+  before_action :require_login
   before_action :set_resposta_form, only: %i[ show edit update destroy ]
 
   # GET /resposta_forms or /resposta_forms.json

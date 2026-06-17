@@ -1,5 +1,6 @@
 class TemplatesController < ApplicationController
   layout "gerenciamento"
+  before_action :require_login
 
   before_action :set_admin
   before_action :set_template, only: %i[ show edit update destroy ]

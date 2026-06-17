@@ -1,4 +1,5 @@
 class CampoFormsController < ApplicationController
+  before_action :require_login
   before_action :set_campo_form, only: %i[ show edit update destroy ]
 
   # GET /campo_forms or /campo_forms.json

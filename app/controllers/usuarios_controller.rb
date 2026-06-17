@@ -1,5 +1,88 @@
 class UsuariosController < ApplicationController
+  before_action :require_login
+  before_action :require_admin, except: [ :avaliacoes, :responder_formulario, :submeter_resposta ]
   before_action :set_usuario, only: %i[ show edit update destroy ]
+
+  def avaliacoes
+    @usuario = Usuario.find(params[:usuario_id])
+
+    if @usuario.is_a?(Docente)
+      @turmas = @usuario.turmas
+    elsif @usuario.is_a?(Discente)
+      @turmas = @usuario.turmas
+    else
+      @turmas = Turma.none
+    end
+
+    @avaliacoes = Formulario
+      .joins(:turma)
+      .where(turma: @turmas)
+      .includes(turma: { disciplina: :departamento, docentes: [] })
+  end
+
+  def responder_formulario
+    @usuario = Usuario.find(params[:usuario_id])
+    @formulario = Formulario.includes(elemento_forms: :campo_forms).find(params[:formulario_id])
+
+    if RespostaForm.exists?(formulario: @formulario, usuario: current_user)
+      redirect_to usuarios_avaliacoes_path(@usuario), notice: "Você já respondeu este formulário."
+    end
+  end
+
+  def submeter_resposta
+    @usuario = Usuario.find(params[:usuario_id])
+    @formulario = Formulario.includes(elemento_forms: :campo_forms).find(params[:formulario_id])
+
+    if RespostaForm.exists?(formulario: @formulario, usuario: current_user)
+      redirect_to usuarios_avaliacoes_path(@usuario), alert: "Você já respondeu este formulário." and return
+    end
+
+    respostas_em_branco = @formulario.elemento_forms.order(:ordem).any? do |ef|
+      params.dig(:respostas, ef.id.to_s).blank?
+    end
+
+    if respostas_em_branco
+      flash.now[:alert] = "Por favor, responda todas as perguntas obrigatórias"
+      render :responder_formulario, status: :unprocessable_content and return
+    end
+
+    resposta_form = RespostaForm.new(
+      formulario: @formulario,
+      usuario: current_user,
+      data_submissao: Date.today
+    )
+
+    ActiveRecord::Base.transaction do
+      resposta_form.save!
+
+      @formulario.elemento_forms.order(:ordem).each do |ef|
+        resposta_val = params.dig(:respostas, ef.id.to_s)
+        next if resposta_val.blank?
+
+        if ef.tipo == "Texto"
+          resposta_form.resposta_elems.create!(
+            elemento_form: ef,
+            texto_resposta: resposta_val
+          )
+        else
+          campo = ef.campo_forms.find_by(id: resposta_val)
+          next unless campo
+
+          resposta_form.resposta_elems.create!(
+            elemento_form: ef,
+            campo_form: campo,
+            texto_resposta: campo.enunciado
+          )
+        end
+      end
+    end
+
+    redirect_to usuarios_avaliacoes_path(@usuario), notice: "Respostas enviadas com sucesso!"
+  rescue ActiveRecord::RecordInvalid => e
+    @formulario = Formulario.includes(elemento_forms: :campo_forms).find(params[:formulario_id])
+    flash.now[:alert] = "Erro ao salvar respostas: #{e.message}"
+    render :responder_formulario, status: :unprocessable_content
+  end
 
   # GET /usuarios or /usuarios.json
   def index
