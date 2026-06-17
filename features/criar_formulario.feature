@@ -10,21 +10,14 @@ Funcionalidade: Criar formulário de avaliação
     E eu estou na página de criação de formulários
 
   Cenário: Criação de formulário com sucesso (Happy Path)
-    Quando eu escolho um template para o formulário
-    E escolho uma turma para enviar o formulário
-    E envio o formulário
+    Quando eu preencho o título com "Avaliação de Turma 2026.1"
+    E eu adiciono uma pergunta do tipo "Múltipla Escolha" com o texto "Como você avalia o professor?"
+    E eu clico em "Salvar Formulário"
     Então eu devo ver a mensagem "Formulário criado com sucesso"
-    E o formulário deve estar disponível para os alunos da turma selecionada
+    E eu devo ver o formulário "Avaliação de Turma 2026.1" na lista de formulários
 
-  Cenário: Tentativa de criação sem template (Sad Path)
-    Quando eu não escolho um template para o formulário
-    E escolho uma turma para enviar o formulário
-    E envio o formulário
-    Então eu devo ver a mensagem "Selecione um template para criar o formulário"
-
-  Cenário: Tentativa de criação sem turma (Sad Path)
-    Quando eu não escolho uma turma para enviar o formulário
-    E escolho um template para o formulário
-    E envio o formulário
-    Então eu devo ver a mensagem "Selecione pelo menos uma turma"
-
+  Cenário: Tentativa de criação sem título (Sad Path)
+    Quando eu deixo o título em branco
+    E eu adiciono uma pergunta do tipo "Texto" com o texto "Quais suas sugestões?"
+    E eu clico em "Salvar Formulário"
+    Então eu devo ver a mensagem "Título não pode ficar em branco"

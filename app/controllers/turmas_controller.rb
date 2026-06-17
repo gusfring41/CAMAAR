@@ -1,5 +1,4 @@
 class TurmasController < ApplicationController
-  before_action :require_login
   before_action :set_turma, only: %i[ show edit update destroy ]
 
   # GET /turmas or /turmas.json

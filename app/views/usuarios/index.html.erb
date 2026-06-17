@@ -6,9 +6,9 @@
 
 <div id="usuarios">
   <% @usuarios.each do |usuario| %>
-    <%= render partial: "usuario", object: usuario %>
+    <%= render usuario %>
     <p>
-      <%= link_to "Show this usuario", usuario_path(usuario) %>
+      <%= link_to "Show this usuario", usuario %>
     </p>
   <% end %>
 </div>

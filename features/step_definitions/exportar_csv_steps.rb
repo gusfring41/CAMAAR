@@ -7,23 +7,23 @@ Dado("que estou na página de Resultados") do
     codigo: "DEP01",
     nome:   "Departamento de Computação"
   )
-
+ 
   @admin = Administrador.create!(
     matricula:    "ADM001",
     nome:         "Admin Teste",
     email:        "admin@teste.com",
     departamento: @departamento
   )
-
+ 
   # Reutiliza o step de login já existente nos steps de autenticação
   step 'que meu usuário está cadastrado com o email "admin@teste.com" e senha "senha123"'
   step 'eu tento realizar o login com o email "admin@teste.com" e a senha "senha123"'
-
-  visit admin_resultados_path(@admin)
+ 
+  visit admin_resultados_path
 end
 
 Dado("vejo os formulários enviados para todas as turmas do meu departamento") do
-  expect(page).to have_current_path(admin_resultados_path(@admin))
+  expect(page).to have_current_path(admin_resultados_path)
 end
 
 Dado("existe a {string} de {string} que possui um formulário associado a ela") do |nome_turma, nome_disciplina|
@@ -61,7 +61,7 @@ Dado("este formulário já possui respostas enviadas pelos alunos") do
     nome:         "Ciência da Computação",
     departamento: @departamento
   )
-
+ 
   @aluno = Discente.create!(
     matricula:    "ALU001",
     nome:         "Aluno Teste",
@@ -69,33 +69,33 @@ Dado("este formulário já possui respostas enviadas pelos alunos") do
     curso:        @curso_aluno,
     departamento: @departamento
   )
-
+ 
   @resposta = RespostaForm.create!(
     formulario:     @formulario,
     usuario:        @aluno,
     data_submissao: Date.today
   )
 
-  @template = Template.new(nome: "Template Padrão", administrador: @admin)
+  @template = Template.new(nome: "Template Padrão")
   elemento_base = @template.elementos.build(ordem: 1, enunciado: "Avaliação")
   elemento_base.campos.build(ordem: 1, enunciado: "Muito bom",  tipo_elemento: "Múltipla Escolha")
   elemento_base.campos.build(ordem: 2, enunciado: "Excelente",  tipo_elemento: "Múltipla Escolha")
   @template.save!
 
-  [ @elemento1, @elemento2 ].each do |ef|
+  [@elemento1, @elemento2].each do |ef|
     elemento_base.campos.each do |campo_base|
       CampoForm.find_or_create_by!(enunciado: campo_base.enunciado, elemento_form: ef) do |cf|
         cf.ordem = campo_base.ordem
       end
     end
   end
-
+ 
   {
     @elemento1 => "Muito bom",
     @elemento2 => "Excelente"
   }.each do |ef, texto|
     cf = ef.campo_forms.find_by!(enunciado: texto)
-
+ 
     RespostaElem.create!(
       texto_resposta: texto,
       resposta_form:  @resposta,
@@ -103,8 +103,8 @@ Dado("este formulário já possui respostas enviadas pelos alunos") do
       campo_form:     cf
     )
   end
-
-  visit admin_resultados_path(@admin)
+ 
+  visit admin_resultados_path
 end
 
 
@@ -119,15 +119,15 @@ Então("o download do arquivo {string} é iniciado") do |_nome_ignorado|
   num_turma    = @formulario.turma.numero_da_turma.parameterize(separator: '_')
   nome_materia = @formulario.turma.disciplina.nome.parameterize(separator: '_')
   nome_esperado = "formulario_#{@formulario.id}_turma_#{num_turma}_#{nome_materia}"
-
+ 
   content_disposition = page.response_headers["Content-Disposition"]
-
+ 
   expect(content_disposition).to be_present,
     "Esperava um header Content-Disposition indicando download, mas não havia nenhum."
-
+ 
   expect(content_disposition).to include("attachment"),
     "Esperava 'attachment' no Content-Disposition, mas foi: #{content_disposition}"
-
+ 
   expect(content_disposition).to include(nome_esperado),
     "Esperava '#{nome_esperado}' no nome do arquivo, " \
     "mas o header foi: #{content_disposition}"
@@ -172,9 +172,9 @@ end
 
 Dado("que a {string} possui outro formulário") do |nome_turma|
   @turma_sad = Turma.find_by(numero_da_turma: nome_turma) || @turma
-
+ 
   @formulario_vazio = Formulario.create!(turma: @turma_sad)
-
+ 
   ElementoForm.create!(
     ordem:      1,
     enunciado:  "Pergunta sem respostas",
@@ -187,7 +187,7 @@ Dado("este formulário não recebeu nenhuma resposta até o momento") do
     RespostaForm.where(formulario_id: @formulario_vazio.id).count
   ).to eq(0), "Esperava 0 respostas para o formulário vazio, mas havia algumas."
 
-  visit admin_resultados_path(@admin)
+  visit admin_resultados_path
 end
 
 Então("vejo a mensagem de erro {string}") do |mensagem_esperada|

@@ -1,5 +1,4 @@
 class DisciplinasController < ApplicationController
-  before_action :require_login
   before_action :set_disciplina, only: %i[ show edit update destroy ]
 
   # GET /disciplinas or /disciplinas.json

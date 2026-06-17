@@ -1,5 +1,4 @@
 class DiscentesController < ApplicationController
-  before_action :require_login
   before_action :set_discente, only: %i[ show edit update destroy ]
 
   # GET /discentes or /discentes.json

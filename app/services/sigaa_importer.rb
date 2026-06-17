@@ -39,13 +39,7 @@ class SigaaImporter
 
         # docente
         if m["docente"].is_a?(Hash)
-          dep_nome = m["docente"]["departamento"]
-          dep = if dep_nome.present?
-            dep_cod = dep_nome.parameterize(separator: "_").upcase.first(20)
-            Departamento.find_or_create_by(codigo: dep_cod) { |d| d.nome = dep_nome }
-          else
-            dep_padrao
-          end
+          dep = m["docente"]["departamento"].present? ? Departamento.find_or_create_by(nome: m["docente"]["departamento"]) : dep_padrao
           docente = Docente.find_or_create_by(email: m["docente"]["email"]) do |dct|
             dct.nome = m["docente"]["nome"]
             dct.matricula = m["docente"]["matricula"] || m["docente"]["usuario"]
@@ -63,13 +57,7 @@ class SigaaImporter
         # discentes
         Array(m["dicente"]).each do |aluno|
           next unless aluno.is_a?(Hash)
-          curso = if aluno["curso"].present?
-            curso_cod = aluno["curso"].parameterize(separator: "_").upcase.first(30)
-            Curso.find_or_create_by(codigo: curso_cod) do |c|
-              c.nome = aluno["curso"]
-              c.departamento = dep_padrao
-            end
-          end
+          curso = Curso.find_or_create_by(nome: aluno["curso"]) { |c| c.departamento = dep_padrao } if aluno["curso"]
           discente = Discente.find_or_create_by(matricula: aluno["matricula"]) do |d|
             d.nome = aluno["nome"]
             d.email = aluno["email"]
@@ -120,29 +108,18 @@ class SigaaImporter
         next unless turma
 
         if m["docente"].is_a?(Hash)
-          dep_nome = m["docente"]["departamento"]
-          dep = if dep_nome.present?
-            dep_cod = dep_nome.parameterize(separator: "_").upcase.first(20)
-            Departamento.find_or_create_by(codigo: dep_cod) { |d| d.nome = dep_nome }
-          end
+          dep = Departamento.find_or_create_by(nome: m["docente"]["departamento"]) if m["docente"]["departamento"]
           docente = Docente.find_by(email: m["docente"]["email"])
-          if docente
-            docente.update(nome: m["docente"]["nome"], departamento: dep || docente.departamento)
-            docente.turmas << turma unless docente.turmas.exists?(turma.id)
-          end
+          docente.update(nome: m["docente"]["nome"], departamento: dep) if docente
+          docente.turmas << turma if docente && !docente.turmas.exists?(turma.id)
         end
 
         Array(m["dicente"]).each do |aluno|
           next unless aluno.is_a?(Hash)
-          curso = if aluno["curso"].present?
-            curso_cod = aluno["curso"].parameterize(separator: "_").upcase.first(30)
-            Curso.find_by(codigo: curso_cod) || Curso.find_by(nome: aluno["curso"])
-          end
+          curso = Curso.find_by(nome: aluno["curso"]) if aluno["curso"]
           discente = Discente.find_by(matricula: aluno["matricula"])
-          if discente
-            discente.update(nome: aluno["nome"], email: aluno["email"], curso: curso || discente.curso)
-            discente.turmas << turma unless discente.turmas.exists?(turma.id)
-          end
+          discente.update(nome: aluno["nome"], email: aluno["email"], curso: curso) if discente
+          discente.turmas << turma if discente && !discente.turmas.exists?(turma.id)
         end
       end
     end

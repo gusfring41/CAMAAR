@@ -8,7 +8,6 @@ Funcionalidade: Redefinição de senha
 
   Contexto:
     Dado que meu usuário está cadastrado com o email "usuario@teste.com" e senha "Senha123"
-    E eu estou na página de login
 
   Cenário: Solicitar redefinição de senha com sucesso (happy path)
     Quando eu clico em "Esqueci minha senha"

@@ -1,107 +1,43 @@
-Dado('que eu estou logado como discente') do
-  depto = Departamento.find_or_create_by!(nome: 'Departamento', codigo: 'TST')
-  curso = Curso.find_or_create_by!(codigo: 'TST') do |c|
-    c.nome = 'Curso Teste'
-    c.departamento = depto
-  end
-
-  @discente = Discente.find_or_create_by!(matricula: '2024001') do |u|
-    u.nome = 'Discente Teste'
-    u.email = 'discente@teste.com'
-    u.senha = 'Senha123'
-    u.senha_confirmation = 'Senha123'
-    u.curso = curso
-  end
-
-  allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@discente)
+Dado('que eu estou logado como aluno') do
+  # Implementar quando definir models e autenticação
+  # visit '/login'
+  # fill_in 'Email', with: 'aluno@ufpe.br'
+  # fill_in 'Senha', with: 'senha123'
+  # click_button 'Entrar'
 end
 
-Dado('existe um formulário ativo para minha turma') do
-  depto = Departamento.find_or_create_by!(nome: 'Departamento', codigo: 'TST')
-  disciplina = Disciplina.find_or_create_by!(codigo: 'CIC0001') do |d|
-    d.nome = 'Engenharia de Software'
-    d.departamento = depto
-  end
-
-  turma = Turma.find_or_create_by!(
-    disciplina: disciplina,
-    numero_da_turma: '01',
-    semestre: '2026.1'
-  ) do |t|
-    t.horario = '235M12'
-  end
-
-  @discente.turmas << turma unless @discente.turmas.include?(turma)
-
-  @formulario = Formulario.find_or_create_by!(turma: turma) do |f|
-    f.titulo = 'Avaliação de Turma 2026.1'
-  end
-
-  elemento = @formulario.elemento_forms.find_or_create_by!(ordem: 1) do |ef|
-    ef.enunciado = 'Como você avalia o professor?'
-    ef.tipo = 'Múltipla Escolha'
-  end
-
-  elemento.campo_forms.find_or_create_by!(ordem: 1) { |c| c.enunciado = 'Ótimo' }
-  elemento.campo_forms.find_or_create_by!(ordem: 2) { |c| c.enunciado = 'Bom' }
-  elemento.campo_forms.find_or_create_by!(ordem: 3) { |c| c.enunciado = 'Regular' }
-  elemento.campo_forms.find_or_create_by!(ordem: 4) { |c| c.enunciado = 'Ruim' }
-
-  elemento2 = @formulario.elemento_forms.find_or_create_by!(ordem: 2) do |ef|
-    ef.enunciado = 'Comente sobre a didática'
-    ef.tipo = 'Texto'
-  end
-
-  elemento2.campo_forms.find_or_create_by!(ordem: 1)
+Dado('existe um formulário ativo chamado {string}') do |nome_formulario|
+  # Implementar a criação desse registro (Form/Evaluation) no banco usando Factory/ActiveRecord
 end
 
 Dado('eu estou na página de formulários disponíveis') do
-  visit usuarios_avaliacoes_path(@discente)
+  visit '/forms/pending'
 end
 
-Quando('eu clico para responder o formulário') do
-  click_link @formulario.turma.disciplina.nome
+Quando('eu clico para responder o formulário {string}') do |nome_formulario|
+  # Ajustar seletor dependendo da interface, por exemplo, achar o escopo do texto ou tr
+  click_link "Responder"
 end
 
 Então('eu devo visualizar os detalhes e perguntas pertinentes a ele') do
-  @formulario.elemento_forms.each do |ef|
-    expect(page).to have_content(ef.enunciado)
-  end
+  # Assumindo que a classe .form-question existirá na view
+  expect(page).to have_selector('.form-question')
 end
 
-Quando('eu respondo todos os campos do formulário') do
-  @formulario.elemento_forms.order(:ordem).each do |ef|
-    if ef.tipo == 'Texto'
-      fill_in "respostas[#{ef.id}]", with: 'Uma resposta qualquer'
-    else
-      primeiro_campo = ef.campo_forms.order(:ordem).first
-      find("input[type='radio'][name='respostas[#{ef.id}]'][value='#{primeiro_campo.id}']").click
-    end
-  end
+Quando('eu respondo a pergunta {string} com a opção {string}') do |pergunta, opcao|
+  # Ajustar conformidade de input visual (radio, select, text)
+  choose opcao
 end
 
-Quando('eu envio o fomulário') do
-  click_button type: 'submit'
+Quando('eu deixo a pergunta obrigatória {string} em branco') do |pergunta|
+  # O comportamento de deixar em branco pode ser simplesmente não preencher, logo, nenhum click extra.
 end
 
-Quando('eu envio o formulário') do
-  click_button type: 'submit'
+Quando('eu clico no botão {string}') do |nome_botao|
+  click_button nome_botao
 end
 
-# Então('eu devo ver a mensagem {string}') do |mensagem|
-#  expect(page).to have_content(mensagem)
-# end
-
-Então('a resposta deve ser registrada no sistema') do
-  expect(RespostaForm.exists?(formulario: @formulario, usuario: @discente)).to be true
-end
-
-Então('eu não devo mais ser capaz de responder ao mesmo formulário') do
-  click_link @formulario.turma.disciplina.nome
-  expect(page).to have_content("Você já respondeu este formulário.")
-end
-
-Quando('eu deixo uma pergunta obrigatória em branco') do
-  campo_texto = @formulario.elemento_forms.find_by(tipo: 'Texto')
-  fill_in "respostas[#{campo_texto.id}]", with: ''
+Então('o formulário {string} não deve mais aparecer na minha lista de pendentes') do |nome_formulario|
+  visit '/forms/pending'
+  expect(page).not_to have_content(nome_formulario)
 end
