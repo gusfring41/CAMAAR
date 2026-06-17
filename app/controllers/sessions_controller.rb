@@ -51,7 +51,7 @@ class SessionsController < ApplicationController
     if usuario.is_a?(Administrador)
       redirect_to admin_avaliacoes_path(usuario.id), notice: "Login realizado com sucesso."
     else
-      redirect_to inicio_path, notice: "Login realizado com sucesso."
+      redirect_to usuarios_avaliacoes_path(usuario.id), notice: "Login realizado com sucesso."
     end
   end
 end

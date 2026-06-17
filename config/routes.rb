@@ -38,8 +38,16 @@ Rails.application.routes.draw do
     resources :templates
     get  "sincronizar_sigaa", to: "admin#sincronizar_sigaa", as: :sincronizar_sigaa
     post "sincronizar_sigaa", to: "admin#sincronizar_sigaa"
+    get  "enviar_formularios", to: "admin#enviar_formularios", as: :enviar_formularios
+    post "enviar_formularios", to: "admin#enviar_formularios"
     get "resultados", to: "admin#resultados", as: :resultados
     get "resultados/:id/download.csv", to: "admin#exportar_csv", as: :baixar_csv
+  end
+
+  scope "/usuarios/:usuario_id", as: "usuarios" do
+    get "avaliacoes", to: "usuarios#avaliacoes", as: :avaliacoes
+    get "formularios/:formulario_id/responder", to: "usuarios#responder_formulario", as: :responder_formulario
+    post "formularios/:formulario_id/responder", to: "usuarios#submeter_resposta", as: :submeter_resposta
   end
 
   post "admin/importar_sigaa", to: "admin#importar_sigaa", as: :importar_sigaa

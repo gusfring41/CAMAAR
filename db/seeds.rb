@@ -69,6 +69,15 @@ docente_2.departamento = dept_cic
 docente_2.formacao = "doutorado"
 docente_2.save!
 
+docente_3 = Docente.find_or_initialize_by(email: "docente3@teste.com")
+docente_3.nome ||= "Zequinha Banana"
+docente_3.matricula ||= "241000069"
+docente_3.senha = "teste123"
+docente_3.senha_confirmation = "teste123"
+docente_3.departamento = dept_cic
+docente_3.formacao = "doutorado"
+docente_3.save!
+
 # Admin
 admin = Administrador.find_or_initialize_by(email: "admin@teste.com")
 admin.nome ||= "Admin Teste"
@@ -114,6 +123,7 @@ docente.save!
 docente_1.turmas << turma_ed_a unless docente_1.turmas.include?(turma_ed_a)
 docente_1.turmas << turma_ed_b unless docente_1.turmas.include?(turma_ed_b)
 docente_2.turmas << turma_isc_a unless docente_2.turmas.include?(turma_isc_a)
+docente_3.turmas << turma_ed_a unless docente_3.turmas.include?(turma_ed_a)
 
 # Distribuindo alunos nas turmas para gerar variação de dados
 # Turma ED A: Alunos 1, 2 e 3
@@ -179,16 +189,21 @@ def configurar_formulario_e_respostas(turma, template_base, dados_alunos)
 
   # 1. Clona todos os elementos e TODOS os seus respectivos campos para o formulário
   template_base.elementos.order(:ordem).each do |elemento_base|
+    tipo_do_elemento = elemento_base.campos.first&.tipo_elemento || "Múltipla Escolha"
+
     ef = ElementoForm.find_or_create_by!(enunciado: elemento_base.enunciado, formulario: formulario) do |e|
       e.ordem = elemento_base.ordem
+      e.tipo = tipo_do_elemento
     end
 
-    # Cria TODOS os campos (opções) atrelados a este elemento
+    ef.update!(tipo: tipo_do_elemento) if ef.tipo.nil?
+
+    next if tipo_do_elemento == "Texto"
+
+    # Cria os campos (opções) apenas para elementos de múltipla escolha
     elemento_base.campos.order(:ordem).each do |campo_base|
       CampoForm.find_or_create_by!(enunciado: campo_base.enunciado, elemento_form: ef) do |c|
         c.ordem = campo_base.ordem
-        # A linha abaixo foi removida pois CampoForm não possui a coluna tipo_elemento
-        # c.tipo_elemento = campo_base.tipo_elemento
       end
     end
   end

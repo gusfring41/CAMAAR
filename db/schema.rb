@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_15_105458) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_16_201400) do
   create_table "campo_forms", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "elemento_form_id", null: false
@@ -73,6 +73,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_15_105458) do
     t.string "enunciado"
     t.bigint "formulario_id", null: false
     t.integer "ordem"
+    t.string "tipo"
     t.datetime "updated_at", null: false
     t.index ["formulario_id"], name: "index_elemento_forms_on_formulario_id"
   end
@@ -88,7 +89,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_15_105458) do
 
   create_table "formularios", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.bigint "turma_id", null: false
+    t.string "titulo"
+    t.bigint "turma_id"
     t.datetime "updated_at", null: false
     t.index ["turma_id"], name: "index_formularios_on_turma_id"
   end
