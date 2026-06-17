@@ -4,6 +4,20 @@ class UsuariosController < ApplicationController
   before_action :set_usuario, only: %i[ show edit update destroy ]
 
   def avaliacoes
+    @usuario = Usuario.find(params[:usuario_id])
+
+    if @usuario.is_a?(Docente)
+      @turmas = @usuario.turmas
+    elsif @usuario.is_a?(Discente)
+      @turmas = @usuario.turmas
+    else
+      @turmas = Turma.none
+    end
+
+    @avaliacoes = Formulario
+      .joins(:turma)
+      .where(turma: @turmas)
+      .includes(turma: { disciplina: :departamento, docentes: [] })
   end
 
   # GET /usuarios or /usuarios.json
