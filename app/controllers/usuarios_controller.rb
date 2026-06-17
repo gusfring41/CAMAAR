@@ -37,6 +37,15 @@ class UsuariosController < ApplicationController
       redirect_to usuarios_avaliacoes_path(@usuario), alert: "Você já respondeu este formulário." and return
     end
 
+    respostas_em_branco = @formulario.elemento_forms.order(:ordem).any? do |ef|
+      params.dig(:respostas, ef.id.to_s).blank?
+    end
+
+    if respostas_em_branco
+      flash.now[:alert] = "Por favor, responda todas as perguntas obrigatórias"
+      render :responder_formulario, status: :unprocessable_content and return
+    end
+
     resposta_form = RespostaForm.new(
       formulario: @formulario,
       usuario: current_user,

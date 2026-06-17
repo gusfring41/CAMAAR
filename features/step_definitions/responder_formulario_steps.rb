@@ -75,7 +75,7 @@ Quando('eu respondo todos os campos do formulário') do
       fill_in "respostas[#{ef.id}]", with: 'Uma resposta qualquer'
     else
       primeiro_campo = ef.campo_forms.order(:ordem).first
-      choose "respostas[#{ef.id}]_#{primeiro_campo.id}"
+      find("input[type='radio'][name='respostas[#{ef.id}]'][value='#{primeiro_campo.id}']").click
     end
   end
 end
@@ -88,17 +88,17 @@ Quando('eu envio o formulário') do
   click_button type: 'submit'
 end
 
-#Então('eu devo ver a mensagem {string}') do |mensagem|
+# Então('eu devo ver a mensagem {string}') do |mensagem|
 #  expect(page).to have_content(mensagem)
-#end
+# end
 
 Então('a resposta deve ser registrada no sistema') do
   expect(RespostaForm.exists?(formulario: @formulario, usuario: @discente)).to be true
 end
 
 Então('eu não devo mais ser capaz de responder ao mesmo formulário') do
-  expect(page).to have_current_path(usuarios_avaliacoes_path(@discente))
-  expect(page).not_to have_content(@formulario.turma.disciplina.nome)
+  click_link @formulario.turma.disciplina.nome
+  expect(page).to have_content("Você já respondeu este formulário.")
 end
 
 Quando('eu deixo uma pergunta obrigatória em branco') do

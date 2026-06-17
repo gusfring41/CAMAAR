@@ -1,3 +1,7 @@
+Dado('eu estou na página de login') do
+  visit root_path
+end
+
 Dado('que meu usuário está cadastrado com o email {string}') do |email|
   Usuario.find_or_create_by!(email: email) do |u|
     u.matricula = "#{rand(100000..999999)}"
