@@ -89,7 +89,7 @@ Quando('eu seleciono as turmas {string}') do |turma_info|
 end
 
 Quando('eu seleciono as turmas {string} e {string}') do |turma1_info, turma2_info|
-  [turma1_info, turma2_info].each do |turma_info|
+  [ turma1_info, turma2_info ].each do |turma_info|
     partes = turma_info.split(' - ')
     codigo = partes[0]
     nome_disciplina = partes[1]

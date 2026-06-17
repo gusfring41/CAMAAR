@@ -40,7 +40,7 @@
           <% disciplina = turma.disciplina %>
           <% professor = turma.docentes.first %>
 
-          <%= link_to formulario_path(formulario),
+          <%= link_to usuarios_responder_formulario_path(@usuario, formulario),
                 style: "width: 278px; background: #FFFFFF; border-radius: 8px; padding: 24px; display: flex; flex-direction: column; justify-content: space-between; min-height: 130px; text-decoration: none; color: inherit; box-sizing: border-box;" do %>
 
             <div>

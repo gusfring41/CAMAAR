@@ -46,6 +46,8 @@ Rails.application.routes.draw do
 
   scope "/usuarios/:usuario_id", as: "usuarios" do
     get "avaliacoes", to: "usuarios#avaliacoes", as: :avaliacoes
+    get "formularios/:formulario_id/responder", to: "usuarios#responder_formulario", as: :responder_formulario
+    post "formularios/:formulario_id/responder", to: "usuarios#submeter_resposta", as: :submeter_resposta
   end
 
   post "admin/importar_sigaa", to: "admin#importar_sigaa", as: :importar_sigaa
