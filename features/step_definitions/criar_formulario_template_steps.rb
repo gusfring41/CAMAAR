@@ -101,6 +101,10 @@ Quando('eu seleciono as turmas {string} e {string}') do |turma1_info, turma2_inf
   end
 end
 
+Quando('eu clico em {string}') do |botao|
+  click_button botao
+end
+
 Quando('eu não seleciono nenhuma turma') do
   # Nenhum checkbox marcado — ação implícita
 end
