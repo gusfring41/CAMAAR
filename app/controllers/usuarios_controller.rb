@@ -1,7 +1,10 @@
 class UsuariosController < ApplicationController
   before_action :require_login
-  before_action :require_admin
+  before_action :require_admin, except: [:avaliacoes]
   before_action :set_usuario, only: %i[ show edit update destroy ]
+
+  def avaliacoes
+  end
 
   # GET /usuarios or /usuarios.json
   def index

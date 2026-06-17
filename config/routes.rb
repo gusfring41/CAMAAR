@@ -44,6 +44,10 @@ Rails.application.routes.draw do
     get "resultados/:id/download.csv", to: "admin#exportar_csv", as: :baixar_csv
   end
 
+  scope "/usuarios/:usuario_id", as: "usuarios" do
+    get "avaliacoes", to: "usuarios#avaliacoes", as: :avaliacoes
+  end
+
   post "admin/importar_sigaa", to: "admin#importar_sigaa", as: :importar_sigaa
   post "admin/atualizar_sigaa", to: "admin#atualizar_sigaa", as: :atualizar_sigaa
 
