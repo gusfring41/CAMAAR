@@ -6,6 +6,9 @@ class AdminController < ApplicationController
   before_action :set_admin
 
   def avaliacoes
+    @avaliacoes = Formulario
+      .joins(:turma)
+      .includes(turma: { disciplina: :departamento, docentes: [] })
   end
 
   def gerenciamento
