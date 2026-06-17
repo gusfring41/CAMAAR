@@ -14,7 +14,7 @@ RSpec.describe "Templates", type: :request do
   end
   let!(:template_existente) do
     template = Template.new(nome: "Template Base", administrador: admin)
-    template.elementos.build(enunciado: "Questão 1", ordem: 1) 
+    template.elementos.build(enunciado: "Questão 1", ordem: 1)
     template.save!
     template
   end
@@ -25,7 +25,7 @@ RSpec.describe "Templates", type: :request do
 
   describe "GET /templates" do
     it "Feature 6: Visualiza a lista de templates" do
-      get admin_templates_path(admin_id: admin.id) 
+      get admin_templates_path(admin_id: admin.id)
       expect(response).to have_http_status(:ok)
     end
   end
@@ -33,12 +33,12 @@ RSpec.describe "Templates", type: :request do
   describe "POST /templates" do
     it "Feature 5: Cria um template com sucesso" do
       expect {
-        post admin_templates_path(admin_id: admin.id), params: { 
-          template: { 
-            nome: "Avaliação Nova", 
+        post admin_templates_path(admin_id: admin.id), params: {
+          template: {
+            nome: "Avaliação Nova",
             administrador_id: admin.id,
-            elementos_attributes: [ { enunciado: "Questão 1", ordem: 1 } ] 
-          } 
+            elementos_attributes: [ { enunciado: "Questão 1", ordem: 1 } ]
+          }
         }
       }.to change(Template, :count).by(1)
       expect(response).to be_redirect
@@ -47,8 +47,8 @@ RSpec.describe "Templates", type: :request do
 
   describe "PATCH /templates/:id" do
     it "Feature 7: Edita um template existente" do
-      patch admin_template_path(admin_id: admin.id, id: template_existente.id), params: { 
-        template: { nome: "Nome Atualizado" } 
+      patch admin_template_path(admin_id: admin.id, id: template_existente.id), params: {
+        template: { nome: "Nome Atualizado" }
       }
       template_existente.reload
       expect(template_existente.nome).to eq("Nome Atualizado")

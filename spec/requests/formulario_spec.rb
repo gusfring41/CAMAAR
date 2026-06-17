@@ -4,7 +4,7 @@ RSpec.describe "Formularios", type: :request do
   let(:departamento) { Departamento.find_or_create_by!(nome: "Ciência da Computação", codigo: "CIC") }
   let(:disciplina) { Disciplina.find_or_create_by!(nome: "Engenharia de Software", codigo: "CIC0097", departamento: departamento) }
   let(:turma) { Turma.find_or_create_by!(numero_da_turma: "TA", disciplina: disciplina, semestre: "2026.1") }
-  
+
   let(:curso) { Curso.find_or_create_by!(nome: "Ciência da Computação", codigo: "CIC", departamento: departamento) }
 
   let(:admin) do
@@ -33,7 +33,7 @@ RSpec.describe "Formularios", type: :request do
           }
         }
       }.to change(Formulario, :count).by(1)
-      
+
       expect(response).to be_redirect
     end
   end

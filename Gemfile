@@ -17,6 +17,9 @@ gem "stimulus-rails"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 
+gem "rdoc", ">= 6.3.1"
+
+
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 gem "bcrypt", "~> 3.1.7"
 
@@ -57,12 +60,15 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  gem "rspec-rails"
+
+  gem "rubycritic", require: false
 end
 
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
-  gem "rspec-rails"
 end
 
 group :test do
@@ -71,5 +77,5 @@ group :test do
   gem "selenium-webdriver"
   gem "cucumber-rails", require: false
   gem "database_cleaner"
-  gem "rspec-rails"
+  gem "simplecov", require: false
 end
