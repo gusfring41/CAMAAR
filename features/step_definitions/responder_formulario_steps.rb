@@ -21,7 +21,7 @@ end
 
 Então('eu devo visualizar os detalhes e perguntas pertinentes a ele') do
   # Assumindo que a classe .form-question existirá na view
-  expect(page).to have_selector('.form-question') 
+  expect(page).to have_selector('.form-question')
 end
 
 Quando('eu respondo a pergunta {string} com a opção {string}') do |pergunta, opcao|

@@ -10,8 +10,9 @@
 # Ignore bundler config.
 /.bundle
 
-# Ignore all environment files.
+# Ignore all environment files (but keep .env.example in the repo).
 /.env*
+!/.env.example
 
 # Ignore all logfiles and tempfiles.
 /log/*
@@ -36,3 +37,4 @@
 # Ignore key files for decrypting credentials and more.
 /config/*.key
 
+/vendor/bundle
