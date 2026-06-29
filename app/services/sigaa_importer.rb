@@ -1,4 +1,7 @@
 class SigaaImporter
+  DEFAULT_DEP_CODIGO = "NAO_ESP".freeze
+  DEFAULT_DEP_NOME   = "Não especificado".freeze
+
   # Importa disciplinas, turmas, docentes e discentes a partir dos arquivos JSON do SIGAA.
   #
   # Registros já existentes no banco de dados (identificados por código ou email/matrícula)
@@ -6,175 +9,274 @@ class SigaaImporter
   #
   # @param classes_path [String] caminho para o arquivo JSON com os dados das turmas/disciplinas
   # @param members_path [String] caminho para o arquivo JSON com os dados dos membros (docentes e discentes)
-  # @return [String] mensagem descrevendo o resultado da operação:
-  #   - "alguns dados já foram importados..." — quando há mistura de novos e já existentes
-  #   - "os dados já existem e não foram duplicados" — quando nenhum dado novo foi inserido
-  #   - "importação realizada com sucesso" — quando todos os dados eram novos
-  #   - "a importação falhou" — em caso de exceção durante o processamento
-  # @note Toda a operação é executada dentro de uma única transação de banco de dados.
-  #   Em caso de erro, a transação é revertida e a mensagem de falha é retornada.
+  # @return [String] mensagem descrevendo o resultado da operação
   def self.import_from_files(classes_path, members_path)
-    created = 0
-    ignored = 0
+    new.import_from_files(classes_path, members_path)
+  end
+
+  def import_from_files(classes_path, members_path)
+    counters = { created: 0, ignored: 0 }
 
     ActiveRecord::Base.transaction do
-      dep_padrao = Departamento.find_or_create_by(codigo: "NAO_ESP") { |d| d.nome = "Não especificado" }
+      dep_padrao
 
-      # classes.json
-      classes = JSON.parse(File.read(classes_path))
-      classes.each do |c|
-        disciplina = Disciplina.find_or_create_by(codigo: c["code"]) do |d|
-          d.nome = c["name"]
-          d.departamento = dep_padrao
-        end
-
-        class_info = c["class"] || {}
-        turma = Turma.find_or_create_by(disciplina: disciplina, numero_da_turma: class_info["classCode"], semestre: class_info["semester"]) do |t|
-          t.horario = class_info["time"]
-        end
-
-        if turma.created_at == turma.updated_at
-          created += 1
-        else
-          ignored += 1
-        end
-      end
-
-      # class_members.json
-      members = JSON.parse(File.read(members_path))
-      members.each do |m|
-        code = m.dig("class", "code") || m["code"]
-        class_code = m.dig("class", "classCode") || m["classCode"]
-        semester = m.dig("class", "semester") || m["semester"]
-
-        disciplina = Disciplina.find_by(codigo: code)
-        turma = Turma.find_by(disciplina: disciplina, numero_da_turma: class_code, semestre: semester)
-        next unless turma
-
-        # docente
-        if m["docente"].is_a?(Hash)
-          dep_nome = m["docente"]["departamento"]
-          dep = if dep_nome.present?
-            dep_cod = dep_nome.parameterize(separator: "_").upcase.first(20)
-            Departamento.find_or_create_by(codigo: dep_cod) { |d| d.nome = dep_nome }
-          else
-            dep_padrao
-          end
-          docente = Docente.find_or_create_by(email: m["docente"]["email"]) do |dct|
-            dct.nome = m["docente"]["nome"]
-            dct.matricula = m["docente"]["matricula"] || m["docente"]["usuario"]
-            dct.formacao = m["docente"]["formacao"] || "docente"
-            dct.departamento = dep
-          end
-          unless docente.turmas.exists?(turma.id)
-            docente.turmas << turma
-            created += 1
-          else
-            ignored += 1
-          end
-        end
-
-        # discentes
-        Array(m["dicente"]).each do |aluno|
-          next unless aluno.is_a?(Hash)
-          curso = if aluno["curso"].present?
-            curso_cod = aluno["curso"].parameterize(separator: "_").upcase.first(30)
-            Curso.find_or_create_by(codigo: curso_cod) do |c|
-              c.nome = aluno["curso"]
-              c.departamento = dep_padrao
-            end
-          end
-          discente = Discente.find_or_create_by(matricula: aluno["matricula"]) do |d|
-            d.nome = aluno["nome"]
-            d.email = aluno["email"]
-            d.formacao = aluno["formacao"] || "graduando"
-            d.curso = curso if curso
-          end
-          unless discente.turmas.exists?(turma.id)
-            discente.turmas << turma
-            created += 1
-          else
-            ignored += 1
-          end
-        end
-      end
+      import_classes_into(classes_path, counters)
+      import_members_into(members_path, counters)
     end
 
-    if created > 0 && ignored > 0
-      "alguns dados já foram importados e não serão importados novamente, mas os dados restantes foram importados com sucesso"
-    elsif created == 0
-      "os dados já existem e não foram duplicados"
-    else
-      "importação realizada com sucesso"
-    end
-  rescue StandardError => _e
+    build_import_result(counters)
+  rescue StandardError
     "a importação falhou"
   end
 
   # Atualiza disciplinas, turmas, docentes e discentes existentes a partir dos arquivos JSON do SIGAA.
   #
-  # Apenas registros já presentes no banco de dados são atualizados; novos registros não são criados
-  # (exceto departamentos e cursos de docentes/discentes que podem ser criados se necessário).
-  #
   # @param classes_path [String] caminho para o arquivo JSON com os dados das turmas/disciplinas
   # @param members_path [String] caminho para o arquivo JSON com os dados dos membros (docentes e discentes)
-  # @return [String] mensagem descrevendo o resultado da operação:
-  #   - "atualização realizada com sucesso" — quando concluída sem erros
-  #   - "a atualização falhou" — em caso de exceção durante o processamento
-  # @note Toda a operação é executada dentro de uma única transação de banco de dados.
-  #   Em caso de erro, a transação é revertida e a mensagem de falha é retornada.
+  # @return [String] mensagem descrevendo o resultado da operação
   def self.update_from_files(classes_path, members_path)
+    new.update_from_files(classes_path, members_path)
+  end
+
+  def update_from_files(classes_path, members_path)
     ActiveRecord::Base.transaction do
-      classes = JSON.parse(File.read(classes_path))
-      classes.each do |c|
-        disciplina = Disciplina.find_by(codigo: c["code"])
-        disciplina.update(nome: c["name"]) if disciplina
-
-        class_info = c["class"] || {}
-        turma = Turma.find_by(disciplina: disciplina, numero_da_turma: class_info["classCode"], semestre: class_info["semester"])
-        turma.update(horario: class_info["time"]) if turma
-      end
-
-      members = JSON.parse(File.read(members_path))
-      members.each do |m|
-        code = m.dig("class", "code") || m["code"]
-        class_code = m.dig("class", "classCode") || m["classCode"]
-        semester = m.dig("class", "semester") || m["semester"]
-
-        disciplina = Disciplina.find_by(codigo: code)
-        turma = Turma.find_by(disciplina: disciplina, numero_da_turma: class_code, semestre: semester)
-        next unless turma
-
-        if m["docente"].is_a?(Hash)
-          dep_nome = m["docente"]["departamento"]
-          dep = if dep_nome.present?
-            dep_cod = dep_nome.parameterize(separator: "_").upcase.first(20)
-            Departamento.find_or_create_by(codigo: dep_cod) { |d| d.nome = dep_nome }
-          end
-          docente = Docente.find_by(email: m["docente"]["email"])
-          if docente
-            docente.update(nome: m["docente"]["nome"], departamento: dep || docente.departamento)
-            docente.turmas << turma unless docente.turmas.exists?(turma.id)
-          end
-        end
-
-        Array(m["dicente"]).each do |aluno|
-          next unless aluno.is_a?(Hash)
-          curso = if aluno["curso"].present?
-            curso_cod = aluno["curso"].parameterize(separator: "_").upcase.first(30)
-            Curso.find_by(codigo: curso_cod) || Curso.find_by(nome: aluno["curso"])
-          end
-          discente = Discente.find_by(matricula: aluno["matricula"])
-          if discente
-            discente.update(nome: aluno["nome"], email: aluno["email"], curso: curso || discente.curso)
-            discente.turmas << turma unless discente.turmas.exists?(turma.id)
-          end
-        end
-      end
+      update_classes_from(classes_path)
+      update_members_from(members_path)
     end
 
     "atualização realizada com sucesso"
-  rescue StandardError => _e
+  rescue StandardError
     "a atualização falhou"
+  end
+
+  private
+
+  # Departamentos ------------------------------------------------------------
+
+  def dep_padrao
+    @dep_padrao ||= Departamento.find_or_create_by!(codigo: DEFAULT_DEP_CODIGO) do |d|
+      d.nome = DEFAULT_DEP_NOME
+    end
+  end
+
+  def find_or_create_departamento(nome)
+    return dep_padrao if nome.blank?
+
+    codigo = nome.parameterize(separator: "_").upcase.first(20)
+    Departamento.find_or_create_by!(codigo: codigo) { |d| d.nome = nome }
+  end
+
+  # Cursos -------------------------------------------------------------------
+
+  def find_or_create_curso(nome)
+    return nil if nome.blank?
+
+    codigo = nome.parameterize(separator: "_").upcase.first(30)
+    Curso.find_or_create_by!(codigo: codigo) do |c|
+      c.nome = nome
+      c.departamento = dep_padrao
+    end
+  end
+
+  def find_curso(nome)
+    return nil if nome.blank?
+
+    codigo = nome.parameterize(separator: "_").upcase.first(30)
+    Curso.find_by(codigo: codigo) || Curso.find_by(nome: nome)
+  end
+
+  # JSON parsing -------------------------------------------------------------
+
+  def parse_classes_json(path)
+    JSON.parse(File.read(path))
+  end
+
+  def parse_members_json(path)
+    JSON.parse(File.read(path))
+  end
+
+  # Turma lookup -------------------------------------------------------------
+
+  def lookup_turma(member_hash)
+    code       = member_hash.dig("class", "code")       || member_hash["code"]
+    class_code = member_hash.dig("class", "classCode")  || member_hash["classCode"]
+    semester   = member_hash.dig("class", "semester")   || member_hash["semester"]
+
+    disciplina = Disciplina.find_by(codigo: code)
+    Turma.find_by(disciplina: disciplina, numero_da_turma: class_code, semestre: semester)
+  end
+
+  # Import classes -----------------------------------------------------------
+
+  def import_classes_into(classes_path, counters)
+    parse_classes_json(classes_path).each do |entry|
+      disciplina = find_or_create_disciplina(entry)
+      turma = find_or_create_turma(disciplina, entry["class"] || {})
+
+      if turma.created_at == turma.updated_at
+        counters[:created] += 1
+      else
+        counters[:ignored] += 1
+      end
+    end
+  end
+
+  def find_or_create_disciplina(entry)
+    Disciplina.find_or_create_by!(codigo: entry["code"]) do |d|
+      d.nome = entry["name"]
+      d.departamento = dep_padrao
+    end
+  end
+
+  def find_or_create_turma(disciplina, class_info)
+    Turma.find_or_create_by!(
+      disciplina: disciplina,
+      numero_da_turma: class_info["classCode"],
+      semestre: class_info["semester"]
+    ) do |t|
+      t.horario = class_info["time"]
+    end
+  end
+
+  # Update classes -----------------------------------------------------------
+
+  def update_classes_from(classes_path)
+    parse_classes_json(classes_path).each do |entry|
+      disciplina = Disciplina.find_by(codigo: entry["code"])
+      disciplina&.update(nome: entry["name"])
+
+      class_info = entry["class"] || {}
+      turma = Turma.find_by(
+        disciplina: disciplina,
+        numero_da_turma: class_info["classCode"],
+        semestre: class_info["semester"]
+      )
+      turma&.update(horario: class_info["time"])
+    end
+  end
+
+  # Import members (docentes + discentes) ------------------------------------
+
+  def import_members_into(members_path, counters)
+    parse_members_json(members_path).each do |member|
+      turma = lookup_turma(member)
+      next unless turma
+
+      import_docente(member, turma, counters)
+      import_discentes(member, turma, counters)
+    end
+  end
+
+  def import_docente(member_hash, turma, counters)
+    docente_hash = member_hash["docente"]
+    return unless docente_hash.is_a?(Hash)
+
+    dep = find_or_create_departamento(docente_hash["departamento"])
+    docente = find_or_create_docente(docente_hash, dep)
+
+    if docente_already_in_turma?(docente, turma)
+      counters[:ignored] += 1
+    else
+      docente.turmas << turma
+      counters[:created] += 1
+    end
+  end
+
+  def find_or_create_docente(docente_hash, departamento)
+    Docente.find_or_create_by!(email: docente_hash["email"]) do |dct|
+      dct.nome = docente_hash["nome"]
+      dct.matricula = docente_hash["matricula"] || docente_hash["usuario"]
+      dct.formacao = docente_hash["formacao"] || "docente"
+      dct.departamento = departamento
+    end
+  end
+
+  def import_discentes(member_hash, turma, counters)
+    Array(member_hash["dicente"]).each do |aluno|
+      next unless aluno.is_a?(Hash)
+
+      curso = find_or_create_curso(aluno["curso"])
+      discente = find_or_create_discente(aluno, curso)
+
+      if discente_already_in_turma?(discente, turma)
+        counters[:ignored] += 1
+      else
+        discente.turmas << turma
+        counters[:created] += 1
+      end
+    end
+  end
+
+  def find_or_create_discente(aluno_hash, curso)
+    Discente.find_or_create_by!(matricula: aluno_hash["matricula"]) do |d|
+      d.nome = aluno_hash["nome"]
+      d.email = aluno_hash["email"]
+      d.formacao = aluno_hash["formacao"] || "graduando"
+      d.curso = curso if curso
+    end
+  end
+
+  # Update members -----------------------------------------------------------
+
+  def update_members_from(members_path)
+    parse_members_json(members_path).each do |member|
+      turma = lookup_turma(member)
+      next unless turma
+
+      update_docente(member, turma)
+      update_discentes(member, turma)
+    end
+  end
+
+  def update_docente(member_hash, turma)
+    docente_hash = member_hash["docente"]
+    return unless docente_hash.is_a?(Hash)
+
+    dep = find_or_create_departamento(docente_hash["departamento"])
+    docente = Docente.find_by(email: docente_hash["email"])
+    return unless docente
+
+    docente.update(
+      nome: docente_hash["nome"],
+      departamento: dep || docente.departamento
+    )
+    docente.turmas << turma unless docente_already_in_turma?(docente, turma)
+  end
+
+  def update_discentes(member_hash, turma)
+    Array(member_hash["dicente"]).each do |aluno|
+      next unless aluno.is_a?(Hash)
+
+      curso = find_curso(aluno["curso"])
+      discente = Discente.find_by(matricula: aluno["matricula"])
+      next unless discente
+
+      discente.update(
+        nome: aluno["nome"],
+        email: aluno["email"],
+        curso: curso || discente.curso
+      )
+      discente.turmas << turma unless discente_already_in_turma?(discente, turma)
+    end
+  end
+
+  # Helpers ------------------------------------------------------------------
+
+  def docente_already_in_turma?(docente, turma)
+    docente.turmas.exists?(turma.id)
+  end
+
+  def discente_already_in_turma?(discente, turma)
+    discente.turmas.exists?(turma.id)
+  end
+
+  def build_import_result(counters)
+    if counters[:created] > 0 && counters[:ignored] > 0
+      "alguns dados já foram importados e não serão importados novamente, mas os dados restantes foram importados com sucesso"
+    elsif counters[:created] == 0
+      "os dados já existem e não foram duplicados"
+    else
+      "importação realizada com sucesso"
+    end
   end
 end
