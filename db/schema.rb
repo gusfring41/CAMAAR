@@ -16,6 +16,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_16_201400) do
     t.bigint "elemento_form_id", null: false
     t.string "enunciado"
     t.integer "ordem"
+    t.string "tipo_elemento"
     t.datetime "updated_at", null: false
     t.index ["elemento_form_id"], name: "index_campo_forms_on_elemento_form_id"
   end
@@ -89,6 +90,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_16_201400) do
 
   create_table "formularios", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.date "data_fim"
+    t.date "data_inicio"
+    t.string "nome"
     t.string "titulo"
     t.bigint "turma_id"
     t.datetime "updated_at", null: false
