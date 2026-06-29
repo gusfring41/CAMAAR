@@ -38,5 +38,22 @@ RSpec.describe Template, type: :model do
 
       expect(template).not_to be_valid
     end
+
+    it "não é válido se o enunciado de uma questão (elemento) estiver em branco" do
+      template = Template.new(nome: "Avaliação da Turma", administrador: admin)
+      template.elementos.build(enunciado: "", ordem: 1)
+
+      expect(template).not_to be_valid
+      expect(template.errors[:base]).to include("O texto de todas as questões deve ser preenchido!")
+    end
+
+    it "não é válido se uma opção (campo) que não seja do tipo Texto estiver com enunciado em branco" do
+      template = Template.new(nome: "Avaliação da Turma", administrador: admin)
+      elemento = template.elementos.build(enunciado: "Questão 1", ordem: 1)
+      elemento.campos.build(tipo_elemento: "Multipla Escolha", enunciado: "", ordem: 1)
+
+      expect(template).not_to be_valid
+      expect(template.errors[:base]).to include("Todas as opções das questões devem ser preenchidas!")
+    end
   end
 end
