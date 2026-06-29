@@ -57,6 +57,24 @@ RSpec.describe "Gerenciamento de Senhas", type: :request do
       expect(flash[:alert]).to eq("Link de definição de senha inválido.")
     end
 
+    it "PATCH /definir_senha/:token falha quando senhas não conferem (sad path)" do
+      patch definicao_senha_path(token: usuario_sem_senha.definicao_senha_token), params: {
+        senha: "NovaSenha123",
+        senha_confirmation: "SenhaDiferente456"
+      }
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(flash.now[:alert]).to include("confirmação não confere")
+    end
+
+    it "PATCH /definir_senha/:token falha quando senha menor que 6 caracteres (sad path)" do
+      patch definicao_senha_path(token: usuario_sem_senha.definicao_senha_token), params: {
+        senha: "abc",
+        senha_confirmation: "abc"
+      }
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(flash.now[:alert]).to include("senha inválida")
+    end
+
     it "PATCH /definir_senha/:token falha se o modelo falhar ao salvar no banco (sad path)" do
       allow_any_instance_of(Usuario).to receive(:save).and_return(false)
       patch definicao_senha_path(token: usuario_sem_senha.definicao_senha_token), params: {
@@ -69,6 +87,23 @@ RSpec.describe "Gerenciamento de Senhas", type: :request do
   end
 
   describe "Redefinir senha" do
+    it "GET /redefinir_senha exibe o formulário de solicitação" do
+      get redefinir_senha_path
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "POST /redefinir_senha redireciona com alerta quando email em branco" do
+      post redefinir_senha_path, params: { email: "" }
+      expect(response).to redirect_to(redefinir_senha_path)
+      expect(flash[:alert]).to include("informe seu email")
+    end
+
+    it "POST /redefinir_senha redireciona com alerta quando usuário não encontrado" do
+      post redefinir_senha_path, params: { email: "naoexiste@unb.br" }
+      expect(response).to redirect_to(redefinir_senha_path)
+      expect(flash[:alert]).to include("usuário não encontrado")
+    end
+
     it "POST /redefinir_senha solicita a troca e envia email" do
       post redefinir_senha_path, params: { email: usuario_esquecido.email }
       usuario_esquecido.reload
@@ -97,6 +132,24 @@ RSpec.describe "Gerenciamento de Senhas", type: :request do
       }
       expect(response).to redirect_to(root_path)
       expect(flash[:alert]).to eq("Link de redefinição de senha inválido.")
+    end
+
+    it "PATCH /redefinir_senha/:token falha quando senhas não conferem (sad path)" do
+      patch redefinicao_senha_path(token: usuario_esquecido.redefinicao_senha_token), params: {
+        senha: "SenhaNova123",
+        senha_confirmation: "SenhaDiferente456"
+      }
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(flash.now[:alert]).to include("confirmação não confere")
+    end
+
+    it "PATCH /redefinir_senha/:token falha quando senha menor que 6 caracteres (sad path)" do
+      patch redefinicao_senha_path(token: usuario_esquecido.redefinicao_senha_token), params: {
+        senha: "abc",
+        senha_confirmation: "abc"
+      }
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(flash.now[:alert]).to include("senha inválida")
     end
 
     it "PATCH /redefinir_senha/:token falha se o modelo falhar ao salvar no banco (sad path)" do
