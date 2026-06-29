@@ -15,7 +15,7 @@
 
     <meta
       name="description"
-      content="Documentation for the FormulariosController class"
+      content="class FormulariosController: Gerencia o CRUD de formulários de avaliação. Formulários são instâncias de avaliação enviadas a turmas específicas, geradas a partir de templates pelo"
     >
 
 
@@ -28,10 +28,7 @@
 
 
 
-    <meta
-      property="og:description"
-      content="Documentation for FormulariosController class - API reference and code examples"
-    >
+    <meta property="og:description" content="Gerencia o CRUD de formulários de avaliação. Formulários são instâncias de avaliação enviadas a turmas específicas, geradas a partir de templates pelo">
 
 
 
@@ -43,10 +40,7 @@
 
 
 
-    <meta
-      name="twitter:description"
-      content="Documentation for FormulariosController class - API reference and code examples"
-    >
+    <meta name="twitter:description" content="Gerencia o CRUD de formulários de avaliação. Formulários são instâncias de avaliação enviadas a turmas específicas, geradas a partir de templates pelo">
 
 
 
@@ -1961,6 +1955,10 @@
 
   <section class="description">
     
+<p>Gerencia o CRUD de formulários de avaliação.</p>
+
+<p>Formulários são instâncias de avaliação enviadas a turmas específicas, geradas a partir de templates pelo <a href="AdminController.html"><code>AdminController</code></a>. Este controller oferece as operações básicas de listagem, visualização, criação, edição e exclusão de formulários.</p>
+
   </section>
 
 
@@ -2009,7 +2007,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/controllers/formularios_controller.rb, line 36</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/controllers/formularios_controller.rb, line 41</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create</span>
   <span class="ruby-ivar">@formulario</span> = <span class="ruby-constant">Formulario</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">formulario_params</span>)
 
@@ -2065,7 +2063,7 @@
             </details>
           </div>
           <div class="method-source-code" id="destroy-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/controllers/formularios_controller.rb, line 71</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/controllers/formularios_controller.rb, line 76</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">destroy</span>
   <span class="ruby-ivar">@formulario</span>.<span class="ruby-identifier">destroy!</span>
 
@@ -2114,7 +2112,7 @@
             </details>
           </div>
           <div class="method-source-code" id="edit-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/controllers/formularios_controller.rb, line 28</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/controllers/formularios_controller.rb, line 33</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">edit</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
@@ -2157,7 +2155,7 @@
             </details>
           </div>
           <div class="method-source-code" id="index-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/controllers/formularios_controller.rb, line 8</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/controllers/formularios_controller.rb, line 13</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">index</span>
   <span class="ruby-ivar">@formularios</span> = <span class="ruby-constant">Formulario</span>.<span class="ruby-identifier">all</span>
 <span class="ruby-keyword">end</span></pre>
@@ -2201,7 +2199,7 @@
             </details>
           </div>
           <div class="method-source-code" id="new-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/controllers/formularios_controller.rb, line 21</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/controllers/formularios_controller.rb, line 26</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">new</span>
   <span class="ruby-ivar">@formulario</span> = <span class="ruby-constant">Formulario</span>.<span class="ruby-identifier">new</span>
 <span class="ruby-keyword">end</span></pre>
@@ -2245,7 +2243,7 @@
             </details>
           </div>
           <div class="method-source-code" id="show-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/controllers/formularios_controller.rb, line 15</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/controllers/formularios_controller.rb, line 20</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">show</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
@@ -2288,7 +2286,7 @@
             </details>
           </div>
           <div class="method-source-code" id="update-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/controllers/formularios_controller.rb, line 55</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/controllers/formularios_controller.rb, line 60</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">update</span>
   <span class="ruby-identifier">respond_to</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">format</span><span class="ruby-operator">|</span>
     <span class="ruby-keyword">if</span> <span class="ruby-ivar">@formulario</span>.<span class="ruby-identifier">update</span>(<span class="ruby-identifier">formulario_params</span>)

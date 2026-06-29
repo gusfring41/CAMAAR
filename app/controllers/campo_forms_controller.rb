@@ -1,3 +1,9 @@
+# Gerencia o CRUD de campos instanciados em elementos de formulários de avaliação.
+#
+# +CampoForm+ é a representação de uma opção de resposta dentro de um
+# +ElementoForm+ concreto, criada a partir de um +Campo+ de template no momento
+# do envio da avaliação. Este controller expõe as operações individuais de CRUD
+# sobre essas instâncias.
 class CampoFormsController < ApplicationController
   before_action :require_login
   before_action :set_campo_form, only: %i[ show edit update destroy ]

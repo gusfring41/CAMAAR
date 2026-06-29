@@ -1934,7 +1934,7 @@
   &lt;div class=&quot;file-time&quot;&gt;
     &lt;span class=&quot;committed-at&quot;&gt;
 
-        Updated &lt;time class=&#39;js-timeago&#39; datetime=&#39;2026-06-16 22:37:35 -0300&#39;&gt;2026-06-16 22:37:35 -0300&lt;/time&gt;
+        Updated &lt;time class=&#39;js-timeago&#39; datetime=&#39;2026-06-29 10:00:29 -0300&#39;&gt;2026-06-29 10:00:29 -0300&lt;/time&gt;
 
     &lt;/span&gt;
   &lt;/div&gt;
@@ -1955,12 +1955,12 @@
         &lt;/div&gt;
         &lt;div class=&quot;code-statistics col-md-11&quot;&gt;
           &lt;div class=&quot;col-md-3&quot;&gt;
-            &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;5&lt;/span&gt;&lt;small&gt; lines of codes&lt;/small&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;10&lt;/span&gt;&lt;small&gt; lines of codes&lt;/small&gt;&lt;/div&gt;
             &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;0&lt;/span&gt;&lt;small&gt; methods&lt;/small&gt;&lt;/div&gt;
           &lt;/div&gt;
           &lt;div class=&quot;col-md-3&quot;&gt;
             &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;N/A&lt;/span&gt;&lt;small&gt; complexity/method&lt;/small&gt;&lt;/div&gt;
-            &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;5&lt;/span&gt;&lt;small&gt; churn&lt;/small&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;6&lt;/span&gt;&lt;small&gt; churn&lt;/small&gt;&lt;/div&gt;
           &lt;/div&gt;
           &lt;div class=&quot;col-md-3&quot;&gt;
             &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;0.0&lt;/span&gt;&lt;small&gt; complexity&lt;/small&gt;&lt;/div&gt;
@@ -1975,7 +1975,7 @@
           &lt;li&gt;&lt;a href=&quot;#&quot; id=&quot;toggle-code&quot; class=&quot;toggle-button button&quot;&gt;code&lt;/a&gt;&lt;/li&gt;
           &lt;li class=&quot;active&quot;&gt;
             &lt;a href=&quot;#&quot; id=&quot;toggle-smells&quot; class=&quot;toggle-button button&quot;&gt;
-              1
+              0
               smell
             &lt;/a&gt;
           &lt;/li&gt;
@@ -1984,10 +1984,14 @@
     &lt;/div&gt;
   &lt;/div&gt;
 
-  &lt;code class=&quot;prettyprint linenums lang-ruby file-code js-file-code&quot;&gt;class Formulario &amp;lt; ApplicationRecord&lt;ol class=&quot;nocode errors smells&quot;&gt;  &lt;li&gt;    &lt;div class=&quot;description&quot;&gt;      &lt;div class=&quot;heading&quot;&gt;        &lt;span&gt;          &lt;i class=&quot;fa fa-warning&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;          &lt;a href=&quot;https://github.com/troessner/reek/blob/master/docs/Irresponsible-Module.md&quot; target=&quot;_blank&quot;&gt;&lt;b&gt;IrresponsibleModule&lt;/b&gt;&lt;/a&gt;        &lt;/span&gt;      &lt;/div&gt;      &lt;span&gt;Formulario has no descriptive comment&lt;/span&gt;          &lt;/div&gt;  &lt;/li&gt;&lt;/ol&gt;
-belongs_to :turma
-has_many :elemento_forms, dependent: :destroy
-has_many :resposta_forms, dependent: :destroy</pre>
+  &lt;code class=&quot;prettyprint linenums lang-ruby file-code js-file-code&quot;&gt;# Representa um formulário de avaliação enviado a uma turma.</pre>
+
+<p># # É criado a partir de um <a href="../../../../Template.html"><code>Template</code></a> e associado a uma <a href="../../../../Turma.html"><code>Turma</code></a>. Contém os # +ElementoForm+s (questões) que os usuários respondem, e agrega as # +RespostaForm+s submetidas pelos participantes. class <a href="../../../../Formulario.html"><code>Formulario</code></a> &amp;lt; <a href="../../../../ApplicationRecord.html"><code>ApplicationRecord</code></a></p>
+
+<pre class="ruby"><span class="ruby-identifier">belongs_to</span> <span class="ruby-value">:turma</span>
+<span class="ruby-identifier">has_many</span> <span class="ruby-value">:elemento_forms</span>, <span class="ruby-value">dependent:</span> <span class="ruby-value">:destroy</span>
+<span class="ruby-identifier">has_many</span> <span class="ruby-value">:resposta_forms</span>, <span class="ruby-value">dependent:</span> <span class="ruby-value">:destroy</span>
+</pre>
 
 <p>end &lt;/code&gt;</p>
 

@@ -1,3 +1,8 @@
+# Gerencia o CRUD de elementos (questões) de templates de avaliação.
+#
+# Elementos são as questões que compõem um template. Normalmente são criados e
+# editados de forma encadeada via nested attributes no +TemplatesController+; este
+# controller expõe as operações individuais de CRUD para cada elemento.
 class ElementosController < ApplicationController
   before_action :require_login
   before_action :set_elemento, only: %i[ show edit update destroy ]

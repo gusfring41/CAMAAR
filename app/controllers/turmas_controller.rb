@@ -1,3 +1,8 @@
+# Gerencia o CRUD de turmas.
+#
+# Turmas representam a oferta de uma disciplina em um semestre, agrupando docentes
+# e discentes. Este controller oferece as operações básicas de listagem, visualização,
+# criação, edição e exclusão de turmas.
 class TurmasController < ApplicationController
   before_action :require_login
   before_action :set_turma, only: %i[ show edit update destroy ]

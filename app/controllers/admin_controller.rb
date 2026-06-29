@@ -1,3 +1,10 @@
+# Gerencia as funcionalidades exclusivas do administrador do sistema.
+#
+# Agrupa as ações restritas ao perfil +Administrador+: visualização e exportação
+# de avaliações, envio de formulários a turmas a partir de templates, tela de
+# gerenciamento geral e sincronização de dados com o SIGAA (importação e
+# atualização via arquivos JSON). Utiliza o layout "gerenciamento" e valida
+# que o administrador autenticado acessa apenas as suas próprias páginas.
 class AdminController < ApplicationController
   layout "gerenciamento"
 

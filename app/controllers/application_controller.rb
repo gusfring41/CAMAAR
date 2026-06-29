@@ -1,3 +1,8 @@
+# Controller base da aplicação do qual todos os demais controllers herdam.
+#
+# Define os helpers e filtros de autenticação e autorização compartilhados:
+# +current_user+ (disponível nas views via +helper_method+), +require_login+
+# (exige sessão ativa) e +require_admin+ (exige perfil de administrador).
 class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern

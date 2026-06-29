@@ -1934,7 +1934,7 @@
   &lt;div class=&quot;file-time&quot;&gt;
     &lt;span class=&quot;committed-at&quot;&gt;
 
-        Updated &lt;time class=&#39;js-timeago&#39; datetime=&#39;2026-06-15 16:24:38 -0300&#39;&gt;2026-06-15 16:24:38 -0300&lt;/time&gt;
+        Updated &lt;time class=&#39;js-timeago&#39; datetime=&#39;2026-06-29 10:00:29 -0300&#39;&gt;2026-06-29 10:00:29 -0300&lt;/time&gt;
 
     &lt;/span&gt;
   &lt;/div&gt;
@@ -1955,12 +1955,12 @@
         &lt;/div&gt;
         &lt;div class=&quot;code-statistics col-md-11&quot;&gt;
           &lt;div class=&quot;col-md-3&quot;&gt;
-            &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;40&lt;/span&gt;&lt;small&gt; lines of codes&lt;/small&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;61&lt;/span&gt;&lt;small&gt; lines of codes&lt;/small&gt;&lt;/div&gt;
             &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;3&lt;/span&gt;&lt;small&gt; methods&lt;/small&gt;&lt;/div&gt;
           &lt;/div&gt;
           &lt;div class=&quot;col-md-3&quot;&gt;
             &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;13.6&lt;/span&gt;&lt;small&gt; complexity/method&lt;/small&gt;&lt;/div&gt;
-            &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;4&lt;/span&gt;&lt;small&gt; churn&lt;/small&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;5&lt;/span&gt;&lt;small&gt; churn&lt;/small&gt;&lt;/div&gt;
           &lt;/div&gt;
           &lt;div class=&quot;col-md-3&quot;&gt;
             &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;40.84&lt;/span&gt;&lt;small&gt; complexity&lt;/small&gt;&lt;/div&gt;
@@ -1975,7 +1975,7 @@
           &lt;li&gt;&lt;a href=&quot;#&quot; id=&quot;toggle-code&quot; class=&quot;toggle-button button&quot;&gt;code&lt;/a&gt;&lt;/li&gt;
           &lt;li class=&quot;active&quot;&gt;
             &lt;a href=&quot;#&quot; id=&quot;toggle-smells&quot; class=&quot;toggle-button button&quot;&gt;
-              4
+              3
               smells
             &lt;/a&gt;
           &lt;/li&gt;
@@ -1984,8 +1984,11 @@
     &lt;/div&gt;
   &lt;/div&gt;
 
-  &lt;code class=&quot;prettyprint linenums lang-ruby file-code js-file-code&quot;&gt;class Template &amp;lt; ApplicationRecord&lt;ol class=&quot;nocode errors smells&quot;&gt;  &lt;li&gt;    &lt;div class=&quot;description&quot;&gt;      &lt;div class=&quot;heading&quot;&gt;        &lt;span&gt;          &lt;i class=&quot;fa fa-warning&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;          &lt;a href=&quot;https://github.com/troessner/reek/blob/master/docs/Irresponsible-Module.md&quot; target=&quot;_blank&quot;&gt;&lt;b&gt;IrresponsibleModule&lt;/b&gt;&lt;/a&gt;        &lt;/span&gt;      &lt;/div&gt;      &lt;span&gt;Template has no descriptive comment&lt;/span&gt;          &lt;/div&gt;  &lt;/li&gt;&lt;/ol&gt;
-belongs_to :administrador, foreign_key: &amp;quot;usuario_id&amp;quot;, class_name: &amp;quot;Administrador&amp;quot;
+  &lt;code class=&quot;prettyprint linenums lang-ruby file-code js-file-code&quot;&gt;# Representa um modelo reutilizável de formulário criado por um +Administrador+.</pre>
+
+<p># # Contém um conjunto ordenado de +Elemento+s (questões), cada um com seus # +Campo+s (opções). Ao ser enviado a turmas, o template é instanciado em # +Formulario+s com +ElementoForm+s e +CampoForm+s correspondentes. class <a href="../../../../Template.html"><code>Template</code></a> &amp;lt; <a href="../../../../ApplicationRecord.html"><code>ApplicationRecord</code></a></p>
+
+<pre>belongs_to :administrador, foreign_key: &amp;quot;usuario_id&amp;quot;, class_name: &amp;quot;Administrador&amp;quot;
 has_many :elementos, dependent: :destroy
 accepts_nested_attributes_for :elementos, allow_destroy: true
 
@@ -1995,18 +1998,34 @@ validate :validar_preenchimento
 
 private
 
+# Valida que o nome do template não está em branco.
+#
+# @return [void]
+# @note Adiciona erro em +:base+ se o atributo +nome+ estiver vazio.
 def validar_titulo
   if nome.blank?
     errors.add(:base, &amp;quot;Título não pode ficar em branco!&amp;quot;)
   end
 end
 
+# Valida que o template possui pelo menos um elemento não marcado para exclusão.
+#
+# @return [void]
+# @note Adiciona erro em +:base+ se nenhum elemento sobreviver à filtragem de
+#   +marked_for_destruction?+.
 def validar_elementos
   if elementos.reject(&amp;amp;:marked_for_destruction?).empty?
     errors.add(:base, &amp;quot;Template deve ter pelo menos um elemento!&amp;quot;)
   end
 end
 
+# Valida que todos os elementos e seus campos estão devidamente preenchidos.
+#
+# @return [void]
+# @note Adiciona erro em +:base+ e interrompe a execução na primeira violação
+#   encontrada: enunciado de elemento em branco, ou enunciado de campo em branco
+#   quando o tipo do campo não é &amp;quot;Texto&amp;quot;. Não é executada se já existirem erros
+#   prévios.
 def validar_preenchimento&lt;ol class=&quot;nocode errors smells&quot;&gt;  &lt;li&gt;    &lt;div class=&quot;description&quot;&gt;      &lt;div class=&quot;heading&quot;&gt;        &lt;span&gt;          &lt;i class=&quot;fa fa-warning&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;          &lt;a href=&quot;http://docs.seattlerb.org/flog/&quot; target=&quot;_blank&quot;&gt;&lt;b&gt;HighComplexity&lt;/b&gt;&lt;/a&gt;        &lt;/span&gt;      &lt;/div&gt;      &lt;span&gt;Template#validar_preenchimento has a flog score of 29&lt;/span&gt;          &lt;/div&gt;  &lt;/li&gt;  &lt;li&gt;    &lt;div class=&quot;description&quot;&gt;      &lt;div class=&quot;heading&quot;&gt;        &lt;span&gt;          &lt;i class=&quot;fa fa-warning&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;          &lt;a href=&quot;https://github.com/troessner/reek/blob/master/docs/Too-Many-Statements.md&quot; target=&quot;_blank&quot;&gt;&lt;b&gt;TooManyStatements&lt;/b&gt;&lt;/a&gt;        &lt;/span&gt;      &lt;/div&gt;      &lt;span&gt;Template#validar_preenchimento has approx 7 statements&lt;/span&gt;          &lt;/div&gt;  &lt;/li&gt;&lt;/ol&gt;
   return if errors.any?
   elementos.reject(&amp;amp;:marked_for_destruction?).each do |elemento|

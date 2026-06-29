@@ -1,3 +1,9 @@
+# Gerencia o CRUD de departamentos acadêmicos da instituição.
+#
+# Departamentos agrupam +Curso+s, +Disciplina+s e +Administrador+es. Não podem
+# ser excluídos enquanto possuírem cursos ou disciplinas vinculados. Normalmente
+# são criados durante a sincronização com o SIGAA; este controller expõe as
+# operações individuais de CRUD para manutenção manual dos registros.
 class DepartamentosController < ApplicationController
   before_action :require_login
   before_action :set_departamento, only: %i[ show edit update destroy ]

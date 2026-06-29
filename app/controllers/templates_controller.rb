@@ -1,3 +1,9 @@
+# Gerencia o CRUD de templates de formulário de avaliação.
+#
+# Templates são modelos reutilizáveis criados por administradores que definem a
+# estrutura de uma avaliação (questões e opções de resposta). Cada administrador
+# só pode gerenciar seus próprios templates. Utiliza o layout "gerenciamento" e
+# suporta criação e edição de elementos e campos via nested attributes.
 class TemplatesController < ApplicationController
   layout "gerenciamento"
   before_action :require_login

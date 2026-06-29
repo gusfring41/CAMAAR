@@ -1,3 +1,8 @@
+# Gerencia o fluxo de redefinição de senha para usuários que já possuem conta ativa.
+#
+# O usuário informa seu email (+new+/+create+), recebe um link por email com token
+# único e utiliza esse token para acessar o formulário de nova senha (+edit+/+update+).
+# Após a redefinição bem-sucedida, o token é invalidado para evitar reutilização.
 class RedefinicaoSenhasController < ApplicationController
   # Exibe o formulário de solicitação de redefinição de senha.
   #

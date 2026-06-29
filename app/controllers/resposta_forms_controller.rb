@@ -1,3 +1,9 @@
+# Gerencia o CRUD de respostas completas submetidas por usuários a formulários.
+#
+# Uma +RespostaForm+ representa a submissão de um usuário a um +Formulario+
+# inteiro. O fluxo principal de submissão é tratado pelo +UsuariosController+;
+# este controller expõe as operações individuais de CRUD para administração direta
+# dos registros de resposta.
 class RespostaFormsController < ApplicationController
   before_action :require_login
   before_action :set_resposta_form, only: %i[ show edit update destroy ]

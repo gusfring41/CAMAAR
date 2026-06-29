@@ -1,3 +1,8 @@
+# Gerencia o CRUD de formulários de avaliação.
+#
+# Formulários são instâncias de avaliação enviadas a turmas específicas, geradas
+# a partir de templates pelo +AdminController+. Este controller oferece as operações
+# básicas de listagem, visualização, criação, edição e exclusão de formulários.
 class FormulariosController < ApplicationController
   before_action :require_login
   before_action :set_formulario, only: %i[ show edit update destroy ]

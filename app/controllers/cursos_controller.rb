@@ -1,3 +1,8 @@
+# Gerencia o CRUD de cursos de graduação e pós-graduação.
+#
+# Cursos pertencem a um +Departamento+ e agrupam +Discente+s. Normalmente são
+# criados automaticamente durante a sincronização com o SIGAA; este controller
+# expõe as operações individuais de CRUD para manutenção manual dos registros.
 class CursosController < ApplicationController
   before_action :require_login
   before_action :set_curso, only: %i[ show edit update destroy ]

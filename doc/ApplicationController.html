@@ -15,7 +15,7 @@
 
     <meta
       name="description"
-      content="Documentation for the ApplicationController class"
+      content="class ApplicationController: Controller base da aplicação do qual todos os demais controllers herdam. current_user+ (disponível nas views via +helper_method+), +require_login+ (ex"
     >
 
 
@@ -28,10 +28,7 @@
 
 
 
-    <meta
-      property="og:description"
-      content="Documentation for ApplicationController class - API reference and code examples"
-    >
+    <meta property="og:description" content="Controller base da aplicação do qual todos os demais controllers herdam. current_user+ (disponível nas views via +helper_method+), +require_login+ (ex">
 
 
 
@@ -43,10 +40,7 @@
 
 
 
-    <meta
-      name="twitter:description"
-      content="Documentation for ApplicationController class - API reference and code examples"
-    >
+    <meta name="twitter:description" content="Controller base da aplicação do qual todos os demais controllers herdam. current_user+ (disponível nas views via +helper_method+), +require_login+ (ex">
 
 
 
@@ -1953,6 +1947,10 @@
 
   <section class="description">
     
+<p>Controller base da aplicação do qual todos os demais controllers herdam.</p>
+
+<p>Define os helpers e filtros de autenticação e autorização compartilhados: <a href="ApplicationController.html#method-i-current_user"><code>current_user</code></a> (disponível nas views via <code>helper_method</code>), <a href="ApplicationController.html#method-i-require_login"><code>require_login</code></a> (exige sessão ativa) e <a href="ApplicationController.html#method-i-require_admin"><code>require_admin</code></a> (exige perfil de administrador).</p>
+
   </section>
 
 
@@ -2001,7 +1999,7 @@
             </details>
           </div>
           <div class="method-source-code" id="current_user-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/controllers/application_controller.rb, line 13</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/controllers/application_controller.rb, line 18</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">current_user</span>
   <span class="ruby-ivar">@current_user</span> <span class="ruby-operator">||=</span> <span class="ruby-constant">Usuario</span>.<span class="ruby-identifier">find_by</span>(<span class="ruby-value">id:</span> <span class="ruby-identifier">session</span>[<span class="ruby-value">:usuario_id</span>])
 <span class="ruby-keyword">end</span></pre>
@@ -2045,7 +2043,7 @@
             </details>
           </div>
           <div class="method-source-code" id="require_admin-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/controllers/application_controller.rb, line 31</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/controllers/application_controller.rb, line 36</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">require_admin</span>
   <span class="ruby-keyword">unless</span> <span class="ruby-identifier">current_user</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Administrador</span>)
     <span class="ruby-identifier">redirect_to</span> <span class="ruby-identifier">inicio_path</span>, <span class="ruby-value">alert:</span> <span class="ruby-string">&quot;Acesso negado.&quot;</span>
@@ -2091,7 +2089,7 @@
             </details>
           </div>
           <div class="method-source-code" id="require_login-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/controllers/application_controller.rb, line 21</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/controllers/application_controller.rb, line 26</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">require_login</span>
   <span class="ruby-keyword">unless</span> <span class="ruby-identifier">current_user</span>
     <span class="ruby-identifier">redirect_to</span> <span class="ruby-identifier">root_path</span>, <span class="ruby-value">alert:</span> <span class="ruby-string">&quot;Você precisa estar logado para acessar esta página.&quot;</span>

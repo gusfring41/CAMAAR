@@ -1,3 +1,9 @@
+# Gerencia o CRUD de campos (opções de resposta) de elementos de template.
+#
+# Campos definem as opções disponíveis para resposta em um elemento, bem como o
+# tipo da questão (texto livre, múltipla escolha etc.). Normalmente são gerenciados
+# via nested attributes no +TemplatesController+; este controller expõe as operações
+# individuais de CRUD.
 class CamposController < ApplicationController
   before_action :require_login
   before_action :set_campo, only: %i[ show edit update destroy ]

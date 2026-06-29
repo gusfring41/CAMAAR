@@ -15,7 +15,7 @@
 
     <meta
       name="description"
-      content="Documentation for the AdminController class"
+      content="class AdminController: Gerencia as funcionalidades exclusivas do administrador do sistema. visualização e exportação de avaliações, envio de formulários a turmas a partir de"
     >
 
 
@@ -28,10 +28,7 @@
 
 
 
-    <meta
-      property="og:description"
-      content="Documentation for AdminController class - API reference and code examples"
-    >
+    <meta property="og:description" content="Gerencia as funcionalidades exclusivas do administrador do sistema. visualização e exportação de avaliações, envio de formulários a turmas a partir de">
 
 
 
@@ -43,10 +40,7 @@
 
 
 
-    <meta
-      name="twitter:description"
-      content="Documentation for AdminController class - API reference and code examples"
-    >
+    <meta name="twitter:description" content="Gerencia as funcionalidades exclusivas do administrador do sistema. visualização e exportação de avaliações, envio de formulários a turmas a partir de">
 
 
 
@@ -1959,6 +1953,10 @@
 
   <section class="description">
     
+<p>Gerencia as funcionalidades exclusivas do administrador do sistema.</p>
+
+<p>Agrupa as ações restritas ao perfil <a href="Administrador.html"><code>Administrador</code></a>: visualização e exportação de avaliações, envio de formulários a turmas a partir de templates, tela de gerenciamento geral e sincronização de dados com o SIGAA (importação e atualização via arquivos JSON). Utiliza o layout “gerenciamento” e valida que o administrador autenticado acessa apenas as suas próprias páginas.</p>
+
   </section>
 
 
@@ -2007,7 +2005,7 @@
             </details>
           </div>
           <div class="method-source-code" id="avaliacoes-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/controllers/admin_controller.rb, line 11</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/controllers/admin_controller.rb, line 18</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">avaliacoes</span>
   <span class="ruby-ivar">@avaliacoes</span> = <span class="ruby-constant">Formulario</span>
     .<span class="ruby-identifier">joins</span>(<span class="ruby-value">:turma</span>)
@@ -2053,7 +2051,7 @@
             </details>
           </div>
           <div class="method-source-code" id="enviar_formularios-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/controllers/admin_controller.rb, line 32</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/controllers/admin_controller.rb, line 39</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">enviar_formularios</span>
   <span class="ruby-keyword">if</span> <span class="ruby-identifier">request</span>.<span class="ruby-identifier">get?</span>
     <span class="ruby-ivar">@templates</span> = <span class="ruby-constant">Template</span>.<span class="ruby-identifier">where</span>(<span class="ruby-value">usuario_id:</span> <span class="ruby-ivar">@admin</span>.<span class="ruby-identifier">id</span>)
@@ -2150,7 +2148,7 @@ a página de gerenciamento.</pre>
             </details>
           </div>
           <div class="method-source-code" id="exportar_csv-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/controllers/admin_controller.rb, line 97</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/controllers/admin_controller.rb, line 104</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">exportar_csv</span>
   <span class="ruby-ivar">@formulario</span> = <span class="ruby-constant">Formulario</span>.<span class="ruby-identifier">find_by</span>(<span class="ruby-value">id:</span> <span class="ruby-identifier">params</span>[<span class="ruby-value">:id</span>])
 
@@ -2220,7 +2218,7 @@ CSV nomeado com o id do formulário, número da turma e nome da matéria.</pre>
             </details>
           </div>
           <div class="method-source-code" id="gerenciamento-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/controllers/admin_controller.rb, line 20</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/controllers/admin_controller.rb, line 27</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">gerenciamento</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
@@ -2263,7 +2261,7 @@ CSV nomeado com o id do formulário, número da turma e nome da matéria.</pre>
             </details>
           </div>
           <div class="method-source-code" id="resultados-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/controllers/admin_controller.rb, line 87</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/controllers/admin_controller.rb, line 94</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">resultados</span>
   <span class="ruby-ivar">@formularios</span> = <span class="ruby-constant">Formulario</span>.<span class="ruby-identifier">joins</span>(<span class="ruby-value">turma:</span> <span class="ruby-value">:disciplina</span>).<span class="ruby-identifier">where</span>(<span class="ruby-value">disciplinas:</span> { <span class="ruby-value">departamento_id:</span> <span class="ruby-ivar">@admin</span>.<span class="ruby-identifier">departamento_id</span> }).<span class="ruby-identifier">includes</span>(<span class="ruby-value">turma:</span> <span class="ruby-value">:disciplina</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -2307,7 +2305,7 @@ CSV nomeado com o id do formulário, número da turma e nome da matéria.</pre>
             </details>
           </div>
           <div class="method-source-code" id="sincronizar_sigaa-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/controllers/admin_controller.rb, line 129</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/controllers/admin_controller.rb, line 136</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">sincronizar_sigaa</span>
   <span class="ruby-keyword">if</span> <span class="ruby-identifier">request</span>.<span class="ruby-identifier">get?</span>
     <span class="ruby-identifier">render</span> <span class="ruby-value">:sincronizar_sigaa</span>

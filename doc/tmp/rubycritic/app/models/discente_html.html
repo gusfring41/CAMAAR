@@ -1934,7 +1934,7 @@
   &lt;div class=&quot;file-time&quot;&gt;
     &lt;span class=&quot;committed-at&quot;&gt;
 
-        Updated &lt;time class=&#39;js-timeago&#39; datetime=&#39;2026-06-15 16:24:38 -0300&#39;&gt;2026-06-15 16:24:38 -0300&lt;/time&gt;
+        Updated &lt;time class=&#39;js-timeago&#39; datetime=&#39;2026-06-29 10:00:29 -0300&#39;&gt;2026-06-29 10:00:29 -0300&lt;/time&gt;
 
     &lt;/span&gt;
   &lt;/div&gt;
@@ -1955,12 +1955,12 @@
         &lt;/div&gt;
         &lt;div class=&quot;code-statistics col-md-11&quot;&gt;
           &lt;div class=&quot;col-md-3&quot;&gt;
-            &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;4&lt;/span&gt;&lt;small&gt; lines of codes&lt;/small&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;9&lt;/span&gt;&lt;small&gt; lines of codes&lt;/small&gt;&lt;/div&gt;
             &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;0&lt;/span&gt;&lt;small&gt; methods&lt;/small&gt;&lt;/div&gt;
           &lt;/div&gt;
           &lt;div class=&quot;col-md-3&quot;&gt;
             &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;N/A&lt;/span&gt;&lt;small&gt; complexity/method&lt;/small&gt;&lt;/div&gt;
-            &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;3&lt;/span&gt;&lt;small&gt; churn&lt;/small&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;4&lt;/span&gt;&lt;small&gt; churn&lt;/small&gt;&lt;/div&gt;
           &lt;/div&gt;
           &lt;div class=&quot;col-md-3&quot;&gt;
             &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;0.0&lt;/span&gt;&lt;small&gt; complexity&lt;/small&gt;&lt;/div&gt;
@@ -1975,7 +1975,7 @@
           &lt;li&gt;&lt;a href=&quot;#&quot; id=&quot;toggle-code&quot; class=&quot;toggle-button button&quot;&gt;code&lt;/a&gt;&lt;/li&gt;
           &lt;li class=&quot;active&quot;&gt;
             &lt;a href=&quot;#&quot; id=&quot;toggle-smells&quot; class=&quot;toggle-button button&quot;&gt;
-              1
+              0
               smell
             &lt;/a&gt;
           &lt;/li&gt;
@@ -1984,8 +1984,11 @@
     &lt;/div&gt;
   &lt;/div&gt;
 
-  &lt;code class=&quot;prettyprint linenums lang-ruby file-code js-file-code&quot;&gt;class Discente &amp;lt; Usuario&lt;ol class=&quot;nocode errors smells&quot;&gt;  &lt;li&gt;    &lt;div class=&quot;description&quot;&gt;      &lt;div class=&quot;heading&quot;&gt;        &lt;span&gt;          &lt;i class=&quot;fa fa-warning&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;          &lt;a href=&quot;https://github.com/troessner/reek/blob/master/docs/Irresponsible-Module.md&quot; target=&quot;_blank&quot;&gt;&lt;b&gt;IrresponsibleModule&lt;/b&gt;&lt;/a&gt;        &lt;/span&gt;      &lt;/div&gt;      &lt;span&gt;Discente has no descriptive comment&lt;/span&gt;          &lt;/div&gt;  &lt;/li&gt;&lt;/ol&gt;
-validates :curso_id, presence: true
+  &lt;code class=&quot;prettyprint linenums lang-ruby file-code js-file-code&quot;&gt;# Representa um estudante (aluno) cadastrado no sistema.</pre>
+
+<p># # Herda de <a href="../../../../Usuario.html"><code>Usuario</code></a> e obrigatoriamente pertence a um <a href="../../../../Curso.html"><code>Curso</code></a>. Pode estar # matriculado em múltiplas +Turma+s, nas quais receberá formulários de # avaliação para responder. class <a href="../../../../Discente.html"><code>Discente</code></a> &amp;lt; <a href="../../../../Usuario.html"><code>Usuario</code></a></p>
+
+<pre>validates :curso_id, presence: true
 has_and_belongs_to_many :turmas, join_table: &amp;quot;discentes_turmas&amp;quot;</pre>
 
 <p>end &lt;/code&gt;</p>

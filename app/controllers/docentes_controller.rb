@@ -1,3 +1,9 @@
+# Gerencia o CRUD de docentes (professores) cadastrados no sistema.
+#
+# Docentes são usuários com perfil de professor, vinculados a uma ou mais +Turma+s
+# e a um +Departamento+. Normalmente são importados via +AdminController#sincronizar_sigaa+;
+# este controller expõe as operações individuais de CRUD para manutenção manual
+# dos registros.
 class DocentesController < ApplicationController
   before_action :require_login
   before_action :set_docente, only: %i[ show edit update destroy ]

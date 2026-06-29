@@ -1,3 +1,9 @@
+# Gerencia o CRUD de discentes (alunos) cadastrados no sistema.
+#
+# Discentes são usuários com perfil de aluno, vinculados a um +Curso+ e a uma
+# ou mais +Turma+s. Normalmente são importados via +AdminController#sincronizar_sigaa+;
+# este controller expõe as operações individuais de CRUD para manutenção manual
+# dos registros.
 class DiscentesController < ApplicationController
   before_action :require_login
   before_action :set_discente, only: %i[ show edit update destroy ]

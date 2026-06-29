@@ -1,3 +1,9 @@
+# Gerencia o CRUD de elementos instanciados em formulários de avaliação.
+#
+# +ElementoForm+ é a representação de uma questão dentro de um +Formulario+
+# concreto, criada a partir de um +Elemento+ de template no momento do envio da
+# avaliação. Este controller expõe as operações individuais de CRUD sobre essas
+# instâncias.
 class ElementoFormsController < ApplicationController
   before_action :require_login
   before_action :set_elemento_form, only: %i[ show edit update destroy ]

@@ -15,7 +15,7 @@
 
     <meta
       name="description"
-      content="Documentation for the SessionsController class"
+      content="class SessionsController: Gerencia o ciclo de vida da sessão de autenticação do usuário. Responsável pelo login (criação de sessão com verificação de credenciais via email ou m"
     >
 
 
@@ -28,10 +28,7 @@
 
 
 
-    <meta
-      property="og:description"
-      content="Documentation for SessionsController class - API reference and code examples"
-    >
+    <meta property="og:description" content="Gerencia o ciclo de vida da sessão de autenticação do usuário. Responsável pelo login (criação de sessão com verificação de credenciais via email ou m">
 
 
 
@@ -43,10 +40,7 @@
 
 
 
-    <meta
-      name="twitter:description"
-      content="Documentation for SessionsController class - API reference and code examples"
-    >
+    <meta name="twitter:description" content="Gerencia o ciclo de vida da sessão de autenticação do usuário. Responsável pelo login (criação de sessão com verificação de credenciais via email ou m">
 
 
 
@@ -1953,6 +1947,10 @@
 
   <section class="description">
     
+<p>Gerencia o ciclo de vida da sessão de autenticação do usuário.</p>
+
+<p>Responsável pelo login (criação de sessão com verificação de credenciais via email ou matrícula) e pelo logout (destruição da sessão). Redireciona o usuário para a página correta de acordo com o seu perfil (<a href="Administrador.html"><code>Administrador</code></a> ou demais).</p>
+
   </section>
 
 
@@ -2001,7 +1999,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/controllers/sessions_controller.rb, line 20</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/controllers/sessions_controller.rb, line 25</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create</span>
   <span class="ruby-identifier">login</span> = <span class="ruby-identifier">params</span>[<span class="ruby-value">:login</span>].<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">strip</span>
   <span class="ruby-identifier">senha</span> = <span class="ruby-identifier">params</span>[<span class="ruby-value">:senha</span>].<span class="ruby-identifier">to_s</span>
@@ -2081,7 +2079,7 @@ página de avaliações.</pre>
             </details>
           </div>
           <div class="method-source-code" id="destroy-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/controllers/sessions_controller.rb, line 59</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/controllers/sessions_controller.rb, line 64</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">destroy</span>
   <span class="ruby-identifier">reset_session</span>
   <span class="ruby-identifier">redirect_to</span> <span class="ruby-identifier">root_path</span>
@@ -2126,7 +2124,7 @@ página de avaliações.</pre>
             </details>
           </div>
           <div class="method-source-code" id="new-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/controllers/sessions_controller.rb, line 6</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/controllers/sessions_controller.rb, line 11</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">new</span>
   <span class="ruby-keyword">if</span> <span class="ruby-identifier">current_user</span>
     <span class="ruby-identifier">redirect_para_pagina_do_usuario</span>(<span class="ruby-identifier">current_user</span>)

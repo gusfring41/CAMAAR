@@ -1,3 +1,9 @@
+# Gerencia o CRUD de respostas individuais a questões de formulários de avaliação.
+#
+# Uma +RespostaElem+ representa a resposta de um usuário a um +ElementoForm+
+# específico, vinculada a uma +RespostaForm+. O fluxo principal de criação ocorre
+# via +UsuariosController#submeter_resposta+; este controller expõe as operações
+# individuais de CRUD para administração direta dos registros.
 class RespostaElemsController < ApplicationController
   before_action :require_login
   before_action :set_resposta_elem, only: %i[ show edit update destroy ]

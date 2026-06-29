@@ -1,3 +1,10 @@
+# Gerencia o cadastro de usuários e o fluxo de resposta a formulários de avaliação.
+#
+# As ações de CRUD (+index+, +show+, +new+, +edit+, +create+, +update+, +destroy+)
+# são restritas a administradores. As ações +avaliacoes+, +responder_formulario+ e
+# +submeter_resposta+ são acessíveis a qualquer usuário autenticado e compõem o
+# fluxo pelo qual docentes e discentes visualizam e respondem formulários de avaliação
+# das suas turmas.
 class UsuariosController < ApplicationController
   before_action :require_login
   before_action :require_admin, except: [ :avaliacoes, :responder_formulario, :submeter_resposta ]

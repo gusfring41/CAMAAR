@@ -1,3 +1,9 @@
+# Gerencia o CRUD de disciplinas ofertadas pelos departamentos.
+#
+# Disciplinas pertencem a um +Departamento+ e possuem múltiplas +Turma+s (uma
+# por semestre/oferta). Normalmente são importadas via sincronização com o SIGAA;
+# este controller expõe as operações individuais de CRUD para manutenção manual
+# dos registros.
 class DisciplinasController < ApplicationController
   before_action :require_login
   before_action :set_disciplina, only: %i[ show edit update destroy ]

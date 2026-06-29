@@ -1934,7 +1934,7 @@
   &lt;div class=&quot;file-time&quot;&gt;
     &lt;span class=&quot;committed-at&quot;&gt;
 
-        Updated &lt;time class=&#39;js-timeago&#39; datetime=&#39;2026-06-15 16:24:38 -0300&#39;&gt;2026-06-15 16:24:38 -0300&lt;/time&gt;
+        Updated &lt;time class=&#39;js-timeago&#39; datetime=&#39;2026-06-29 10:00:29 -0300&#39;&gt;2026-06-29 10:00:29 -0300&lt;/time&gt;
 
     &lt;/span&gt;
   &lt;/div&gt;
@@ -1955,12 +1955,12 @@
         &lt;/div&gt;
         &lt;div class=&quot;code-statistics col-md-11&quot;&gt;
           &lt;div class=&quot;col-md-3&quot;&gt;
-            &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;77&lt;/span&gt;&lt;small&gt; lines of codes&lt;/small&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;132&lt;/span&gt;&lt;small&gt; lines of codes&lt;/small&gt;&lt;/div&gt;
             &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;11&lt;/span&gt;&lt;small&gt; methods&lt;/small&gt;&lt;/div&gt;
           &lt;/div&gt;
           &lt;div class=&quot;col-md-3&quot;&gt;
             &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;4.0&lt;/span&gt;&lt;small&gt; complexity/method&lt;/small&gt;&lt;/div&gt;
-            &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;3&lt;/span&gt;&lt;small&gt; churn&lt;/small&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;4&lt;/span&gt;&lt;small&gt; churn&lt;/small&gt;&lt;/div&gt;
           &lt;/div&gt;
           &lt;div class=&quot;col-md-3&quot;&gt;
             &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;43.76&lt;/span&gt;&lt;small&gt; complexity&lt;/small&gt;&lt;/div&gt;
@@ -1975,7 +1975,7 @@
           &lt;li&gt;&lt;a href=&quot;#&quot; id=&quot;toggle-code&quot; class=&quot;toggle-button button&quot;&gt;code&lt;/a&gt;&lt;/li&gt;
           &lt;li class=&quot;active&quot;&gt;
             &lt;a href=&quot;#&quot; id=&quot;toggle-smells&quot; class=&quot;toggle-button button&quot;&gt;
-              8
+              7
               smells
             &lt;/a&gt;
           &lt;/li&gt;
@@ -1984,8 +1984,11 @@
     &lt;/div&gt;
   &lt;/div&gt;
 
-  &lt;code class=&quot;prettyprint linenums lang-ruby file-code js-file-code&quot;&gt;class Usuario &amp;lt; ApplicationRecord&lt;ol class=&quot;nocode errors smells&quot;&gt;  &lt;li&gt;    &lt;div class=&quot;description&quot;&gt;      &lt;div class=&quot;heading&quot;&gt;        &lt;span&gt;          &lt;i class=&quot;fa fa-warning&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;          &lt;a href=&quot;https://github.com/troessner/reek/blob/master/docs/Irresponsible-Module.md&quot; target=&quot;_blank&quot;&gt;&lt;b&gt;IrresponsibleModule&lt;/b&gt;&lt;/a&gt;        &lt;/span&gt;      &lt;/div&gt;      &lt;span&gt;Usuario has no descriptive comment&lt;/span&gt;          &lt;/div&gt;  &lt;/li&gt;&lt;/ol&gt;
-belongs_to :curso, optional: true
+  &lt;code class=&quot;prettyprint linenums lang-ruby file-code js-file-code&quot;&gt;# Classe base para todos os usuários do sistema (STI).</pre>
+
+<p># # Gerencia autenticação via BCrypt e tokens de email para definição e # redefinição de senha. As subclasses concretas são <a href="../../../../Administrador.html"><code>Administrador</code></a>, # <a href="../../../../Docente.html"><code>Docente</code></a> e <a href="../../../../Discente.html"><code>Discente</code></a>, diferenciadas pela coluna <code>type</code> (Single Table # Inheritance). class <a href="../../../../Usuario.html"><code>Usuario</code></a> &amp;lt; <a href="../../../../ApplicationRecord.html"><code>ApplicationRecord</code></a></p>
+
+<pre>belongs_to :curso, optional: true
 belongs_to :departamento, optional: true
 validates :matricula, presence: true, uniqueness: true
 validates :email, presence: true, uniqueness: true
@@ -1997,14 +2000,26 @@ attr_accessor :senha_confirmation&lt;ol class=&quot;nocode errors smells&quot;&g
 before_save :atualizar_senha_hash, if: -&amp;gt; { senha.present? }
 validate :validar_senha, if: -&amp;gt; { senha.present? }
 
+# Armazena a senha em texto plano em atributo virtual para uso nas validações e no hash.
+#
+# @param nova_senha [String] senha em texto plano fornecida pelo usuário
+# @return [String] a mesma senha recebida
 def senha=(nova_senha)
   @senha = nova_senha
 end
 
+# Verifica se o usuário já possui uma senha cadastrada.
+#
+# @return [Boolean] +true+ se o hash de senha estiver presente, +false+ caso contrário
 def senha_definida?
   senha_hash.present?
 end
 
+# Verifica se a senha fornecida corresponde ao hash armazenado.
+#
+# @param tentativa [String] senha em texto plano a ser verificada
+# @return [Boolean] +true+ se a senha conferir, +false+ caso contrário ou se o hash
+#   for inválido
 def autenticar_senha(tentativa)
   return false if senha_hash.blank?
 
@@ -2013,6 +2028,11 @@ rescue BCrypt::Errors::InvalidHash
   false
 end
 
+# Gera e persiste um token de definição de senha com a data/hora atual.
+#
+# @return [void]
+# @note Atualiza os campos +definicao_senha_token+ e +definicao_senha_sent_at+
+#   diretamente no banco de dados.
 def gerar_definicao_senha_token!&lt;ol class=&quot;nocode errors smells&quot;&gt;  &lt;li&gt;    &lt;div class=&quot;description&quot;&gt;      &lt;div class=&quot;heading&quot;&gt;        &lt;span&gt;          &lt;i class=&quot;fa fa-warning&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;          &lt;a href=&quot;https://github.com/troessner/reek/blob/master/docs/Missing-Safe-Method.md&quot; target=&quot;_blank&quot;&gt;&lt;b&gt;MissingSafeMethod&lt;/b&gt;&lt;/a&gt;        &lt;/span&gt;      &lt;/div&gt;      &lt;span&gt;Usuario has missing safe method &#39;gerar_definicao_senha_token!&#39;&lt;/span&gt;          &lt;/div&gt;  &lt;/li&gt;&lt;/ol&gt;
   update!(
     definicao_senha_token: SecureRandom.urlsafe_base64(32),
@@ -2020,11 +2040,21 @@ def gerar_definicao_senha_token!&lt;ol class=&quot;nocode errors smells&quot;&gt
   )
 end
 
+# Gera o token de definição de senha e envia o email correspondente ao usuário.
+#
+# @return [void]
+# @note Chama +gerar_definicao_senha_token!+ e dispara o envio do email via
+#   +UsuarioMailer#definicao_senha+ de forma síncrona.
 def enviar_email_definicao_senha!&lt;ol class=&quot;nocode errors smells&quot;&gt;  &lt;li&gt;    &lt;div class=&quot;description&quot;&gt;      &lt;div class=&quot;heading&quot;&gt;        &lt;span&gt;          &lt;i class=&quot;fa fa-warning&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;          &lt;a href=&quot;https://github.com/troessner/reek/blob/master/docs/Missing-Safe-Method.md&quot; target=&quot;_blank&quot;&gt;&lt;b&gt;MissingSafeMethod&lt;/b&gt;&lt;/a&gt;        &lt;/span&gt;      &lt;/div&gt;      &lt;span&gt;Usuario has missing safe method &#39;enviar_email_definicao_senha!&#39;&lt;/span&gt;          &lt;/div&gt;  &lt;/li&gt;&lt;/ol&gt;
   gerar_definicao_senha_token!
   UsuarioMailer.definicao_senha(self).deliver_now
 end
 
+# Gera e persiste um token de redefinição de senha com a data/hora atual.
+#
+# @return [void]
+# @note Atualiza os campos +redefinicao_senha_token+ e +redefinicao_senha_sent_at+
+#   diretamente no banco de dados.
 def gerar_redefinicao_senha_token!&lt;ol class=&quot;nocode errors smells&quot;&gt;  &lt;li&gt;    &lt;div class=&quot;description&quot;&gt;      &lt;div class=&quot;heading&quot;&gt;        &lt;span&gt;          &lt;i class=&quot;fa fa-warning&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;          &lt;a href=&quot;https://github.com/troessner/reek/blob/master/docs/Missing-Safe-Method.md&quot; target=&quot;_blank&quot;&gt;&lt;b&gt;MissingSafeMethod&lt;/b&gt;&lt;/a&gt;        &lt;/span&gt;      &lt;/div&gt;      &lt;span&gt;Usuario has missing safe method &#39;gerar_redefinicao_senha_token!&#39;&lt;/span&gt;          &lt;/div&gt;  &lt;/li&gt;&lt;/ol&gt;
   update!(
     redefinicao_senha_token: SecureRandom.urlsafe_base64(32),
@@ -2032,21 +2062,39 @@ def gerar_redefinicao_senha_token!&lt;ol class=&quot;nocode errors smells&quot;&
   )
 end
 
+# Gera o token de redefinição de senha e envia o email correspondente ao usuário.
+#
+# @return [void]
+# @note Chama +gerar_redefinicao_senha_token!+ e dispara o envio do email via
+#   +UsuarioMailer#redefinicao_senha+ de forma síncrona.
 def enviar_email_redefinicao_senha!&lt;ol class=&quot;nocode errors smells&quot;&gt;  &lt;li&gt;    &lt;div class=&quot;description&quot;&gt;      &lt;div class=&quot;heading&quot;&gt;        &lt;span&gt;          &lt;i class=&quot;fa fa-warning&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;          &lt;a href=&quot;https://github.com/troessner/reek/blob/master/docs/Missing-Safe-Method.md&quot; target=&quot;_blank&quot;&gt;&lt;b&gt;MissingSafeMethod&lt;/b&gt;&lt;/a&gt;        &lt;/span&gt;      &lt;/div&gt;      &lt;span&gt;Usuario has missing safe method &#39;enviar_email_redefinicao_senha!&#39;&lt;/span&gt;          &lt;/div&gt;  &lt;/li&gt;&lt;/ol&gt;
   gerar_redefinicao_senha_token!
   UsuarioMailer.redefinicao_senha(self).deliver_now
 end
 
+# Remove o token de redefinição de senha e a data de envio do banco de dados.
+#
+# @return [void]
+# @note Define +redefinicao_senha_token+ e +redefinicao_senha_sent_at+ como +nil+.
 def limpar_redefinicao_senha_token!&lt;ol class=&quot;nocode errors smells&quot;&gt;  &lt;li&gt;    &lt;div class=&quot;description&quot;&gt;      &lt;div class=&quot;heading&quot;&gt;        &lt;span&gt;          &lt;i class=&quot;fa fa-warning&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;          &lt;a href=&quot;https://github.com/troessner/reek/blob/master/docs/Missing-Safe-Method.md&quot; target=&quot;_blank&quot;&gt;&lt;b&gt;MissingSafeMethod&lt;/b&gt;&lt;/a&gt;        &lt;/span&gt;      &lt;/div&gt;      &lt;span&gt;Usuario has missing safe method &#39;limpar_redefinicao_senha_token!&#39;&lt;/span&gt;          &lt;/div&gt;  &lt;/li&gt;&lt;/ol&gt;
   update!(redefinicao_senha_token: nil, redefinicao_senha_sent_at: nil)
 end
 
+# Remove o token de definição de senha e a data de envio do banco de dados.
+#
+# @return [void]
+# @note Define +definicao_senha_token+ e +definicao_senha_sent_at+ como +nil+.
 def limpar_definicao_senha_token!&lt;ol class=&quot;nocode errors smells&quot;&gt;  &lt;li&gt;    &lt;div class=&quot;description&quot;&gt;      &lt;div class=&quot;heading&quot;&gt;        &lt;span&gt;          &lt;i class=&quot;fa fa-warning&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;          &lt;a href=&quot;https://github.com/troessner/reek/blob/master/docs/Missing-Safe-Method.md&quot; target=&quot;_blank&quot;&gt;&lt;b&gt;MissingSafeMethod&lt;/b&gt;&lt;/a&gt;        &lt;/span&gt;      &lt;/div&gt;      &lt;span&gt;Usuario has missing safe method &#39;limpar_definicao_senha_token!&#39;&lt;/span&gt;          &lt;/div&gt;  &lt;/li&gt;&lt;/ol&gt;
   update!(definicao_senha_token: nil, definicao_senha_sent_at: nil)
 end
 
 private
 
+# Valida a confirmação e o tamanho mínimo da senha.
+#
+# @return [void]
+# @note Adiciona erros em +:senha+ se a confirmação não conferir ou se a senha tiver
+#   menos de 6 caracteres.
 def validar_senha
   if senha_confirmation.present? &amp;amp;&amp;amp; senha != senha_confirmation
     errors.add(:senha, :confirmation, message: &amp;quot;confirmação não confere&amp;quot;)
@@ -2057,6 +2105,10 @@ def validar_senha
   end
 end
 
+# Gera e armazena o hash BCrypt da senha antes de salvar o registro.
+#
+# @return [void]
+# @note Atualiza o campo virtual +senha_hash+ com o resultado de +BCrypt::Password.create+.
 def atualizar_senha_hash
   self.senha_hash = BCrypt::Password.create(senha)
 end</pre>

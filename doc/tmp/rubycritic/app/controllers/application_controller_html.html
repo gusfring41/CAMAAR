@@ -1934,7 +1934,7 @@
   &lt;div class=&quot;file-time&quot;&gt;
     &lt;span class=&quot;committed-at&quot;&gt;
 
-        Updated &lt;time class=&#39;js-timeago&#39; datetime=&#39;2026-06-16 10:48:40 -0300&#39;&gt;2026-06-16 10:48:40 -0300&lt;/time&gt;
+        Updated &lt;time class=&#39;js-timeago&#39; datetime=&#39;2026-06-29 10:00:29 -0300&#39;&gt;2026-06-29 10:00:29 -0300&lt;/time&gt;
 
     &lt;/span&gt;
   &lt;/div&gt;
@@ -1955,12 +1955,12 @@
         &lt;/div&gt;
         &lt;div class=&quot;code-statistics col-md-11&quot;&gt;
           &lt;div class=&quot;col-md-3&quot;&gt;
-            &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;25&lt;/span&gt;&lt;small&gt; lines of codes&lt;/small&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;36&lt;/span&gt;&lt;small&gt; lines of codes&lt;/small&gt;&lt;/div&gt;
             &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;3&lt;/span&gt;&lt;small&gt; methods&lt;/small&gt;&lt;/div&gt;
           &lt;/div&gt;
           &lt;div class=&quot;col-md-3&quot;&gt;
             &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;4.0&lt;/span&gt;&lt;small&gt; complexity/method&lt;/small&gt;&lt;/div&gt;
-            &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;4&lt;/span&gt;&lt;small&gt; churn&lt;/small&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;5&lt;/span&gt;&lt;small&gt; churn&lt;/small&gt;&lt;/div&gt;
           &lt;/div&gt;
           &lt;div class=&quot;col-md-3&quot;&gt;
             &lt;div&gt;&lt;span class=&quot;metric&quot;&gt;11.99&lt;/span&gt;&lt;small&gt; complexity&lt;/small&gt;&lt;/div&gt;
@@ -1993,16 +1993,27 @@ stale_when_importmap_changes
 
 helper_method :current_user
 
+# Retorna o usuário atualmente autenticado na sessão.
+#
+# @return [Usuario, nil] instância do usuário logado, ou +nil+ se não houver sessão ativa
 def current_user
   @current_user ||= Usuario.find_by(id: session[:usuario_id])
 end
 
+# Exige que o usuário esteja autenticado para acessar a ação.
+#
+# @return [void]
+# @note Redireciona para a página raiz com alerta caso o usuário não esteja logado.
 def require_login
   unless current_user
     redirect_to root_path, alert: &amp;quot;Você precisa estar logado para acessar esta página.&amp;quot;
   end
 end
 
+# Exige que o usuário autenticado seja um administrador.
+#
+# @return [void]
+# @note Redireciona para a página inicial com alerta caso o usuário não seja um +Administrador+.
 def require_admin
   unless current_user.is_a?(Administrador)
     redirect_to inicio_path, alert: &amp;quot;Acesso negado.&amp;quot;

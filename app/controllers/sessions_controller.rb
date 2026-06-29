@@ -1,3 +1,8 @@
+# Gerencia o ciclo de vida da sessão de autenticação do usuário.
+#
+# Responsável pelo login (criação de sessão com verificação de credenciais via
+# email ou matrícula) e pelo logout (destruição da sessão). Redireciona o usuário
+# para a página correta de acordo com o seu perfil (+Administrador+ ou demais).
 class SessionsController < ApplicationController
   # Exibe o formulário de login.
   #

@@ -15,7 +15,7 @@
 
     <meta
       name="description"
-      content="Documentation for the UsuariosController class"
+      content="class UsuariosController: Gerencia o cadastro de usuários e o fluxo de resposta a formulários de avaliação. As ações de CRUD (+index+, +show+, +new+, +edit+, +create+, +update+"
     >
 
 
@@ -28,10 +28,7 @@
 
 
 
-    <meta
-      property="og:description"
-      content="Documentation for UsuariosController class - API reference and code examples"
-    >
+    <meta property="og:description" content="Gerencia o cadastro de usuários e o fluxo de resposta a formulários de avaliação. As ações de CRUD (+index+, +show+, +new+, +edit+, +create+, +update+">
 
 
 
@@ -43,10 +40,7 @@
 
 
 
-    <meta
-      name="twitter:description"
-      content="Documentation for UsuariosController class - API reference and code examples"
-    >
+    <meta name="twitter:description" content="Gerencia o cadastro de usuários e o fluxo de resposta a formulários de avaliação. As ações de CRUD (+index+, +show+, +new+, +edit+, +create+, +update+">
 
 
 
@@ -1967,6 +1961,10 @@
 
   <section class="description">
     
+<p>Gerencia o cadastro de usuários e o fluxo de resposta a formulários de avaliação.</p>
+
+<p>As ações de CRUD (<code>index</code>, <code>show</code>, <code>new</code>, <code>edit</code>, <code>create</code>, <code>update</code>, <code>destroy</code>) são restritas a administradores. As ações <code>avaliacoes</code>, <a href="UsuariosController.html#method-i-responder_formulario"><code>responder_formulario</code></a> e <a href="UsuariosController.html#method-i-submeter_resposta"><code>submeter_resposta</code></a> são acessíveis a qualquer usuário autenticado e compõem o fluxo pelo qual docentes e discentes visualizam e respondem formulários de avaliação das suas turmas.</p>
+
   </section>
 
 
@@ -2015,7 +2013,7 @@
             </details>
           </div>
           <div class="method-source-code" id="avaliacoes-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/controllers/usuarios_controller.rb, line 11</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/controllers/usuarios_controller.rb, line 18</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">avaliacoes</span>
   <span class="ruby-ivar">@usuario</span> = <span class="ruby-constant">Usuario</span>.<span class="ruby-identifier">find</span>(<span class="ruby-identifier">params</span>[<span class="ruby-value">:usuario_id</span>])
 
@@ -2074,7 +2072,7 @@
             </details>
           </div>
           <div class="method-source-code" id="create-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/controllers/usuarios_controller.rb, line 137</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/controllers/usuarios_controller.rb, line 144</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create</span>
   <span class="ruby-ivar">@usuario</span> = <span class="ruby-constant">Usuario</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">usuario_params</span>)
 
@@ -2130,7 +2128,7 @@
             </details>
           </div>
           <div class="method-source-code" id="destroy-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/controllers/usuarios_controller.rb, line 172</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/controllers/usuarios_controller.rb, line 179</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">destroy</span>
   <span class="ruby-ivar">@usuario</span>.<span class="ruby-identifier">destroy!</span>
 
@@ -2179,7 +2177,7 @@
             </details>
           </div>
           <div class="method-source-code" id="edit-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/controllers/usuarios_controller.rb, line 129</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/controllers/usuarios_controller.rb, line 136</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">edit</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
@@ -2222,7 +2220,7 @@
             </details>
           </div>
           <div class="method-source-code" id="index-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/controllers/usuarios_controller.rb, line 109</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/controllers/usuarios_controller.rb, line 116</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">index</span>
   <span class="ruby-ivar">@usuarios</span> = <span class="ruby-constant">Usuario</span>.<span class="ruby-identifier">all</span>
 <span class="ruby-keyword">end</span></pre>
@@ -2266,7 +2264,7 @@
             </details>
           </div>
           <div class="method-source-code" id="new-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/controllers/usuarios_controller.rb, line 122</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/controllers/usuarios_controller.rb, line 129</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">new</span>
   <span class="ruby-ivar">@usuario</span> = <span class="ruby-constant">Usuario</span>.<span class="ruby-identifier">new</span>
 <span class="ruby-keyword">end</span></pre>
@@ -2310,7 +2308,7 @@
             </details>
           </div>
           <div class="method-source-code" id="responder_formulario-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/controllers/usuarios_controller.rb, line 33</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/controllers/usuarios_controller.rb, line 40</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">responder_formulario</span>
   <span class="ruby-ivar">@usuario</span> = <span class="ruby-constant">Usuario</span>.<span class="ruby-identifier">find</span>(<span class="ruby-identifier">params</span>[<span class="ruby-value">:usuario_id</span>])
   <span class="ruby-ivar">@formulario</span> = <span class="ruby-constant">Formulario</span>.<span class="ruby-identifier">includes</span>(<span class="ruby-value">elemento_forms:</span> <span class="ruby-value">:campo_forms</span>).<span class="ruby-identifier">find</span>(<span class="ruby-identifier">params</span>[<span class="ruby-value">:formulario_id</span>])
@@ -2361,7 +2359,7 @@
             </details>
           </div>
           <div class="method-source-code" id="show-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/controllers/usuarios_controller.rb, line 116</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/controllers/usuarios_controller.rb, line 123</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">show</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
@@ -2404,7 +2402,7 @@
             </details>
           </div>
           <div class="method-source-code" id="submeter_resposta-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/controllers/usuarios_controller.rb, line 51</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/controllers/usuarios_controller.rb, line 58</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">submeter_resposta</span>
   <span class="ruby-ivar">@usuario</span> = <span class="ruby-constant">Usuario</span>.<span class="ruby-identifier">find</span>(<span class="ruby-identifier">params</span>[<span class="ruby-value">:usuario_id</span>])
   <span class="ruby-ivar">@formulario</span> = <span class="ruby-constant">Formulario</span>.<span class="ruby-identifier">includes</span>(<span class="ruby-value">elemento_forms:</span> <span class="ruby-value">:campo_forms</span>).<span class="ruby-identifier">find</span>(<span class="ruby-identifier">params</span>[<span class="ruby-value">:formulario_id</span>])
@@ -2505,7 +2503,7 @@ o formulário com mensagem de alerta.</pre>
             </details>
           </div>
           <div class="method-source-code" id="update-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/controllers/usuarios_controller.rb, line 156</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/controllers/usuarios_controller.rb, line 163</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">update</span>
   <span class="ruby-identifier">respond_to</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">format</span><span class="ruby-operator">|</span>
     <span class="ruby-keyword">if</span> <span class="ruby-ivar">@usuario</span>.<span class="ruby-identifier">update</span>(<span class="ruby-identifier">usuario_params</span>)

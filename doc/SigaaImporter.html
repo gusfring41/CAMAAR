@@ -15,7 +15,7 @@
 
     <meta
       name="description"
-      content="Documentation for the SigaaImporter class"
+      content="class SigaaImporter: Serviço responsável pela importação e atualização de dados acadêmicos a partir dos arquivos JSON exportados pelo SIGAA (Sistema Integrado de Gestão de"
     >
 
 
@@ -28,10 +28,7 @@
 
 
 
-    <meta
-      property="og:description"
-      content="Documentation for SigaaImporter class - API reference and code examples"
-    >
+    <meta property="og:description" content="Serviço responsável pela importação e atualização de dados acadêmicos a partir dos arquivos JSON exportados pelo SIGAA (Sistema Integrado de Gestão de">
 
 
 
@@ -43,10 +40,7 @@
 
 
 
-    <meta
-      name="twitter:description"
-      content="Documentation for SigaaImporter class - API reference and code examples"
-    >
+    <meta name="twitter:description" content="Serviço responsável pela importação e atualização de dados acadêmicos a partir dos arquivos JSON exportados pelo SIGAA (Sistema Integrado de Gestão de">
 
 
 
@@ -1921,6 +1915,27 @@
 
 
 
+  <div class="nav-section">
+    <details class="nav-section-collapsible" open>
+      <summary class="nav-section-header">
+        <span class="nav-section-icon">
+          <svg><use href="#icon-instance-methods"></use></svg>
+        </span>
+        <span class="nav-section-title">Instance Methods</span>
+        <span class="nav-section-chevron">
+          <svg><use href="#icon-chevron"></use></svg>
+        </span>
+      </summary>
+      <ul class="nav-list" role="directory">
+
+        <li ><a href="#method-i-import_from_files">import_from_files</a></li>
+
+        <li ><a href="#method-i-update_from_files">update_from_files</a></li>
+
+      </ul>
+    </details>
+  </div>
+
 
   <div id="classindex-section" class="nav-section">
   <details class="nav-section-collapsible" open>
@@ -1951,6 +1966,12 @@
 
   <section class="description">
     
+<p>Serviço responsável pela importação e atualização de dados acadêmicos a partir dos arquivos JSON exportados pelo SIGAA (Sistema Integrado de Gestão de Atividades Acadêmicas).</p>
+
+<p>Processa dois arquivos: o de turmas/disciplinas (<a href="classes_json.html">classes.json</a>) e o de membros (<a href="class_members_json.html">class_members.json</a>), criando ou atualizando +Departamento+s, +Disciplina+s, +Turma+s, +Docente+s, +Discente+s e +Curso+s dentro de uma única transação. Toda a lógica de persistência é encapsulada em métodos privados especializados, mantendo os métodos públicos enxutos.</p>
+
+<p>Os métodos de classe (<code>self.import_from_files</code>, <code>self.update_from_files</code>) são a interface pública recomendada; eles delegam para instâncias privadas para facilitar testes e reutilização interna.</p>
+
   </section>
 
 
@@ -1960,6 +1981,31 @@
 
 
 
+
+    <section class="constants-list">
+      <header>
+        <h3 id="untitled-constants"><a href="#untitled-constants">Constants</a></h3>
+      </header>
+      <dl>
+
+        <dt id="DEFAULT_DEP_CODIGO">DEFAULT_DEP_CODIGO</dt>
+
+        <dd>
+
+          
+        </dd>
+
+
+        <dt id="DEFAULT_DEP_NOME">DEFAULT_DEP_NOME</dt>
+
+        <dd>
+
+          
+        </dd>
+
+
+      </dl>
+    </section>
 
 
 
@@ -1993,103 +2039,9 @@
             </details>
           </div>
           <div class="method-source-code" id="import_from_files-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/services/sigaa_importer.rb, line 16</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/services/sigaa_importer.rb, line 26</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">import_from_files</span>(<span class="ruby-identifier">classes_path</span>, <span class="ruby-identifier">members_path</span>)
-  <span class="ruby-identifier">created</span> = <span class="ruby-value">0</span>
-  <span class="ruby-identifier">ignored</span> = <span class="ruby-value">0</span>
-
-  <span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">transaction</span> <span class="ruby-keyword">do</span>
-    <span class="ruby-identifier">dep_padrao</span> = <span class="ruby-constant">Departamento</span>.<span class="ruby-identifier">find_or_create_by</span>(<span class="ruby-value">codigo:</span> <span class="ruby-string">&quot;NAO_ESP&quot;</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">d</span><span class="ruby-operator">|</span> <span class="ruby-identifier">d</span>.<span class="ruby-identifier">nome</span> = <span class="ruby-string">&quot;Não especificado&quot;</span> }
-
-    <span class="ruby-comment"># classes.json</span>
-    <span class="ruby-identifier">classes</span> = <span class="ruby-constant">JSON</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">read</span>(<span class="ruby-identifier">classes_path</span>))
-    <span class="ruby-identifier">classes</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">c</span><span class="ruby-operator">|</span>
-      <span class="ruby-identifier">disciplina</span> = <span class="ruby-constant">Disciplina</span>.<span class="ruby-identifier">find_or_create_by</span>(<span class="ruby-value">codigo:</span> <span class="ruby-identifier">c</span>[<span class="ruby-string">&quot;code&quot;</span>]) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">d</span><span class="ruby-operator">|</span>
-        <span class="ruby-identifier">d</span>.<span class="ruby-identifier">nome</span> = <span class="ruby-identifier">c</span>[<span class="ruby-string">&quot;name&quot;</span>]
-        <span class="ruby-identifier">d</span>.<span class="ruby-identifier">departamento</span> = <span class="ruby-identifier">dep_padrao</span>
-      <span class="ruby-keyword">end</span>
-
-      <span class="ruby-identifier">class_info</span> = <span class="ruby-identifier">c</span>[<span class="ruby-string">&quot;class&quot;</span>] <span class="ruby-operator">||</span> {}
-      <span class="ruby-identifier">turma</span> = <span class="ruby-constant">Turma</span>.<span class="ruby-identifier">find_or_create_by</span>(<span class="ruby-value">disciplina:</span> <span class="ruby-identifier">disciplina</span>, <span class="ruby-value">numero_da_turma:</span> <span class="ruby-identifier">class_info</span>[<span class="ruby-string">&quot;classCode&quot;</span>], <span class="ruby-value">semestre:</span> <span class="ruby-identifier">class_info</span>[<span class="ruby-string">&quot;semester&quot;</span>]) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">t</span><span class="ruby-operator">|</span>
-        <span class="ruby-identifier">t</span>.<span class="ruby-identifier">horario</span> = <span class="ruby-identifier">class_info</span>[<span class="ruby-string">&quot;time&quot;</span>]
-      <span class="ruby-keyword">end</span>
-
-      <span class="ruby-keyword">if</span> <span class="ruby-identifier">turma</span>.<span class="ruby-identifier">created_at</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">turma</span>.<span class="ruby-identifier">updated_at</span>
-        <span class="ruby-identifier">created</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
-      <span class="ruby-keyword">else</span>
-        <span class="ruby-identifier">ignored</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
-      <span class="ruby-keyword">end</span>
-    <span class="ruby-keyword">end</span>
-
-    <span class="ruby-comment"># class_members.json</span>
-    <span class="ruby-identifier">members</span> = <span class="ruby-constant">JSON</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">read</span>(<span class="ruby-identifier">members_path</span>))
-    <span class="ruby-identifier">members</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">m</span><span class="ruby-operator">|</span>
-      <span class="ruby-identifier">code</span> = <span class="ruby-identifier">m</span>.<span class="ruby-identifier">dig</span>(<span class="ruby-string">&quot;class&quot;</span>, <span class="ruby-string">&quot;code&quot;</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">m</span>[<span class="ruby-string">&quot;code&quot;</span>]
-      <span class="ruby-identifier">class_code</span> = <span class="ruby-identifier">m</span>.<span class="ruby-identifier">dig</span>(<span class="ruby-string">&quot;class&quot;</span>, <span class="ruby-string">&quot;classCode&quot;</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">m</span>[<span class="ruby-string">&quot;classCode&quot;</span>]
-      <span class="ruby-identifier">semester</span> = <span class="ruby-identifier">m</span>.<span class="ruby-identifier">dig</span>(<span class="ruby-string">&quot;class&quot;</span>, <span class="ruby-string">&quot;semester&quot;</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">m</span>[<span class="ruby-string">&quot;semester&quot;</span>]
-
-      <span class="ruby-identifier">disciplina</span> = <span class="ruby-constant">Disciplina</span>.<span class="ruby-identifier">find_by</span>(<span class="ruby-value">codigo:</span> <span class="ruby-identifier">code</span>)
-      <span class="ruby-identifier">turma</span> = <span class="ruby-constant">Turma</span>.<span class="ruby-identifier">find_by</span>(<span class="ruby-value">disciplina:</span> <span class="ruby-identifier">disciplina</span>, <span class="ruby-value">numero_da_turma:</span> <span class="ruby-identifier">class_code</span>, <span class="ruby-value">semestre:</span> <span class="ruby-identifier">semester</span>)
-      <span class="ruby-keyword">next</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">turma</span>
-
-      <span class="ruby-comment"># docente</span>
-      <span class="ruby-keyword">if</span> <span class="ruby-identifier">m</span>[<span class="ruby-string">&quot;docente&quot;</span>].<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>)
-        <span class="ruby-identifier">dep_nome</span> = <span class="ruby-identifier">m</span>[<span class="ruby-string">&quot;docente&quot;</span>][<span class="ruby-string">&quot;departamento&quot;</span>]
-        <span class="ruby-identifier">dep</span> = <span class="ruby-keyword">if</span> <span class="ruby-identifier">dep_nome</span>.<span class="ruby-identifier">present?</span>
-          <span class="ruby-identifier">dep_cod</span> = <span class="ruby-identifier">dep_nome</span>.<span class="ruby-identifier">parameterize</span>(<span class="ruby-value">separator:</span> <span class="ruby-string">&quot;_&quot;</span>).<span class="ruby-identifier">upcase</span>.<span class="ruby-identifier">first</span>(<span class="ruby-value">20</span>)
-          <span class="ruby-constant">Departamento</span>.<span class="ruby-identifier">find_or_create_by</span>(<span class="ruby-value">codigo:</span> <span class="ruby-identifier">dep_cod</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">d</span><span class="ruby-operator">|</span> <span class="ruby-identifier">d</span>.<span class="ruby-identifier">nome</span> = <span class="ruby-identifier">dep_nome</span> }
-        <span class="ruby-keyword">else</span>
-          <span class="ruby-identifier">dep_padrao</span>
-        <span class="ruby-keyword">end</span>
-        <span class="ruby-identifier">docente</span> = <span class="ruby-constant">Docente</span>.<span class="ruby-identifier">find_or_create_by</span>(<span class="ruby-value">email:</span> <span class="ruby-identifier">m</span>[<span class="ruby-string">&quot;docente&quot;</span>][<span class="ruby-string">&quot;email&quot;</span>]) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">dct</span><span class="ruby-operator">|</span>
-          <span class="ruby-identifier">dct</span>.<span class="ruby-identifier">nome</span> = <span class="ruby-identifier">m</span>[<span class="ruby-string">&quot;docente&quot;</span>][<span class="ruby-string">&quot;nome&quot;</span>]
-          <span class="ruby-identifier">dct</span>.<span class="ruby-identifier">matricula</span> = <span class="ruby-identifier">m</span>[<span class="ruby-string">&quot;docente&quot;</span>][<span class="ruby-string">&quot;matricula&quot;</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">m</span>[<span class="ruby-string">&quot;docente&quot;</span>][<span class="ruby-string">&quot;usuario&quot;</span>]
-          <span class="ruby-identifier">dct</span>.<span class="ruby-identifier">formacao</span> = <span class="ruby-identifier">m</span>[<span class="ruby-string">&quot;docente&quot;</span>][<span class="ruby-string">&quot;formacao&quot;</span>] <span class="ruby-operator">||</span> <span class="ruby-string">&quot;docente&quot;</span>
-          <span class="ruby-identifier">dct</span>.<span class="ruby-identifier">departamento</span> = <span class="ruby-identifier">dep</span>
-        <span class="ruby-keyword">end</span>
-        <span class="ruby-keyword">unless</span> <span class="ruby-identifier">docente</span>.<span class="ruby-identifier">turmas</span>.<span class="ruby-identifier">exists?</span>(<span class="ruby-identifier">turma</span>.<span class="ruby-identifier">id</span>)
-          <span class="ruby-identifier">docente</span>.<span class="ruby-identifier">turmas</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">turma</span>
-          <span class="ruby-identifier">created</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
-        <span class="ruby-keyword">else</span>
-          <span class="ruby-identifier">ignored</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
-        <span class="ruby-keyword">end</span>
-      <span class="ruby-keyword">end</span>
-
-      <span class="ruby-comment"># discentes</span>
-      <span class="ruby-constant">Array</span>(<span class="ruby-identifier">m</span>[<span class="ruby-string">&quot;dicente&quot;</span>]).<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">aluno</span><span class="ruby-operator">|</span>
-        <span class="ruby-keyword">next</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">aluno</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>)
-        <span class="ruby-identifier">curso</span> = <span class="ruby-keyword">if</span> <span class="ruby-identifier">aluno</span>[<span class="ruby-string">&quot;curso&quot;</span>].<span class="ruby-identifier">present?</span>
-          <span class="ruby-identifier">curso_cod</span> = <span class="ruby-identifier">aluno</span>[<span class="ruby-string">&quot;curso&quot;</span>].<span class="ruby-identifier">parameterize</span>(<span class="ruby-value">separator:</span> <span class="ruby-string">&quot;_&quot;</span>).<span class="ruby-identifier">upcase</span>.<span class="ruby-identifier">first</span>(<span class="ruby-value">30</span>)
-          <span class="ruby-constant">Curso</span>.<span class="ruby-identifier">find_or_create_by</span>(<span class="ruby-value">codigo:</span> <span class="ruby-identifier">curso_cod</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">c</span><span class="ruby-operator">|</span>
-            <span class="ruby-identifier">c</span>.<span class="ruby-identifier">nome</span> = <span class="ruby-identifier">aluno</span>[<span class="ruby-string">&quot;curso&quot;</span>]
-            <span class="ruby-identifier">c</span>.<span class="ruby-identifier">departamento</span> = <span class="ruby-identifier">dep_padrao</span>
-          <span class="ruby-keyword">end</span>
-        <span class="ruby-keyword">end</span>
-        <span class="ruby-identifier">discente</span> = <span class="ruby-constant">Discente</span>.<span class="ruby-identifier">find_or_create_by</span>(<span class="ruby-value">matricula:</span> <span class="ruby-identifier">aluno</span>[<span class="ruby-string">&quot;matricula&quot;</span>]) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">d</span><span class="ruby-operator">|</span>
-          <span class="ruby-identifier">d</span>.<span class="ruby-identifier">nome</span> = <span class="ruby-identifier">aluno</span>[<span class="ruby-string">&quot;nome&quot;</span>]
-          <span class="ruby-identifier">d</span>.<span class="ruby-identifier">email</span> = <span class="ruby-identifier">aluno</span>[<span class="ruby-string">&quot;email&quot;</span>]
-          <span class="ruby-identifier">d</span>.<span class="ruby-identifier">formacao</span> = <span class="ruby-identifier">aluno</span>[<span class="ruby-string">&quot;formacao&quot;</span>] <span class="ruby-operator">||</span> <span class="ruby-string">&quot;graduando&quot;</span>
-          <span class="ruby-identifier">d</span>.<span class="ruby-identifier">curso</span> = <span class="ruby-identifier">curso</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">curso</span>
-        <span class="ruby-keyword">end</span>
-        <span class="ruby-keyword">unless</span> <span class="ruby-identifier">discente</span>.<span class="ruby-identifier">turmas</span>.<span class="ruby-identifier">exists?</span>(<span class="ruby-identifier">turma</span>.<span class="ruby-identifier">id</span>)
-          <span class="ruby-identifier">discente</span>.<span class="ruby-identifier">turmas</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">turma</span>
-          <span class="ruby-identifier">created</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
-        <span class="ruby-keyword">else</span>
-          <span class="ruby-identifier">ignored</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
-        <span class="ruby-keyword">end</span>
-      <span class="ruby-keyword">end</span>
-    <span class="ruby-keyword">end</span>
-  <span class="ruby-keyword">end</span>
-
-  <span class="ruby-keyword">if</span> <span class="ruby-identifier">created</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">ignored</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>
-    <span class="ruby-string">&quot;alguns dados já foram importados e não serão importados novamente, mas os dados restantes foram importados com sucesso&quot;</span>
-  <span class="ruby-keyword">elsif</span> <span class="ruby-identifier">created</span> <span class="ruby-operator">==</span> <span class="ruby-value">0</span>
-    <span class="ruby-string">&quot;os dados já existem e não foram duplicados&quot;</span>
-  <span class="ruby-keyword">else</span>
-    <span class="ruby-string">&quot;importação realizada com sucesso&quot;</span>
-  <span class="ruby-keyword">end</span>
-<span class="ruby-keyword">rescue</span> <span class="ruby-constant">StandardError</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">_e</span>
-  <span class="ruby-string">&quot;a importação falhou&quot;</span>
+  <span class="ruby-identifier">new</span>.<span class="ruby-identifier">import_from_files</span>(<span class="ruby-identifier">classes_path</span>, <span class="ruby-identifier">members_path</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
 
@@ -2102,16 +2054,7 @@
 
 <p>Registros já existentes no banco de dados (identificados por código ou email/matrícula) são ignorados; somente novos registros são criados.</p>
 
-<p>@param classes_path [String] caminho para o arquivo JSON com os dados das turmas/disciplinas @param members_path [String] caminho para o arquivo JSON com os dados dos membros (docentes e discentes) @return [String] mensagem descrevendo o resultado da operação:</p>
-
-<pre>- &quot;alguns dados já foram importados...&quot; — quando há mistura de novos e já existentes
-- &quot;os dados já existem e não foram duplicados&quot; — quando nenhum dado novo foi inserido
-- &quot;importação realizada com sucesso&quot; — quando todos os dados eram novos
-- &quot;a importação falhou&quot; — em caso de exceção durante o processamento</pre>
-
-<p>@note Toda a operação é executada dentro de uma única transação de banco de dados.</p>
-
-<pre>Em caso de erro, a transação é revertida e a mensagem de falha é retornada.</pre>
+<p>@param classes_path [String] caminho para o arquivo JSON com os dados das turmas/disciplinas @param members_path [String] caminho para o arquivo JSON com os dados dos membros (docentes e discentes) @return [String] mensagem descrevendo o resultado da operação</p>
 
 
         </div>
@@ -2142,60 +2085,9 @@
             </details>
           </div>
           <div class="method-source-code" id="update_from_files-source">
-            <pre class="ruby"><span class="ruby-comment"># File app/services/sigaa_importer.rb, line 126</span>
+            <pre class="ruby"><span class="ruby-comment"># File app/services/sigaa_importer.rb, line 57</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">update_from_files</span>(<span class="ruby-identifier">classes_path</span>, <span class="ruby-identifier">members_path</span>)
-  <span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">transaction</span> <span class="ruby-keyword">do</span>
-    <span class="ruby-identifier">classes</span> = <span class="ruby-constant">JSON</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">read</span>(<span class="ruby-identifier">classes_path</span>))
-    <span class="ruby-identifier">classes</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">c</span><span class="ruby-operator">|</span>
-      <span class="ruby-identifier">disciplina</span> = <span class="ruby-constant">Disciplina</span>.<span class="ruby-identifier">find_by</span>(<span class="ruby-value">codigo:</span> <span class="ruby-identifier">c</span>[<span class="ruby-string">&quot;code&quot;</span>])
-      <span class="ruby-identifier">disciplina</span>.<span class="ruby-identifier">update</span>(<span class="ruby-value">nome:</span> <span class="ruby-identifier">c</span>[<span class="ruby-string">&quot;name&quot;</span>]) <span class="ruby-keyword">if</span> <span class="ruby-identifier">disciplina</span>
-
-      <span class="ruby-identifier">class_info</span> = <span class="ruby-identifier">c</span>[<span class="ruby-string">&quot;class&quot;</span>] <span class="ruby-operator">||</span> {}
-      <span class="ruby-identifier">turma</span> = <span class="ruby-constant">Turma</span>.<span class="ruby-identifier">find_by</span>(<span class="ruby-value">disciplina:</span> <span class="ruby-identifier">disciplina</span>, <span class="ruby-value">numero_da_turma:</span> <span class="ruby-identifier">class_info</span>[<span class="ruby-string">&quot;classCode&quot;</span>], <span class="ruby-value">semestre:</span> <span class="ruby-identifier">class_info</span>[<span class="ruby-string">&quot;semester&quot;</span>])
-      <span class="ruby-identifier">turma</span>.<span class="ruby-identifier">update</span>(<span class="ruby-value">horario:</span> <span class="ruby-identifier">class_info</span>[<span class="ruby-string">&quot;time&quot;</span>]) <span class="ruby-keyword">if</span> <span class="ruby-identifier">turma</span>
-    <span class="ruby-keyword">end</span>
-
-    <span class="ruby-identifier">members</span> = <span class="ruby-constant">JSON</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">read</span>(<span class="ruby-identifier">members_path</span>))
-    <span class="ruby-identifier">members</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">m</span><span class="ruby-operator">|</span>
-      <span class="ruby-identifier">code</span> = <span class="ruby-identifier">m</span>.<span class="ruby-identifier">dig</span>(<span class="ruby-string">&quot;class&quot;</span>, <span class="ruby-string">&quot;code&quot;</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">m</span>[<span class="ruby-string">&quot;code&quot;</span>]
-      <span class="ruby-identifier">class_code</span> = <span class="ruby-identifier">m</span>.<span class="ruby-identifier">dig</span>(<span class="ruby-string">&quot;class&quot;</span>, <span class="ruby-string">&quot;classCode&quot;</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">m</span>[<span class="ruby-string">&quot;classCode&quot;</span>]
-      <span class="ruby-identifier">semester</span> = <span class="ruby-identifier">m</span>.<span class="ruby-identifier">dig</span>(<span class="ruby-string">&quot;class&quot;</span>, <span class="ruby-string">&quot;semester&quot;</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">m</span>[<span class="ruby-string">&quot;semester&quot;</span>]
-
-      <span class="ruby-identifier">disciplina</span> = <span class="ruby-constant">Disciplina</span>.<span class="ruby-identifier">find_by</span>(<span class="ruby-value">codigo:</span> <span class="ruby-identifier">code</span>)
-      <span class="ruby-identifier">turma</span> = <span class="ruby-constant">Turma</span>.<span class="ruby-identifier">find_by</span>(<span class="ruby-value">disciplina:</span> <span class="ruby-identifier">disciplina</span>, <span class="ruby-value">numero_da_turma:</span> <span class="ruby-identifier">class_code</span>, <span class="ruby-value">semestre:</span> <span class="ruby-identifier">semester</span>)
-      <span class="ruby-keyword">next</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">turma</span>
-
-      <span class="ruby-keyword">if</span> <span class="ruby-identifier">m</span>[<span class="ruby-string">&quot;docente&quot;</span>].<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>)
-        <span class="ruby-identifier">dep_nome</span> = <span class="ruby-identifier">m</span>[<span class="ruby-string">&quot;docente&quot;</span>][<span class="ruby-string">&quot;departamento&quot;</span>]
-        <span class="ruby-identifier">dep</span> = <span class="ruby-keyword">if</span> <span class="ruby-identifier">dep_nome</span>.<span class="ruby-identifier">present?</span>
-          <span class="ruby-identifier">dep_cod</span> = <span class="ruby-identifier">dep_nome</span>.<span class="ruby-identifier">parameterize</span>(<span class="ruby-value">separator:</span> <span class="ruby-string">&quot;_&quot;</span>).<span class="ruby-identifier">upcase</span>.<span class="ruby-identifier">first</span>(<span class="ruby-value">20</span>)
-          <span class="ruby-constant">Departamento</span>.<span class="ruby-identifier">find_or_create_by</span>(<span class="ruby-value">codigo:</span> <span class="ruby-identifier">dep_cod</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">d</span><span class="ruby-operator">|</span> <span class="ruby-identifier">d</span>.<span class="ruby-identifier">nome</span> = <span class="ruby-identifier">dep_nome</span> }
-        <span class="ruby-keyword">end</span>
-        <span class="ruby-identifier">docente</span> = <span class="ruby-constant">Docente</span>.<span class="ruby-identifier">find_by</span>(<span class="ruby-value">email:</span> <span class="ruby-identifier">m</span>[<span class="ruby-string">&quot;docente&quot;</span>][<span class="ruby-string">&quot;email&quot;</span>])
-        <span class="ruby-keyword">if</span> <span class="ruby-identifier">docente</span>
-          <span class="ruby-identifier">docente</span>.<span class="ruby-identifier">update</span>(<span class="ruby-value">nome:</span> <span class="ruby-identifier">m</span>[<span class="ruby-string">&quot;docente&quot;</span>][<span class="ruby-string">&quot;nome&quot;</span>], <span class="ruby-value">departamento:</span> <span class="ruby-identifier">dep</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">docente</span>.<span class="ruby-identifier">departamento</span>)
-          <span class="ruby-identifier">docente</span>.<span class="ruby-identifier">turmas</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">turma</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">docente</span>.<span class="ruby-identifier">turmas</span>.<span class="ruby-identifier">exists?</span>(<span class="ruby-identifier">turma</span>.<span class="ruby-identifier">id</span>)
-        <span class="ruby-keyword">end</span>
-      <span class="ruby-keyword">end</span>
-
-      <span class="ruby-constant">Array</span>(<span class="ruby-identifier">m</span>[<span class="ruby-string">&quot;dicente&quot;</span>]).<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">aluno</span><span class="ruby-operator">|</span>
-        <span class="ruby-keyword">next</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">aluno</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>)
-        <span class="ruby-identifier">curso</span> = <span class="ruby-keyword">if</span> <span class="ruby-identifier">aluno</span>[<span class="ruby-string">&quot;curso&quot;</span>].<span class="ruby-identifier">present?</span>
-          <span class="ruby-identifier">curso_cod</span> = <span class="ruby-identifier">aluno</span>[<span class="ruby-string">&quot;curso&quot;</span>].<span class="ruby-identifier">parameterize</span>(<span class="ruby-value">separator:</span> <span class="ruby-string">&quot;_&quot;</span>).<span class="ruby-identifier">upcase</span>.<span class="ruby-identifier">first</span>(<span class="ruby-value">30</span>)
-          <span class="ruby-constant">Curso</span>.<span class="ruby-identifier">find_by</span>(<span class="ruby-value">codigo:</span> <span class="ruby-identifier">curso_cod</span>) <span class="ruby-operator">||</span> <span class="ruby-constant">Curso</span>.<span class="ruby-identifier">find_by</span>(<span class="ruby-value">nome:</span> <span class="ruby-identifier">aluno</span>[<span class="ruby-string">&quot;curso&quot;</span>])
-        <span class="ruby-keyword">end</span>
-        <span class="ruby-identifier">discente</span> = <span class="ruby-constant">Discente</span>.<span class="ruby-identifier">find_by</span>(<span class="ruby-value">matricula:</span> <span class="ruby-identifier">aluno</span>[<span class="ruby-string">&quot;matricula&quot;</span>])
-        <span class="ruby-keyword">if</span> <span class="ruby-identifier">discente</span>
-          <span class="ruby-identifier">discente</span>.<span class="ruby-identifier">update</span>(<span class="ruby-value">nome:</span> <span class="ruby-identifier">aluno</span>[<span class="ruby-string">&quot;nome&quot;</span>], <span class="ruby-value">email:</span> <span class="ruby-identifier">aluno</span>[<span class="ruby-string">&quot;email&quot;</span>], <span class="ruby-value">curso:</span> <span class="ruby-identifier">curso</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">discente</span>.<span class="ruby-identifier">curso</span>)
-          <span class="ruby-identifier">discente</span>.<span class="ruby-identifier">turmas</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">turma</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">discente</span>.<span class="ruby-identifier">turmas</span>.<span class="ruby-identifier">exists?</span>(<span class="ruby-identifier">turma</span>.<span class="ruby-identifier">id</span>)
-        <span class="ruby-keyword">end</span>
-      <span class="ruby-keyword">end</span>
-    <span class="ruby-keyword">end</span>
-  <span class="ruby-keyword">end</span>
-
-  <span class="ruby-string">&quot;atualização realizada com sucesso&quot;</span>
-<span class="ruby-keyword">rescue</span> <span class="ruby-constant">StandardError</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">_e</span>
-  <span class="ruby-string">&quot;a atualização falhou&quot;</span>
+  <span class="ruby-identifier">new</span>.<span class="ruby-identifier">update_from_files</span>(<span class="ruby-identifier">classes_path</span>, <span class="ruby-identifier">members_path</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
 
@@ -2206,16 +2098,7 @@
 
           <p>Atualiza disciplinas, turmas, docentes e discentes existentes a partir dos arquivos JSON do SIGAA.</p>
 
-<p>Apenas registros já presentes no banco de dados são atualizados; novos registros não são criados (exceto departamentos e cursos de docentes/discentes que podem ser criados se necessário).</p>
-
-<p>@param classes_path [String] caminho para o arquivo JSON com os dados das turmas/disciplinas @param members_path [String] caminho para o arquivo JSON com os dados dos membros (docentes e discentes) @return [String] mensagem descrevendo o resultado da operação:</p>
-
-<pre>- &quot;atualização realizada com sucesso&quot; — quando concluída sem erros
-- &quot;a atualização falhou&quot; — em caso de exceção durante o processamento</pre>
-
-<p>@note Toda a operação é executada dentro de uma única transação de banco de dados.</p>
-
-<pre>Em caso de erro, a transação é revertida e a mensagem de falha é retornada.</pre>
+<p>@param classes_path [String] caminho para o arquivo JSON com os dados das turmas/disciplinas @param members_path [String] caminho para o arquivo JSON com os dados dos membros (docentes e discentes) @return [String] mensagem descrevendo o resultado da operação</p>
 
 
         </div>
@@ -2234,6 +2117,124 @@
 
 
 
+
+     <section id="public-instance-untitled-method-details" class="method-section anchor-link">
+       <header>
+         <h3 id="public-instance-untitled-methods"><a href="#public-instance-untitled-methods">Public Instance Methods</a></h3>
+       </header>
+
+
+      <div id="method-i-import_from_files" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-import_from_files" title="Link to this method">
+                <span class="method-name">import_from_files</span>
+                <span class="method-args">(classes_path, members_path)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="import_from_files-source">
+            <pre class="ruby"><span class="ruby-comment"># File app/services/sigaa_importer.rb, line 37</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">import_from_files</span>(<span class="ruby-identifier">classes_path</span>, <span class="ruby-identifier">members_path</span>)
+  <span class="ruby-identifier">counters</span> = { <span class="ruby-value">created:</span> <span class="ruby-value">0</span>, <span class="ruby-value">ignored:</span> <span class="ruby-value">0</span> }
+
+  <span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">transaction</span> <span class="ruby-keyword">do</span>
+    <span class="ruby-identifier">dep_padrao</span>
+
+    <span class="ruby-identifier">import_classes_into</span>(<span class="ruby-identifier">classes_path</span>, <span class="ruby-identifier">counters</span>)
+    <span class="ruby-identifier">import_members_into</span>(<span class="ruby-identifier">members_path</span>, <span class="ruby-identifier">counters</span>)
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">build_import_result</span>(<span class="ruby-identifier">counters</span>)
+<span class="ruby-keyword">rescue</span> <span class="ruby-constant">StandardError</span>
+  <span class="ruby-string">&quot;a importação falhou&quot;</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Executa a importação propriamente dita (método de instância delegado pelo class method).</p>
+
+<p>@param classes_path [String] caminho para o arquivo JSON de turmas/disciplinas @param members_path [String] caminho para o arquivo JSON de membros @return [String] mensagem de resultado da operação @note Toda a operação roda dentro de uma transação; em caso de erro a transação</p>
+
+<pre>é revertida e retorna &quot;a importação falhou&quot;.</pre>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-update_from_files" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-update_from_files" title="Link to this method">
+                <span class="method-name">update_from_files</span>
+                <span class="method-args">(classes_path, members_path)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="update_from_files-source">
+            <pre class="ruby"><span class="ruby-comment"># File app/services/sigaa_importer.rb, line 68</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">update_from_files</span>(<span class="ruby-identifier">classes_path</span>, <span class="ruby-identifier">members_path</span>)
+  <span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">transaction</span> <span class="ruby-keyword">do</span>
+    <span class="ruby-identifier">update_classes_from</span>(<span class="ruby-identifier">classes_path</span>)
+    <span class="ruby-identifier">update_members_from</span>(<span class="ruby-identifier">members_path</span>)
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-string">&quot;atualização realizada com sucesso&quot;</span>
+<span class="ruby-keyword">rescue</span> <span class="ruby-constant">StandardError</span>
+  <span class="ruby-string">&quot;a atualização falhou&quot;</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Executa a atualização propriamente dita (método de instância delegado pelo class method).</p>
+
+<p>@param classes_path [String] caminho para o arquivo JSON de turmas/disciplinas @param members_path [String] caminho para o arquivo JSON de membros @return [String] mensagem de resultado da operação @note Toda a operação roda dentro de uma transação; em caso de erro a transação</p>
+
+<pre>é revertida e retorna &quot;a atualização falhou&quot;.</pre>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+    </section>
 
 
 
