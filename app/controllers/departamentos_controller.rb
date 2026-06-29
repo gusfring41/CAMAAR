@@ -2,25 +2,37 @@ class DepartamentosController < ApplicationController
   before_action :require_login
   before_action :set_departamento, only: %i[ show edit update destroy ]
 
-  # GET /departamentos or /departamentos.json
+  # Lista todos os departamentos cadastrados.
+  #
+  # @return [void]
   def index
     @departamentos = Departamento.all
   end
 
-  # GET /departamentos/1 or /departamentos/1.json
+  # Exibe os detalhes de um departamento específico.
+  #
+  # @return [void]
   def show
   end
 
-  # GET /departamentos/new
+  # Exibe o formulário de criação de novo departamento.
+  #
+  # @return [void]
   def new
     @departamento = Departamento.new
   end
 
-  # GET /departamentos/1/edit
+  # Exibe o formulário de edição de um departamento existente.
+  #
+  # @return [void]
   def edit
   end
 
-  # POST /departamentos or /departamentos.json
+  # Cria um novo departamento com os parâmetros permitidos.
+  #
+  # @return [void]
+  # @note Persiste o departamento no banco de dados. Em caso de sucesso, redireciona para
+  #   a sua página; em caso de falha, re-renderiza o formulário de criação.
   def create
     @departamento = Departamento.new(departamento_params)
 
@@ -35,7 +47,11 @@ class DepartamentosController < ApplicationController
     end
   end
 
-  # PATCH/PUT /departamentos/1 or /departamentos/1.json
+  # Atualiza os dados de um departamento existente.
+  #
+  # @return [void]
+  # @note Persiste as alterações no banco de dados. Em caso de sucesso, redireciona para
+  #   a página do departamento; em caso de falha, re-renderiza o formulário de edição.
   def update
     respond_to do |format|
       if @departamento.update(departamento_params)
@@ -48,7 +64,10 @@ class DepartamentosController < ApplicationController
     end
   end
 
-  # DELETE /departamentos/1 or /departamentos/1.json
+  # Remove permanentemente um departamento do banco de dados.
+  #
+  # @return [void]
+  # @note Redireciona para a lista de departamentos após a exclusão.
   def destroy
     @departamento.destroy!
 
@@ -59,13 +78,18 @@ class DepartamentosController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_departamento
-      @departamento = Departamento.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def departamento_params
-      params.expect(departamento: [ :codigo, :nome ])
-    end
+  # Busca o departamento pelo +:id+ da rota e o atribui a +@departamento+.
+  #
+  # @return [void]
+  def set_departamento
+    @departamento = Departamento.find(params.expect(:id))
+  end
+
+  # Filtra os parâmetros permitidos para criação/atualização de departamento.
+  #
+  # @return [ActionController::Parameters] parâmetros filtrados do departamento
+  def departamento_params
+    params.expect(departamento: [ :codigo, :nome ])
+  end
 end

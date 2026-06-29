@@ -5,15 +5,30 @@ class AdminController < ApplicationController
   before_action :require_admin
   before_action :set_admin
 
+  # Lista todos os formulários com suas turmas, disciplinas, departamentos e docentes.
+  #
+  # @return [void]
   def avaliacoes
     @avaliacoes = Formulario
       .joins(:turma)
       .includes(turma: { disciplina: :departamento, docentes: [] })
   end
 
+  # Exibe a página de gerenciamento do administrador.
+  #
+  # @return [void]
   def gerenciamento
   end
 
+  # Exibe o formulário de envio de avaliações (GET) ou cria formulários a partir de um
+  # template para as turmas selecionadas (POST).
+  #
+  # @return [void]
+  # @note GET: popula +@templates+ e +@turmas+ para exibição do formulário de seleção.
+  #   POST: lê os parâmetros +:template_id+ e +:turma_ids+; redireciona com alerta se
+  #   algum estiver ausente. Em caso de sucesso, cria um +Formulario+ para cada turma
+  #   com os +ElementoForm+ e +CampoForm+ derivados do template, depois redireciona para
+  #   a página de gerenciamento.
   def enviar_formularios
     if request.get?
       @templates = Template.where(usuario_id: @admin.id)
@@ -66,10 +81,19 @@ class AdminController < ApplicationController
     end
   end
 
+  # Lista os formulários pertencentes às disciplinas do departamento do administrador.
+  #
+  # @return [void]
   def resultados
     @formularios = Formulario.joins(turma: :disciplina).where(disciplinas: { departamento_id: @admin.departamento_id }).includes(turma: :disciplina)
   end
 
+  # Exporta as respostas de um formulário como arquivo CSV para download.
+  #
+  # @return [void]
+  # @note Lê o parâmetro +:id+ da rota. Redireciona com alerta se o formulário não for
+  #   encontrado ou não possuir respostas. Em caso de sucesso, força o download do arquivo
+  #   CSV nomeado com o id do formulário, número da turma e nome da matéria.
   def exportar_csv
     @formulario = Formulario.find_by(id: params[:id])
 
@@ -96,6 +120,12 @@ class AdminController < ApplicationController
       redirect_to admin_resultados_path(@admin), alert: "Formulário não encontrado"
     end
   end
+
+  # Exibe a página de sincronização com o SIGAA (GET) ou processa a sincronização (POST).
+  #
+  # @return [void]
+  # @note GET: renderiza a view +sincronizar_sigaa+.
+  #   POST: delega o processamento para +processar_sincronizacao+.
   def sincronizar_sigaa
     if request.get?
       render :sincronizar_sigaa
@@ -106,6 +136,11 @@ class AdminController < ApplicationController
 
   private
 
+  # Busca e valida o administrador referenciado pela rota.
+  #
+  # @return [void]
+  # @note Redireciona para a página inicial com alerta se o administrador da rota for
+  #   diferente do usuário autenticado na sessão.
   def set_admin
     @admin = Administrador.find(params[:admin_id])
 
@@ -114,6 +149,14 @@ class AdminController < ApplicationController
     end
   end
 
+  # Lê os arquivos enviados via POST e delega a importação ou atualização ao SigaaImporter.
+  #
+  # @return [void]
+  # @note Lê os parâmetros +:acao+, +:arquivo_classes+ e +:arquivo_membros+.
+  #   Redireciona com alerta se algum arquivo estiver ausente.
+  #   Chama +SigaaImporter.import_from_files+ para a ação "importar" ou
+  #   +SigaaImporter.update_from_files+ para "atualizar", depois delega o resultado
+  #   a +processar_resultado+.
   def processar_sincronizacao
     acao = params[:acao]
     arquivo_classes = params[:arquivo_classes]
@@ -136,6 +179,14 @@ class AdminController < ApplicationController
     processar_resultado(resultado, acao)
   end
 
+  # Redireciona para a página de gerenciamento com mensagem apropriada ao resultado
+  # da importação ou atualização do SIGAA.
+  #
+  # @param resultado [String] mensagem retornada pelo +SigaaImporter+
+  # @param acao [String] "importar" ou "atualizar"
+  # @return [void]
+  # @note Redireciona para +admin_gerenciamento_path+ em todos os casos, variando apenas
+  #   o tipo (notice/alert) e o texto da mensagem conforme o conteúdo de +resultado+.
   def processar_resultado(resultado, acao)
     case resultado
     when /alguns dados/i

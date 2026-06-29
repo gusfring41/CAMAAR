@@ -1,4 +1,18 @@
 class SigaaImporter
+  # Importa disciplinas, turmas, docentes e discentes a partir dos arquivos JSON do SIGAA.
+  #
+  # Registros já existentes no banco de dados (identificados por código ou email/matrícula)
+  # são ignorados; somente novos registros são criados.
+  #
+  # @param classes_path [String] caminho para o arquivo JSON com os dados das turmas/disciplinas
+  # @param members_path [String] caminho para o arquivo JSON com os dados dos membros (docentes e discentes)
+  # @return [String] mensagem descrevendo o resultado da operação:
+  #   - "alguns dados já foram importados..." — quando há mistura de novos e já existentes
+  #   - "os dados já existem e não foram duplicados" — quando nenhum dado novo foi inserido
+  #   - "importação realizada com sucesso" — quando todos os dados eram novos
+  #   - "a importação falhou" — em caso de exceção durante o processamento
+  # @note Toda a operação é executada dentro de uma única transação de banco de dados.
+  #   Em caso de erro, a transação é revertida e a mensagem de falha é retornada.
   def self.import_from_files(classes_path, members_path)
     created = 0
     ignored = 0
@@ -97,6 +111,18 @@ class SigaaImporter
     "a importação falhou"
   end
 
+  # Atualiza disciplinas, turmas, docentes e discentes existentes a partir dos arquivos JSON do SIGAA.
+  #
+  # Apenas registros já presentes no banco de dados são atualizados; novos registros não são criados
+  # (exceto departamentos e cursos de docentes/discentes que podem ser criados se necessário).
+  #
+  # @param classes_path [String] caminho para o arquivo JSON com os dados das turmas/disciplinas
+  # @param members_path [String] caminho para o arquivo JSON com os dados dos membros (docentes e discentes)
+  # @return [String] mensagem descrevendo o resultado da operação:
+  #   - "atualização realizada com sucesso" — quando concluída sem erros
+  #   - "a atualização falhou" — em caso de exceção durante o processamento
+  # @note Toda a operação é executada dentro de uma única transação de banco de dados.
+  #   Em caso de erro, a transação é revertida e a mensagem de falha é retornada.
   def self.update_from_files(classes_path, members_path)
     ActiveRecord::Base.transaction do
       classes = JSON.parse(File.read(classes_path))

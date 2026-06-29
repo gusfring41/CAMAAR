@@ -2,25 +2,37 @@ class ElementosController < ApplicationController
   before_action :require_login
   before_action :set_elemento, only: %i[ show edit update destroy ]
 
-  # GET /elementos or /elementos.json
+  # Lista todos os elementos cadastrados.
+  #
+  # @return [void]
   def index
     @elementos = Elemento.all
   end
 
-  # GET /elementos/1 or /elementos/1.json
+  # Exibe os detalhes de um elemento específico.
+  #
+  # @return [void]
   def show
   end
 
-  # GET /elementos/new
+  # Exibe o formulário de criação de novo elemento.
+  #
+  # @return [void]
   def new
     @elemento = Elemento.new
   end
 
-  # GET /elementos/1/edit
+  # Exibe o formulário de edição de um elemento existente.
+  #
+  # @return [void]
   def edit
   end
 
-  # POST /elementos or /elementos.json
+  # Cria um novo elemento com os parâmetros permitidos.
+  #
+  # @return [void]
+  # @note Persiste o elemento no banco de dados. Em caso de sucesso, redireciona para a
+  #   página do elemento; em caso de falha, re-renderiza o formulário de criação.
   def create
     @elemento = Elemento.new(elemento_params)
 
@@ -35,7 +47,11 @@ class ElementosController < ApplicationController
     end
   end
 
-  # PATCH/PUT /elementos/1 or /elementos/1.json
+  # Atualiza os dados de um elemento existente.
+  #
+  # @return [void]
+  # @note Persiste as alterações no banco de dados. Em caso de sucesso, redireciona para
+  #   a página do elemento; em caso de falha, re-renderiza o formulário de edição.
   def update
     respond_to do |format|
       if @elemento.update(elemento_params)
@@ -48,7 +64,10 @@ class ElementosController < ApplicationController
     end
   end
 
-  # DELETE /elementos/1 or /elementos/1.json
+  # Remove permanentemente um elemento do banco de dados.
+  #
+  # @return [void]
+  # @note Redireciona para a lista de elementos após a exclusão.
   def destroy
     @elemento.destroy!
 
@@ -59,13 +78,18 @@ class ElementosController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_elemento
-      @elemento = Elemento.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def elemento_params
-      params.expect(elemento: [ :ordem, :enunciado, :template_id ])
-    end
+  # Busca o elemento pelo +:id+ da rota e o atribui a +@elemento+.
+  #
+  # @return [void]
+  def set_elemento
+    @elemento = Elemento.find(params.expect(:id))
+  end
+
+  # Filtra os parâmetros permitidos para criação/atualização de elemento.
+  #
+  # @return [ActionController::Parameters] parâmetros filtrados do elemento
+  def elemento_params
+    params.expect(elemento: [ :ordem, :enunciado, :template_id ])
+  end
 end

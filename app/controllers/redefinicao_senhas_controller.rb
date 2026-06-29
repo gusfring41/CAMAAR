@@ -1,7 +1,16 @@
 class RedefinicaoSenhasController < ApplicationController
+  # Exibe o formulário de solicitação de redefinição de senha.
+  #
+  # @return [void]
   def new
   end
 
+  # Envia o email de redefinição de senha para o endereço informado.
+  #
+  # @return [void]
+  # @note Lê o parâmetro +:email+ do formulário. Redireciona com alerta se o email
+  #   estiver em branco ou não corresponder a nenhum usuário. Em caso de sucesso, dispara
+  #   o envio do email de redefinição e redireciona para a página raiz.
   def create
     email = params[:email].to_s.strip
 
@@ -21,6 +30,11 @@ class RedefinicaoSenhasController < ApplicationController
     redirect_to root_path, notice: "Solicitação de redefinição de senha enviada."
   end
 
+  # Exibe o formulário de redefinição de senha via token enviado por email.
+  #
+  # @return [void]
+  # @note Lê o parâmetro +:token+ da rota. Redireciona para a página raiz com alerta
+  #   se o token for inválido ou não corresponder a nenhum usuário.
   def edit
     @usuario = Usuario.find_by(redefinicao_senha_token: params[:token])
 
@@ -29,6 +43,13 @@ class RedefinicaoSenhasController < ApplicationController
     redirect_to root_path, alert: "Link de redefinição de senha inválido."
   end
 
+  # Persiste a nova senha para o usuário identificado pelo token de redefinição.
+  #
+  # @return [void]
+  # @note Lê os parâmetros +:token+, +:senha+ e +:senha_confirmation+.
+  #   Redireciona com alerta se o token for inválido, as senhas não conferirem ou a
+  #   senha tiver menos de 6 caracteres. Em caso de sucesso, limpa o token e a data
+  #   de envio, salva a nova senha no banco de dados e redireciona para a página raiz.
   def update
     @usuario = Usuario.find_by(redefinicao_senha_token: params[:token])
 

@@ -2,25 +2,37 @@ class DocentesController < ApplicationController
   before_action :require_login
   before_action :set_docente, only: %i[ show edit update destroy ]
 
-  # GET /docentes or /docentes.json
+  # Lista todos os docentes cadastrados.
+  #
+  # @return [void]
   def index
     @docentes = Docente.all
   end
 
-  # GET /docentes/1 or /docentes/1.json
+  # Exibe os detalhes de um docente específico.
+  #
+  # @return [void]
   def show
   end
 
-  # GET /docentes/new
+  # Exibe o formulário de criação de novo docente.
+  #
+  # @return [void]
   def new
     @docente = Docente.new
   end
 
-  # GET /docentes/1/edit
+  # Exibe o formulário de edição de um docente existente.
+  #
+  # @return [void]
   def edit
   end
 
-  # POST /docentes or /docentes.json
+  # Cria um novo docente com os parâmetros permitidos.
+  #
+  # @return [void]
+  # @note Persiste o docente no banco de dados. Em caso de sucesso, redireciona para a
+  #   sua página; em caso de falha, re-renderiza o formulário de criação.
   def create
     @docente = Docente.new(docente_params)
 
@@ -35,7 +47,11 @@ class DocentesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /docentes/1 or /docentes/1.json
+  # Atualiza os dados de um docente existente.
+  #
+  # @return [void]
+  # @note Persiste as alterações no banco de dados. Em caso de sucesso, redireciona para
+  #   a página do docente; em caso de falha, re-renderiza o formulário de edição.
   def update
     respond_to do |format|
       if @docente.update(docente_params)
@@ -48,7 +64,10 @@ class DocentesController < ApplicationController
     end
   end
 
-  # DELETE /docentes/1 or /docentes/1.json
+  # Remove permanentemente um docente do banco de dados.
+  #
+  # @return [void]
+  # @note Redireciona para a lista de docentes após a exclusão.
   def destroy
     @docente.destroy!
 
@@ -59,13 +78,18 @@ class DocentesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_docente
-      @docente = Docente.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def docente_params
-      params.expect(docente: [ :matricula, :email, :nome, :formacao ])
-    end
+  # Busca o docente pelo +:id+ da rota e o atribui a +@docente+.
+  #
+  # @return [void]
+  def set_docente
+    @docente = Docente.find(params.expect(:id))
+  end
+
+  # Filtra os parâmetros permitidos para criação/atualização de docente.
+  #
+  # @return [ActionController::Parameters] parâmetros filtrados do docente
+  def docente_params
+    params.expect(docente: [ :matricula, :email, :nome, :formacao ])
+  end
 end

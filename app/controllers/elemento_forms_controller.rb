@@ -2,25 +2,37 @@ class ElementoFormsController < ApplicationController
   before_action :require_login
   before_action :set_elemento_form, only: %i[ show edit update destroy ]
 
-  # GET /elemento_forms or /elemento_forms.json
+  # Lista todos os elementos de formulário cadastrados.
+  #
+  # @return [void]
   def index
     @elemento_forms = ElementoForm.all
   end
 
-  # GET /elemento_forms/1 or /elemento_forms/1.json
+  # Exibe os detalhes de um elemento de formulário específico.
+  #
+  # @return [void]
   def show
   end
 
-  # GET /elemento_forms/new
+  # Exibe o formulário de criação de novo elemento de formulário.
+  #
+  # @return [void]
   def new
     @elemento_form = ElementoForm.new
   end
 
-  # GET /elemento_forms/1/edit
+  # Exibe o formulário de edição de um elemento de formulário existente.
+  #
+  # @return [void]
   def edit
   end
 
-  # POST /elemento_forms or /elemento_forms.json
+  # Cria um novo elemento de formulário com os parâmetros permitidos.
+  #
+  # @return [void]
+  # @note Persiste o elemento de formulário no banco de dados. Em caso de sucesso,
+  #   redireciona para a sua página; em caso de falha, re-renderiza o formulário de criação.
   def create
     @elemento_form = ElementoForm.new(elemento_form_params)
 
@@ -35,7 +47,11 @@ class ElementoFormsController < ApplicationController
     end
   end
 
-  # PATCH/PUT /elemento_forms/1 or /elemento_forms/1.json
+  # Atualiza os dados de um elemento de formulário existente.
+  #
+  # @return [void]
+  # @note Persiste as alterações no banco de dados. Em caso de sucesso, redireciona para
+  #   a página do elemento de formulário; em caso de falha, re-renderiza o formulário de edição.
   def update
     respond_to do |format|
       if @elemento_form.update(elemento_form_params)
@@ -48,7 +64,10 @@ class ElementoFormsController < ApplicationController
     end
   end
 
-  # DELETE /elemento_forms/1 or /elemento_forms/1.json
+  # Remove permanentemente um elemento de formulário do banco de dados.
+  #
+  # @return [void]
+  # @note Redireciona para a lista de elementos de formulário após a exclusão.
   def destroy
     @elemento_form.destroy!
 
@@ -59,13 +78,18 @@ class ElementoFormsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_elemento_form
-      @elemento_form = ElementoForm.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def elemento_form_params
-      params.expect(elemento_form: [ :ordem, :enunciado, :formulario_id ])
-    end
+  # Busca o elemento de formulário pelo +:id+ da rota e o atribui a +@elemento_form+.
+  #
+  # @return [void]
+  def set_elemento_form
+    @elemento_form = ElementoForm.find(params.expect(:id))
+  end
+
+  # Filtra os parâmetros permitidos para criação/atualização de elemento de formulário.
+  #
+  # @return [ActionController::Parameters] parâmetros filtrados do elemento de formulário
+  def elemento_form_params
+    params.expect(elemento_form: [ :ordem, :enunciado, :formulario_id ])
+  end
 end

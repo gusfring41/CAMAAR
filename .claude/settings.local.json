@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bundle exec *)",
+      "Bash(ruby --version)",
+      "Bash(gem list *)",
+      "Write(spec/**)"
+    ]
+  }
+}

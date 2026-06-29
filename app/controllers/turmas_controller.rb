@@ -2,25 +2,37 @@ class TurmasController < ApplicationController
   before_action :require_login
   before_action :set_turma, only: %i[ show edit update destroy ]
 
-  # GET /turmas or /turmas.json
+  # Lista todas as turmas cadastradas.
+  #
+  # @return [void]
   def index
     @turmas = Turma.all
   end
 
-  # GET /turmas/1 or /turmas/1.json
+  # Exibe os detalhes de uma turma específica.
+  #
+  # @return [void]
   def show
   end
 
-  # GET /turmas/new
+  # Exibe o formulário de criação de nova turma.
+  #
+  # @return [void]
   def new
     @turma = Turma.new
   end
 
-  # GET /turmas/1/edit
+  # Exibe o formulário de edição de uma turma existente.
+  #
+  # @return [void]
   def edit
   end
 
-  # POST /turmas or /turmas.json
+  # Cria uma nova turma com os parâmetros permitidos.
+  #
+  # @return [void]
+  # @note Persiste a turma no banco de dados. Em caso de sucesso, redireciona para a
+  #   página da turma; em caso de falha, re-renderiza o formulário de criação.
   def create
     @turma = Turma.new(turma_params)
 
@@ -35,7 +47,11 @@ class TurmasController < ApplicationController
     end
   end
 
-  # PATCH/PUT /turmas/1 or /turmas/1.json
+  # Atualiza os dados de uma turma existente.
+  #
+  # @return [void]
+  # @note Persiste as alterações no banco de dados. Em caso de sucesso, redireciona para
+  #   a página da turma; em caso de falha, re-renderiza o formulário de edição.
   def update
     respond_to do |format|
       if @turma.update(turma_params)
@@ -48,7 +64,10 @@ class TurmasController < ApplicationController
     end
   end
 
-  # DELETE /turmas/1 or /turmas/1.json
+  # Remove permanentemente uma turma do banco de dados.
+  #
+  # @return [void]
+  # @note Redireciona para a lista de turmas após a exclusão.
   def destroy
     @turma.destroy!
 
@@ -59,13 +78,18 @@ class TurmasController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_turma
-      @turma = Turma.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def turma_params
-      params.expect(turma: [ :numero_da_turma, :semestre, :horario, :disciplina_id ])
-    end
+  # Busca a turma pelo +:id+ da rota e a atribui a +@turma+.
+  #
+  # @return [void]
+  def set_turma
+    @turma = Turma.find(params.expect(:id))
+  end
+
+  # Filtra os parâmetros permitidos para criação/atualização de turma.
+  #
+  # @return [ActionController::Parameters] parâmetros filtrados da turma
+  def turma_params
+    params.expect(turma: [ :numero_da_turma, :semestre, :horario, :disciplina_id ])
+  end
 end

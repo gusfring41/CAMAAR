@@ -2,25 +2,37 @@ class CursosController < ApplicationController
   before_action :require_login
   before_action :set_curso, only: %i[ show edit update destroy ]
 
-  # GET /cursos or /cursos.json
+  # Lista todos os cursos cadastrados.
+  #
+  # @return [void]
   def index
     @cursos = Curso.all
   end
 
-  # GET /cursos/1 or /cursos/1.json
+  # Exibe os detalhes de um curso específico.
+  #
+  # @return [void]
   def show
   end
 
-  # GET /cursos/new
+  # Exibe o formulário de criação de novo curso.
+  #
+  # @return [void]
   def new
     @curso = Curso.new
   end
 
-  # GET /cursos/1/edit
+  # Exibe o formulário de edição de um curso existente.
+  #
+  # @return [void]
   def edit
   end
 
-  # POST /cursos or /cursos.json
+  # Cria um novo curso com os parâmetros permitidos.
+  #
+  # @return [void]
+  # @note Persiste o curso no banco de dados. Em caso de sucesso, redireciona para a
+  #   sua página; em caso de falha, re-renderiza o formulário de criação.
   def create
     @curso = Curso.new(curso_params)
 
@@ -35,7 +47,11 @@ class CursosController < ApplicationController
     end
   end
 
-  # PATCH/PUT /cursos/1 or /cursos/1.json
+  # Atualiza os dados de um curso existente.
+  #
+  # @return [void]
+  # @note Persiste as alterações no banco de dados. Em caso de sucesso, redireciona para
+  #   a página do curso; em caso de falha, re-renderiza o formulário de edição.
   def update
     respond_to do |format|
       if @curso.update(curso_params)
@@ -48,7 +64,10 @@ class CursosController < ApplicationController
     end
   end
 
-  # DELETE /cursos/1 or /cursos/1.json
+  # Remove permanentemente um curso do banco de dados.
+  #
+  # @return [void]
+  # @note Redireciona para a lista de cursos após a exclusão.
   def destroy
     @curso.destroy!
 
@@ -59,13 +78,18 @@ class CursosController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_curso
-      @curso = Curso.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def curso_params
-      params.expect(curso: [ :codigo, :nome, :departamento_id ])
-    end
+  # Busca o curso pelo +:id+ da rota e o atribui a +@curso+.
+  #
+  # @return [void]
+  def set_curso
+    @curso = Curso.find(params.expect(:id))
+  end
+
+  # Filtra os parâmetros permitidos para criação/atualização de curso.
+  #
+  # @return [ActionController::Parameters] parâmetros filtrados do curso
+  def curso_params
+    params.expect(curso: [ :codigo, :nome, :departamento_id ])
+  end
 end

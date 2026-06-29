@@ -2,25 +2,37 @@ class DiscentesController < ApplicationController
   before_action :require_login
   before_action :set_discente, only: %i[ show edit update destroy ]
 
-  # GET /discentes or /discentes.json
+  # Lista todos os discentes cadastrados.
+  #
+  # @return [void]
   def index
     @discentes = Discente.all
   end
 
-  # GET /discentes/1 or /discentes/1.json
+  # Exibe os detalhes de um discente específico.
+  #
+  # @return [void]
   def show
   end
 
-  # GET /discentes/new
+  # Exibe o formulário de criação de novo discente.
+  #
+  # @return [void]
   def new
     @discente = Discente.new
   end
 
-  # GET /discentes/1/edit
+  # Exibe o formulário de edição de um discente existente.
+  #
+  # @return [void]
   def edit
   end
 
-  # POST /discentes or /discentes.json
+  # Cria um novo discente com os parâmetros permitidos.
+  #
+  # @return [void]
+  # @note Persiste o discente no banco de dados. Em caso de sucesso, redireciona para a
+  #   sua página; em caso de falha, re-renderiza o formulário de criação.
   def create
     @discente = Discente.new(discente_params)
 
@@ -35,7 +47,11 @@ class DiscentesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /discentes/1 or /discentes/1.json
+  # Atualiza os dados de um discente existente.
+  #
+  # @return [void]
+  # @note Persiste as alterações no banco de dados. Em caso de sucesso, redireciona para
+  #   a página do discente; em caso de falha, re-renderiza o formulário de edição.
   def update
     respond_to do |format|
       if @discente.update(discente_params)
@@ -48,7 +64,10 @@ class DiscentesController < ApplicationController
     end
   end
 
-  # DELETE /discentes/1 or /discentes/1.json
+  # Remove permanentemente um discente do banco de dados.
+  #
+  # @return [void]
+  # @note Redireciona para a lista de discentes após a exclusão.
   def destroy
     @discente.destroy!
 
@@ -59,13 +78,18 @@ class DiscentesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_discente
-      @discente = Discente.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def discente_params
-      params.expect(discente: [ :matricula, :email, :nome, :formacao, :curso_id ])
-    end
+  # Busca o discente pelo +:id+ da rota e o atribui a +@discente+.
+  #
+  # @return [void]
+  def set_discente
+    @discente = Discente.find(params.expect(:id))
+  end
+
+  # Filtra os parâmetros permitidos para criação/atualização de discente.
+  #
+  # @return [ActionController::Parameters] parâmetros filtrados do discente
+  def discente_params
+    params.expect(discente: [ :matricula, :email, :nome, :formacao, :curso_id ])
+  end
 end

@@ -1,4 +1,9 @@
 class DefinicaoSenhasController < ApplicationController
+  # Exibe o formulário de definição de senha via token enviado por email.
+  #
+  # @return [void]
+  # @note Lê o parâmetro +:token+ da rota. Redireciona para a página raiz com alerta
+  #   se o token for inválido ou não corresponder a nenhum usuário.
   def edit
     @usuario = Usuario.find_by(definicao_senha_token: params[:token])
 
@@ -7,6 +12,13 @@ class DefinicaoSenhasController < ApplicationController
     redirect_to root_path, alert: "Link de definição de senha inválido."
   end
 
+  # Persiste a nova senha para o usuário identificado pelo token.
+  #
+  # @return [void]
+  # @note Lê os parâmetros +:token+, +:senha+ e +:senha_confirmation+.
+  #   Redireciona com alerta se o token for inválido, as senhas não conferirem ou a
+  #   senha tiver menos de 6 caracteres. Em caso de sucesso, limpa o token e a data
+  #   de envio, salva a nova senha no banco de dados e redireciona para a página raiz.
   def update
     @usuario = Usuario.find_by(definicao_senha_token: params[:token])
 

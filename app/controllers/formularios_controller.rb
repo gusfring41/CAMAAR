@@ -2,25 +2,37 @@ class FormulariosController < ApplicationController
   before_action :require_login
   before_action :set_formulario, only: %i[ show edit update destroy ]
 
-  # GET /formularios or /formularios.json
+  # Lista todos os formulários cadastrados.
+  #
+  # @return [void]
   def index
     @formularios = Formulario.all
   end
 
-  # GET /formularios/1 or /formularios/1.json
+  # Exibe os detalhes de um formulário específico.
+  #
+  # @return [void]
   def show
   end
 
-  # GET /formularios/new
+  # Exibe o formulário de criação de novo formulário.
+  #
+  # @return [void]
   def new
     @formulario = Formulario.new
   end
 
-  # GET /formularios/1/edit
+  # Exibe o formulário de edição de um formulário existente.
+  #
+  # @return [void]
   def edit
   end
 
-  # POST /formularios or /formularios.json
+  # Cria um novo formulário com os parâmetros permitidos.
+  #
+  # @return [void]
+  # @note Persiste o formulário no banco de dados. Em caso de sucesso, redireciona para
+  #   a página do formulário; em caso de falha, re-renderiza o formulário de criação.
   def create
     @formulario = Formulario.new(formulario_params)
 
@@ -35,7 +47,11 @@ class FormulariosController < ApplicationController
     end
   end
 
-  # PATCH/PUT /formularios/1 or /formularios/1.json
+  # Atualiza os dados de um formulário existente.
+  #
+  # @return [void]
+  # @note Persiste as alterações no banco de dados. Em caso de sucesso, redireciona para
+  #   a página do formulário; em caso de falha, re-renderiza o formulário de edição.
   def update
     respond_to do |format|
       if @formulario.update(formulario_params)
@@ -48,7 +64,10 @@ class FormulariosController < ApplicationController
     end
   end
 
-  # DELETE /formularios/1 or /formularios/1.json
+  # Remove permanentemente um formulário do banco de dados.
+  #
+  # @return [void]
+  # @note Redireciona para a lista de formulários após a exclusão.
   def destroy
     @formulario.destroy!
 
@@ -59,13 +78,18 @@ class FormulariosController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_formulario
-      @formulario = Formulario.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def formulario_params
-      params.expect(formulario: [ :turma_id ])
-    end
+  # Busca o formulário pelo +:id+ da rota e o atribui a +@formulario+.
+  #
+  # @return [void]
+  def set_formulario
+    @formulario = Formulario.find(params.expect(:id))
+  end
+
+  # Filtra os parâmetros permitidos para criação/atualização de formulário.
+  #
+  # @return [ActionController::Parameters] parâmetros filtrados do formulário
+  def formulario_params
+    params.expect(formulario: [ :turma_id ])
+  end
 end

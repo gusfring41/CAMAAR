@@ -2,25 +2,37 @@ class DisciplinasController < ApplicationController
   before_action :require_login
   before_action :set_disciplina, only: %i[ show edit update destroy ]
 
-  # GET /disciplinas or /disciplinas.json
+  # Lista todas as disciplinas cadastradas.
+  #
+  # @return [void]
   def index
     @disciplinas = Disciplina.all
   end
 
-  # GET /disciplinas/1 or /disciplinas/1.json
+  # Exibe os detalhes de uma disciplina específica.
+  #
+  # @return [void]
   def show
   end
 
-  # GET /disciplinas/new
+  # Exibe o formulário de criação de nova disciplina.
+  #
+  # @return [void]
   def new
     @disciplina = Disciplina.new
   end
 
-  # GET /disciplinas/1/edit
+  # Exibe o formulário de edição de uma disciplina existente.
+  #
+  # @return [void]
   def edit
   end
 
-  # POST /disciplinas or /disciplinas.json
+  # Cria uma nova disciplina com os parâmetros permitidos.
+  #
+  # @return [void]
+  # @note Persiste a disciplina no banco de dados. Em caso de sucesso, redireciona para
+  #   a sua página; em caso de falha, re-renderiza o formulário de criação.
   def create
     @disciplina = Disciplina.new(disciplina_params)
 
@@ -35,7 +47,11 @@ class DisciplinasController < ApplicationController
     end
   end
 
-  # PATCH/PUT /disciplinas/1 or /disciplinas/1.json
+  # Atualiza os dados de uma disciplina existente.
+  #
+  # @return [void]
+  # @note Persiste as alterações no banco de dados. Em caso de sucesso, redireciona para
+  #   a página da disciplina; em caso de falha, re-renderiza o formulário de edição.
   def update
     respond_to do |format|
       if @disciplina.update(disciplina_params)
@@ -48,7 +64,10 @@ class DisciplinasController < ApplicationController
     end
   end
 
-  # DELETE /disciplinas/1 or /disciplinas/1.json
+  # Remove permanentemente uma disciplina do banco de dados.
+  #
+  # @return [void]
+  # @note Redireciona para a lista de disciplinas após a exclusão.
   def destroy
     @disciplina.destroy!
 
@@ -59,13 +78,18 @@ class DisciplinasController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_disciplina
-      @disciplina = Disciplina.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def disciplina_params
-      params.expect(disciplina: [ :codigo, :nome, :departamento_id ])
-    end
+  # Busca a disciplina pelo +:id+ da rota e a atribui a +@disciplina+.
+  #
+  # @return [void]
+  def set_disciplina
+    @disciplina = Disciplina.find(params.expect(:id))
+  end
+
+  # Filtra os parâmetros permitidos para criação/atualização de disciplina.
+  #
+  # @return [ActionController::Parameters] parâmetros filtrados da disciplina
+  def disciplina_params
+    params.expect(disciplina: [ :codigo, :nome, :departamento_id ])
+  end
 end

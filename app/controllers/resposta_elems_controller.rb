@@ -2,25 +2,37 @@ class RespostaElemsController < ApplicationController
   before_action :require_login
   before_action :set_resposta_elem, only: %i[ show edit update destroy ]
 
-  # GET /resposta_elems or /resposta_elems.json
+  # Lista todas as respostas de elemento cadastradas.
+  #
+  # @return [void]
   def index
     @resposta_elems = RespostaElem.all
   end
 
-  # GET /resposta_elems/1 or /resposta_elems/1.json
+  # Exibe os detalhes de uma resposta de elemento específica.
+  #
+  # @return [void]
   def show
   end
 
-  # GET /resposta_elems/new
+  # Exibe o formulário de criação de nova resposta de elemento.
+  #
+  # @return [void]
   def new
     @resposta_elem = RespostaElem.new
   end
 
-  # GET /resposta_elems/1/edit
+  # Exibe o formulário de edição de uma resposta de elemento existente.
+  #
+  # @return [void]
   def edit
   end
 
-  # POST /resposta_elems or /resposta_elems.json
+  # Cria uma nova resposta de elemento com os parâmetros permitidos.
+  #
+  # @return [void]
+  # @note Persiste a resposta no banco de dados. Em caso de sucesso, redireciona para a
+  #   sua página; em caso de falha, re-renderiza o formulário de criação.
   def create
     @resposta_elem = RespostaElem.new(resposta_elem_params)
 
@@ -35,7 +47,11 @@ class RespostaElemsController < ApplicationController
     end
   end
 
-  # PATCH/PUT /resposta_elems/1 or /resposta_elems/1.json
+  # Atualiza os dados de uma resposta de elemento existente.
+  #
+  # @return [void]
+  # @note Persiste as alterações no banco de dados. Em caso de sucesso, redireciona para
+  #   a página da resposta; em caso de falha, re-renderiza o formulário de edição.
   def update
     respond_to do |format|
       if @resposta_elem.update(resposta_elem_params)
@@ -48,7 +64,10 @@ class RespostaElemsController < ApplicationController
     end
   end
 
-  # DELETE /resposta_elems/1 or /resposta_elems/1.json
+  # Remove permanentemente uma resposta de elemento do banco de dados.
+  #
+  # @return [void]
+  # @note Redireciona para a lista de respostas de elemento após a exclusão.
   def destroy
     @resposta_elem.destroy!
 
@@ -59,13 +78,18 @@ class RespostaElemsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_resposta_elem
-      @resposta_elem = RespostaElem.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def resposta_elem_params
-      params.expect(resposta_elem: [ :texto_resposta, :resposta_form_id, :elemento_form_id, :campo_form_id ])
-    end
+  # Busca a resposta de elemento pelo +:id+ da rota e a atribui a +@resposta_elem+.
+  #
+  # @return [void]
+  def set_resposta_elem
+    @resposta_elem = RespostaElem.find(params.expect(:id))
+  end
+
+  # Filtra os parâmetros permitidos para criação/atualização de resposta de elemento.
+  #
+  # @return [ActionController::Parameters] parâmetros filtrados da resposta de elemento
+  def resposta_elem_params
+    params.expect(resposta_elem: [ :texto_resposta, :resposta_form_id, :elemento_form_id, :campo_form_id ])
+  end
 end

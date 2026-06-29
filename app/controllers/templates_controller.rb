@@ -5,17 +5,24 @@ class TemplatesController < ApplicationController
   before_action :set_admin
   before_action :set_template, only: %i[ show edit update destroy ]
 
-  # GET /templates or /templates.json
+  # Lista todos os templates do administrador com seus elementos e campos.
+  #
+  # @return [void]
   def index
     @templates = @admin.templates.includes(elementos: :campos)
   end
 
-  # GET /templates/1 or /templates/1.json
+  # Redireciona para a lista de templates do administrador.
+  #
+  # @return [void]
+  # @note Redireciona para +admin_templates_path+.
   def show
     redirect_to admin_templates_path(@admin)
   end
 
-  # GET /templates/new
+  # Exibe o formulário de criação de novo template com um elemento e um campo iniciais.
+  #
+  # @return [void]
   def new
     @templates = @admin.templates
     @template = @admin.templates.build
@@ -23,7 +30,11 @@ class TemplatesController < ApplicationController
     elemento.campos.build
   end
 
-  # GET /templates/1/edit
+  # Exibe o formulário de edição de um template existente.
+  #
+  # @return [void]
+  # @note Se o template não possuir elementos, cria um elemento vazio com um campo
+  #   para facilitar o preenchimento do formulário.
   def edit
     @templates = @admin.templates
     if @template.elementos.empty?
@@ -32,7 +43,12 @@ class TemplatesController < ApplicationController
     end
   end
 
-  # POST /templates or /templates.json
+  # Cria um novo template com os parâmetros permitidos.
+  #
+  # @return [void]
+  # @note Persiste o template e seus elementos/campos no banco de dados via nested
+  #   attributes. Em caso de sucesso, redireciona para a lista de templates; em caso
+  #   de falha, re-renderiza o formulário de criação.
   def create
     @template = @admin.templates.build(template_params)
 
@@ -48,7 +64,12 @@ class TemplatesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /templates/1 or /templates/1.json
+  # Atualiza os dados de um template existente.
+  #
+  # @return [void]
+  # @note Persiste as alterações no banco de dados, incluindo adição, edição e remoção
+  #   de elementos e campos. Em caso de sucesso, redireciona para a lista de templates;
+  #   em caso de falha, re-renderiza o formulário de edição.
   def update
     respond_to do |format|
       if @template.update(template_params)
@@ -62,7 +83,10 @@ class TemplatesController < ApplicationController
     end
   end
 
-  # DELETE /templates/1 or /templates/1.json
+  # Remove permanentemente um template e seus elementos/campos do banco de dados.
+  #
+  # @return [void]
+  # @note Redireciona para a lista de templates após a exclusão.
   def destroy
     @template.destroy!
     respond_to do |format|
@@ -72,27 +96,37 @@ class TemplatesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
 
-    def set_admin
-      @admin = Administrador.find(params[:admin_id])
-      if @admin.id != session[:usuario_id]
-        redirect_to inicio_path, alert: "Acesso negado! Você só pode acessar as suas próprias páginas."
-      end
+  # Busca e valida o administrador referenciado pela rota.
+  #
+  # @return [void]
+  # @note Redireciona para a página inicial com alerta se o administrador da rota for
+  #   diferente do usuário autenticado na sessão.
+  def set_admin
+    @admin = Administrador.find(params[:admin_id])
+    if @admin.id != session[:usuario_id]
+      redirect_to inicio_path, alert: "Acesso negado! Você só pode acessar as suas próprias páginas."
     end
+  end
 
-    def set_template
-      @template = @admin.templates.find(params.expect(:id))
-    end
+  # Busca o template pelo +:id+ da rota dentro dos templates do administrador.
+  #
+  # @return [void]
+  def set_template
+    @template = @admin.templates.find(params.expect(:id))
+  end
 
-    # Only allow a list of trusted parameters through.
-    def template_params
-      params.require(:template).permit(
-        :nome,
-        elementos_attributes: [
-          :id, :enunciado, :ordem, :_destroy,
-          campos_attributes: [ :id, :tipo_elemento, :enunciado, :ordem, :_destroy ]
-        ]
-      )
-    end
+  # Filtra os parâmetros permitidos para criação/atualização de template.
+  #
+  # @return [ActionController::Parameters] parâmetros filtrados do template com nested
+  #   attributes de elementos e campos
+  def template_params
+    params.require(:template).permit(
+      :nome,
+      elementos_attributes: [
+        :id, :enunciado, :ordem, :_destroy,
+        campos_attributes: [ :id, :tipo_elemento, :enunciado, :ordem, :_destroy ]
+      ]
+    )
+  end
 end
