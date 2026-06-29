@@ -132,10 +132,10 @@ RSpec.describe "Usuarios", type: :request do
     it "cria um novo usuário com sucesso (happy path)" do
       expect {
         post usuarios_path, params: {
-          usuario: { 
-            matricula: "novo123", 
-            email: "novo@unb.br", 
-            nome: "Novo Teste", 
+          usuario: {
+            matricula: "novo123",
+            email: "novo@unb.br",
+            nome: "Novo Teste",
             type: "Docente",
             senha: "Senha123",
             senha_confirmation: "Senha123",
@@ -170,7 +170,7 @@ RSpec.describe "Usuarios", type: :request do
     let(:disciplina) { Disciplina.find_or_create_by!(nome: "Software", codigo: "SW1", departamento: departamento) }
     let(:turma) { Turma.find_or_create_by!(numero_da_turma: "TA", disciplina: disciplina, semestre: "2026.1") }
     let(:formulario) { Formulario.create!(turma: turma) }
-    
+
     let!(:elemento) { formulario.elemento_forms.create!(enunciado: "Avalie o professor", ordem: 1, tipo: "Texto") }
     let!(:campo) { elemento.campo_forms.create!(enunciado: "Resposta", ordem: 1) }
 
@@ -178,11 +178,11 @@ RSpec.describe "Usuarios", type: :request do
 
     let(:discente) do
       Discente.create!(
-        nome: "Aluno Teste", 
-        matricula: "disc001", 
+        nome: "Aluno Teste",
+        matricula: "disc001",
         email: "aluno@unb.br",
-        curso: curso, 
-        senha: "Senha123", 
+        curso: curso,
+        senha: "Senha123",
         senha_confirmation: "Senha123"
       )
     end
@@ -226,7 +226,7 @@ RSpec.describe "Usuarios", type: :request do
       it "redireciona com alerta se o formulário já foi respondido" do
         RespostaForm.create!(formulario: formulario, usuario: discente, data_submissao: Date.today)
         get usuarios_responder_formulario_path(usuario_id: discente.id, formulario_id: formulario.id)
-        
+
         expect(response).to redirect_to(usuarios_avaliacoes_path(discente))
         expect(flash[:notice]).to eq("Você já respondeu este formulário.")
       end
@@ -257,14 +257,13 @@ RSpec.describe "Usuarios", type: :request do
 
       it "redireciona se tentar submeter um formulário já respondido" do
         RespostaForm.create!(formulario: formulario, usuario: discente, data_submissao: Date.today)
-        
+
         post usuarios_submeter_resposta_path(usuario_id: discente.id, formulario_id: formulario.id),
              params: { respostas: { elemento.id.to_s => "O professor foi ótimo" } }
-             
+
         expect(response).to redirect_to(usuarios_avaliacoes_path(discente))
         expect(flash[:alert]).to eq("Você já respondeu este formulário.")
       end
     end
   end
-
 end

@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe "Gerenciamento de Senhas", type: :request do
   let(:departamento) { Departamento.find_or_create_by!(nome: "Ciência da Computação", codigo: "CIC") }
-  
+
   let(:usuario_sem_senha) do
     Docente.create!(
       nome: "Novo Professor",

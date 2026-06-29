@@ -80,21 +80,21 @@ RSpec.describe "Formularios", type: :request do
       expect {
         post formularios_path, params: { formulario: { turma_id: nil } }
       }.to change(Formulario, :count).by(0)
-      
+
       expect(response).to have_http_status(:unprocessable_content)
     end
 
     it "atualiza um formulário existente com sucesso (happy path)" do
       patch formulario_path(formulario), params: { formulario: { turma_id: outra_turma.id } }
       formulario.reload
-      
+
       expect(formulario.turma_id).to eq(outra_turma.id)
       expect(response).to redirect_to(formulario_url(formulario))
     end
 
     it "falha ao atualizar com dados inválidos (sad path)" do
       patch formulario_path(formulario), params: { formulario: { turma_id: nil } }
-      
+
       expect(response).to have_http_status(:unprocessable_content)
     end
 
@@ -102,9 +102,8 @@ RSpec.describe "Formularios", type: :request do
       expect {
         delete formulario_path(formulario)
       }.to change(Formulario, :count).by(-1)
-      
+
       expect(response).to redirect_to(formularios_url)
     end
   end
-
 end

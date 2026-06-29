@@ -4,11 +4,9 @@ require 'simplecov'
 
 SimpleCov.command_name 'RSpec'
 SimpleCov.start 'rails' do
-  
-  
   add_group "Controllers", "app/controllers"
   add_group "Models", "app/models"
-  
+
   add_filter '/spec/'
   add_filter '/config/'
   add_filter '/vendor/'
