@@ -15,6 +15,10 @@ class SigaaImporter
   DEFAULT_DEP_CODIGO = "NAO_ESP".freeze
   DEFAULT_DEP_NOME   = "Não especificado".freeze
 
+  # Agrupa o hash de membro com a turma correspondente, eliminando a necessidade
+  # de passar ambos como argumentos separados em todos os métodos de processamento.
+  MemberEntry = Struct.new(:member_hash, :turma)
+
   # Importa disciplinas, turmas, docentes e discentes a partir dos arquivos JSON do SIGAA.
   #
   # Registros já existentes no banco de dados (identificados por código ou email/matrícula)
@@ -39,7 +43,6 @@ class SigaaImporter
 
     ActiveRecord::Base.transaction do
       dep_padrao
-
       import_classes_into(classes_path, counters)
       import_members_into(members_path, counters)
     end
@@ -84,8 +87,8 @@ class SigaaImporter
   #
   # @return [Departamento] instância memoizada do departamento padrão
   def dep_padrao
-    @dep_padrao ||= Departamento.find_or_create_by!(codigo: DEFAULT_DEP_CODIGO) do |d|
-      d.nome = DEFAULT_DEP_NOME
+    @dep_padrao ||= Departamento.find_or_create_by!(codigo: DEFAULT_DEP_CODIGO) do |departamento|
+      departamento.nome = DEFAULT_DEP_NOME
     end
   end
 
@@ -96,8 +99,8 @@ class SigaaImporter
   def find_or_create_departamento(nome)
     return dep_padrao if nome.blank?
 
-    codigo = nome.parameterize(separator: "_").upcase.first(20)
-    Departamento.find_or_create_by!(codigo: codigo) { |d| d.nome = nome }
+    codigo = codigo_de_nome(nome, 20)
+    Departamento.find_or_create_by!(codigo: codigo) { |dep| dep.nome = nome }
   end
 
   # Cursos -------------------------------------------------------------------
@@ -109,10 +112,10 @@ class SigaaImporter
   def find_or_create_curso(nome)
     return nil if nome.blank?
 
-    codigo = nome.parameterize(separator: "_").upcase.first(30)
-    Curso.find_or_create_by!(codigo: codigo) do |c|
-      c.nome = nome
-      c.departamento = dep_padrao
+    codigo = codigo_de_nome(nome, 30)
+    Curso.find_or_create_by!(codigo: codigo) do |curso|
+      curso.nome = nome
+      curso.departamento = dep_padrao
     end
   end
 
@@ -123,25 +126,17 @@ class SigaaImporter
   def find_curso(nome)
     return nil if nome.blank?
 
-    codigo = nome.parameterize(separator: "_").upcase.first(30)
+    codigo = codigo_de_nome(nome, 30)
     Curso.find_by(codigo: codigo) || Curso.find_by(nome: nome)
   end
 
   # JSON parsing -------------------------------------------------------------
 
-  # Lê e faz o parse do arquivo JSON de turmas/disciplinas.
+  # Lê e faz o parse de um arquivo JSON.
   #
   # @param path [String] caminho absoluto para o arquivo
   # @return [Array<Hash>] lista de entradas do JSON
-  def parse_classes_json(path)
-    JSON.parse(File.read(path))
-  end
-
-  # Lê e faz o parse do arquivo JSON de membros (docentes e discentes).
-  #
-  # @param path [String] caminho absoluto para o arquivo
-  # @return [Array<Hash>] lista de entradas do JSON
-  def parse_members_json(path)
+  def parse_json(path)
     JSON.parse(File.read(path))
   end
 
@@ -168,7 +163,7 @@ class SigaaImporter
   # @param counters [Hash] hash com chaves +:created+ e +:ignored+ para contagem
   # @return [void]
   def import_classes_into(classes_path, counters)
-    parse_classes_json(classes_path).each do |entry|
+    parse_json(classes_path).each do |entry|
       disciplina = find_or_create_disciplina(entry)
       turma = find_or_create_turma(disciplina, entry["class"] || {})
 
@@ -185,9 +180,9 @@ class SigaaImporter
   # @param entry [Hash] entrada do JSON com as chaves "code" e "name"
   # @return [Disciplina] disciplina encontrada ou recém-criada
   def find_or_create_disciplina(entry)
-    Disciplina.find_or_create_by!(codigo: entry["code"]) do |d|
-      d.nome = entry["name"]
-      d.departamento = dep_padrao
+    Disciplina.find_or_create_by!(codigo: entry["code"]) do |disciplina|
+      disciplina.nome = entry["name"]
+      disciplina.departamento = dep_padrao
     end
   end
 
@@ -201,8 +196,8 @@ class SigaaImporter
       disciplina: disciplina,
       numero_da_turma: class_info["classCode"],
       semestre: class_info["semester"]
-    ) do |t|
-      t.horario = class_info["time"]
+    ) do |turma|
+      turma.horario = class_info["time"]
     end
   end
 
@@ -214,7 +209,7 @@ class SigaaImporter
   # @return [void]
   # @note Apenas registros já existentes são atualizados; nenhum novo é criado.
   def update_classes_from(classes_path)
-    parse_classes_json(classes_path).each do |entry|
+    parse_json(classes_path).each do |entry|
       disciplina = Disciplina.find_by(codigo: entry["code"])
       disciplina&.update(nome: entry["name"])
 
@@ -236,34 +231,28 @@ class SigaaImporter
   # @param counters [Hash] hash com chaves +:created+ e +:ignored+ para contagem
   # @return [void]
   def import_members_into(members_path, counters)
-    parse_members_json(members_path).each do |member|
+    parse_json(members_path).each do |member|
       turma = lookup_turma(member)
       next unless turma
 
-      import_docente(member, turma, counters)
-      import_discentes(member, turma, counters)
+      entry = MemberEntry.new(member, turma)
+      import_docente(entry, counters)
+      import_discentes(entry, counters)
     end
   end
 
   # Importa ou ignora o docente de uma entrada do JSON de membros.
   #
-  # @param member_hash [Hash] entrada do JSON contendo a chave "docente"
-  # @param turma [Turma] turma à qual o docente deve ser associado
+  # @param entry [MemberEntry] entrada com member_hash e turma
   # @param counters [Hash] hash de contagem +:created+/+:ignored+
   # @return [void]
-  def import_docente(member_hash, turma, counters)
-    docente_hash = member_hash["docente"]
+  def import_docente(entry, counters)
+    docente_hash = entry.member_hash["docente"]
     return unless docente_hash.is_a?(Hash)
 
     dep = find_or_create_departamento(docente_hash["departamento"])
     docente = find_or_create_docente(docente_hash, dep)
-
-    if docente_already_in_turma?(docente, turma)
-      counters[:ignored] += 1
-    else
-      docente.turmas << turma
-      counters[:created] += 1
-    end
+    add_membro_to_turma(docente, entry.turma, counters)
   end
 
   # Localiza ou cria um docente pelo email.
@@ -272,33 +261,26 @@ class SigaaImporter
   # @param departamento [Departamento] departamento ao qual o docente pertence
   # @return [Docente] docente encontrado ou recém-criado
   def find_or_create_docente(docente_hash, departamento)
-    Docente.find_or_create_by!(email: docente_hash["email"]) do |dct|
-      dct.nome = docente_hash["nome"]
-      dct.matricula = docente_hash["matricula"] || docente_hash["usuario"]
-      dct.formacao = docente_hash["formacao"] || "docente"
-      dct.departamento = departamento
+    Docente.find_or_create_by!(email: docente_hash["email"]) do |docente|
+      docente.nome = docente_hash["nome"]
+      docente.matricula = docente_hash["matricula"] || docente_hash["usuario"]
+      docente.formacao = docente_hash["formacao"] || "docente"
+      docente.departamento = departamento
     end
   end
 
   # Importa ou ignora os discentes de uma entrada do JSON de membros.
   #
-  # @param member_hash [Hash] entrada do JSON contendo a chave "dicente" (array)
-  # @param turma [Turma] turma à qual os discentes devem ser associados
+  # @param entry [MemberEntry] entrada com member_hash e turma
   # @param counters [Hash] hash de contagem +:created+/+:ignored+
   # @return [void]
-  def import_discentes(member_hash, turma, counters)
-    Array(member_hash["dicente"]).each do |aluno|
+  def import_discentes(entry, counters)
+    Array(entry.member_hash["dicente"]).each do |aluno|
       next unless aluno.is_a?(Hash)
 
       curso = find_or_create_curso(aluno["curso"])
       discente = find_or_create_discente(aluno, curso)
-
-      if discente_already_in_turma?(discente, turma)
-        counters[:ignored] += 1
-      else
-        discente.turmas << turma
-        counters[:created] += 1
-      end
+      add_membro_to_turma(discente, entry.turma, counters)
     end
   end
 
@@ -308,11 +290,11 @@ class SigaaImporter
   # @param curso [Curso, nil] curso ao qual o discente pertence
   # @return [Discente] discente encontrado ou recém-criado
   def find_or_create_discente(aluno_hash, curso)
-    Discente.find_or_create_by!(matricula: aluno_hash["matricula"]) do |d|
-      d.nome = aluno_hash["nome"]
-      d.email = aluno_hash["email"]
-      d.formacao = aluno_hash["formacao"] || "graduando"
-      d.curso = curso if curso
+    Discente.find_or_create_by!(matricula: aluno_hash["matricula"]) do |discente|
+      discente.nome = aluno_hash["nome"]
+      discente.email = aluno_hash["email"]
+      discente.formacao = aluno_hash["formacao"] || "graduando"
+      discente.curso = curso if curso
     end
   end
 
@@ -324,22 +306,22 @@ class SigaaImporter
   # @return [void]
   # @note Apenas registros já existentes são atualizados; nenhum novo é criado.
   def update_members_from(members_path)
-    parse_members_json(members_path).each do |member|
+    parse_json(members_path).each do |member|
       turma = lookup_turma(member)
       next unless turma
 
-      update_docente(member, turma)
-      update_discentes(member, turma)
+      entry = MemberEntry.new(member, turma)
+      update_docente(entry)
+      update_discentes(entry)
     end
   end
 
   # Atualiza o docente de uma entrada do JSON de membros, se ele já existir.
   #
-  # @param member_hash [Hash] entrada do JSON contendo a chave "docente"
-  # @param turma [Turma] turma à qual o docente deve ser associado, se ainda não estiver
+  # @param entry [MemberEntry] entrada com member_hash e turma
   # @return [void]
-  def update_docente(member_hash, turma)
-    docente_hash = member_hash["docente"]
+  def update_docente(entry)
+    docente_hash = entry.member_hash["docente"]
     return unless docente_hash.is_a?(Hash)
 
     dep = find_or_create_departamento(docente_hash["departamento"])
@@ -350,16 +332,15 @@ class SigaaImporter
       nome: docente_hash["nome"],
       departamento: dep || docente.departamento
     )
-    docente.turmas << turma unless docente_already_in_turma?(docente, turma)
+    docente.turmas << entry.turma unless docente.turmas.exists?(entry.turma.id)
   end
 
   # Atualiza os discentes de uma entrada do JSON de membros, se eles já existirem.
   #
-  # @param member_hash [Hash] entrada do JSON contendo a chave "dicente" (array)
-  # @param turma [Turma] turma à qual os discentes devem ser associados, se ainda não estiverem
+  # @param entry [MemberEntry] entrada com member_hash e turma
   # @return [void]
-  def update_discentes(member_hash, turma)
-    Array(member_hash["dicente"]).each do |aluno|
+  def update_discentes(entry)
+    Array(entry.member_hash["dicente"]).each do |aluno|
       next unless aluno.is_a?(Hash)
 
       curso = find_curso(aluno["curso"])
@@ -371,40 +352,45 @@ class SigaaImporter
         email: aluno["email"],
         curso: curso || discente.curso
       )
-      discente.turmas << turma unless discente_already_in_turma?(discente, turma)
+      discente.turmas << entry.turma unless discente.turmas.exists?(entry.turma.id)
     end
   end
 
   # Helpers ------------------------------------------------------------------
 
-  # Verifica se o docente já está associado à turma.
+  # Adiciona um membro (docente ou discente) a uma turma, incrementando os contadores.
   #
-  # @param docente [Docente] docente a verificar
+  # @param membro [Docente, Discente] membro a ser adicionado
   # @param turma [Turma] turma alvo
-  # @return [Boolean] +true+ se a associação já existir, +false+ caso contrário
-  def docente_already_in_turma?(docente, turma)
-    docente.turmas.exists?(turma.id)
+  # @param counters [Hash] hash de contagem +:created+/+:ignored+
+  # @return [void]
+  def add_membro_to_turma(membro, turma, counters)
+    if membro.turmas.exists?(turma.id)
+      counters[:ignored] += 1
+    else
+      membro.turmas << turma
+      counters[:created] += 1
+    end
   end
 
-  # Verifica se o discente já está associado à turma.
+  # Deriva um código curto a partir de um nome por parametrização e truncamento.
   #
-  # @param discente [Discente] discente a verificar
-  # @param turma [Turma] turma alvo
-  # @return [Boolean] +true+ se a associação já existir, +false+ caso contrário
-  def discente_already_in_turma?(discente, turma)
-    discente.turmas.exists?(turma.id)
+  # @param nome [String] nome a converter
+  # @param max_length [Integer] número máximo de caracteres do código
+  # @return [String] código em maiúsculas com separadores underline
+  def codigo_de_nome(nome, max_length)
+    nome.parameterize(separator: "_").upcase.first(max_length)
   end
 
   # Constrói a mensagem de resultado da importação com base nos contadores.
   #
   # @param counters [Hash] hash com as chaves +:created+ e +:ignored+
-  # @return [String] mensagem descritiva do resultado:
-  #   "alguns dados já foram importados..." (mistura), "os dados já existem..."
-  #   (nenhum novo) ou "importação realizada com sucesso" (todos novos)
+  # @return [String] mensagem descritiva do resultado
   def build_import_result(counters)
-    if counters[:created] > 0 && counters[:ignored] > 0
+    created = counters[:created]
+    if created > 0 && counters[:ignored] > 0
       "alguns dados já foram importados e não serão importados novamente, mas os dados restantes foram importados com sucesso"
-    elsif counters[:created] == 0
+    elsif created == 0
       "os dados já existem e não foram duplicados"
     else
       "importação realizada com sucesso"

@@ -8,6 +8,8 @@ class TemplatesController < ApplicationController
   layout "gerenciamento"
   before_action :require_login
 
+  include AdminAutenticavel
+
   before_action :set_admin
   before_action :set_template, only: %i[ show edit update destroy ]
 
@@ -102,18 +104,6 @@ class TemplatesController < ApplicationController
   end
 
   private
-
-  # Busca e valida o administrador referenciado pela rota.
-  #
-  # @return [void]
-  # @note Redireciona para a página inicial com alerta se o administrador da rota for
-  #   diferente do usuário autenticado na sessão.
-  def set_admin
-    @admin = Administrador.find(params[:admin_id])
-    if @admin.id != session[:usuario_id]
-      redirect_to inicio_path, alert: "Acesso negado! Você só pode acessar as suas próprias páginas."
-    end
-  end
 
   # Busca o template pelo +:id+ da rota dentro dos templates do administrador.
   #
